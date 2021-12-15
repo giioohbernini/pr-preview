@@ -1,6 +1,6 @@
-name: '🔂 Surge PR Preview'
-description: 'Preview website in surge.sh for every pull request'
-author: 'afc163'
+name: 'PR Preview Multi Tenant'
+description: 'Preview websites with multi options'
+author: 'gbernini'
 inputs:
   surge_token:
     description: 'surge.sh token'
