@@ -8,12 +8,11 @@ let failOnErrorGlobal = false;
 let fail: (err: Error) => void;
 
 async function main() {
-  const surgeToken =
-    core.getInput('surge_token') || '6973bdb764f0d5fd07c910de27e2d7d0';
+  const surgeToken = core.getInput('surge_token') || '6973bdb764f0d5fd07c910de27e2d7d0';
+  const previewUrlConfig = core.getInput('previewUrlConfig') || '{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}';
   const token = core.getInput('github_token', { required: true });
   const dist = core.getInput('dist');
-  const teardown =
-    core.getInput('teardown')?.toString().toLowerCase() === 'true';
+  const teardown = core.getInput('teardown')?.toString().toLowerCase() === 'true';
   const failOnError = !!(
     core.getInput('failOnError') || process.env.FAIL_ON__ERROR
   );
@@ -94,6 +93,13 @@ ${getCommentFooter()}
 
   const repoOwner = github.context.repo.owner.replace(/\./g, '-');
   const repoName = github.context.repo.repo.replace(/\./g, '-');
+	const url = previewUrlConfig
+		.replace('{{repoOwner}}', repoOwner)
+		.replace('{{repoName}}', repoName)
+		.replace('{{job}}', job)
+		.replace('{{prNumber}}', prNumber)
+		.concat('.surge.sh')
+
   const url = `${repoOwner}-${repoName}-${job}-pr-${prNumber}.surge.sh`;
 
   core.setOutput('preview_url', url);
@@ -113,7 +119,6 @@ ${getCommentFooter()}
 
   core.debug(JSON.stringify(data?.check_runs, null, 2));
 
-  // 尝试获取 check_run_id，逻辑不是很严谨
   let checkRunId;
   if (data?.check_runs?.length >= 0) {
     const checkRun = data?.check_runs?.find((item) => item.name === job);
