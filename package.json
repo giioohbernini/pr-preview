@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/afc163/surge-preview.git"
+    "url": "git+https://github.com/giioohbernini/pr-preview.git"
   },
   "keywords": [
     "actions",
@@ -27,7 +27,7 @@
     "pull-requests",
     "deploy"
   ],
-  "author": "afc163 <afc163@gmail.com>",
+  "author": "giioohbernini",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",

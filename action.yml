@@ -4,10 +4,14 @@ author: 'gbernini'
 inputs:
   surge_token:
     description: 'surge.sh token'
-    default: '6973bdb764f0d5fd07c910de27e2d7d0'
-  preview_url_config:
+    required: true
+  preview_url:
     description: 'string with repo options'
     default: '{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}'
+    required: false
+  preview_path:
+    description: 'direct route for preview url'
+    default: ''
     required: false
   github_token:
     description: 'github token'
