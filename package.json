@@ -13,7 +13,7 @@
 		"package": "ncc build --source-map",
 		"test": "jest --passWithNoTests",
 		"pretty-quick": "pretty-quick",
-		"all": "npm run build && npm run format && npm run lint && npm run package && npm test",
+		"all": "yarn build && yarn format && yarn lint && yarn package && yarn test",
 		"prepare": "husky install"
 	},
 	"repository": {
