@@ -122,7 +122,7 @@ async function main() {
 
 	let checkRunId
 	if (data?.check_runs?.length >= 0) {
-		const checkRun = data?.check_runs?.find(item => item.name === job)
+		const checkRun = data?.check_runs?.find((item) => item.name === job)
 		checkRunId = checkRun?.id
 	}
 
