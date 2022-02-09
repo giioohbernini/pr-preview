@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         id: preview_step
-        name: test afc163/surge-preview
+        name: test giioohbernini/pr-preview
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -20,6 +20,7 @@ jobs:
           build: |
             mkdir -p public/preview
             npm install -g yarn
+            yarn
             yarn build-preview -- public/preview
       - name: Get the output url
         run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
@@ -37,7 +38,8 @@ jobs:
           dist: public/preview2
           build: |
             mkdir -p public/preview2
-            npm install
-            npm run build-preview -- public/preview2
+            npm install -g yarn
+            yarn
+            yarn build-preview -- public/preview2
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
