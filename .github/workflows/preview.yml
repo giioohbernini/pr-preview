@@ -19,8 +19,8 @@ jobs:
           dist: public/preview
           build: |
             mkdir -p public/preview
-            npm install
-            npm run build-preview -- public/preview
+            npm install -g yarn
+            yarn build-preview -- public/preview
       - name: Get the output url
         run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
   preview2:
