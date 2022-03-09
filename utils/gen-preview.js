@@ -55,9 +55,7 @@ const allowedVars = [
 
 	console.log(`received: ${content}`)
 	const contentHtml = content.join('\n   ')
-	const html = `<div>
-   ${contentHtml}
-</div>`
+	const html = `<div>${contentHtml}</div>`
 
 	return writeFile(filePath, html)
 })()
