@@ -1,13 +1,10 @@
-# Surge PR Preview
+# PR Preview
 
-[![CI status][github-action-image]][github-action-url] [![david deps][david-image]][david-url] [![david devDeps][david-dev-image]][david-dev-url]
+[![CI status][github-action-image]][github-action-url]
 
-[github-action-image]: https://github.com/afc163/surge-preview/workflows/build-test/badge.svg
-[github-action-url]: https://github.com/afc163/surge-preview/actions?query=workflow%3Abuild-test
-[david-image]: https://img.shields.io/david/afc163/surge-preview?style=flat-square
-[david-dev-url]: https://david-dm.org/afc163/surge-preview?type=dev
-[david-dev-image]: https://img.shields.io/david/dev/afc163/surge-preview?style=flat-square
-[david-url]: https://david-dm.org/afc163/surge-preview
+[github-action-image]: https://github.com/giioohbernini/pr-preview/workflows/build-test/badge.svg
+[github-action-url]: https://github.com/giioohbernini/pr-preview/actions?query=workflow%3Abuild-test
+
 
 A GitHub action that preview website in [surge.sh](https://surge.sh/) for your pull requests.
 
@@ -131,27 +128,3 @@ jobs:
 ### Outputs
 
 - `preview_url`: The url for the related PR preview
-
-### Who are using it?
-
-- https://github.com/ant-design/ant-design-pro
-- https://github.com/ant-design/pro-components
-- https://github.com/antvis/antvis.github.io
-- https://github.com/antvis/gatsby-theme-antv
-- https://github.com/antvis/g2
-- https://github.com/antvis/g2plot
-- https://github.com/antvis/g6
-- https://github.com/antvis/x6
-- https://github.com/umijs/dumi
-- https://github.com/alibaba/hooks
-- https://github.com/youzan/vant
-- https://github.com/didi/cube-ui
-- https://github.com/didi/mand-mobile
-- https://github.com/jdf2e/nutui
-- https://github.com/ant-design-colorful/ant-design-colorful
-- https://github.com/iambumblehead/react-dropdown-now
-
-### Thanks to
-
-- https://github.com/jwalton/gh-find-current-pr
-- https://github.com/marocchino/sticky-pull-request-comment
