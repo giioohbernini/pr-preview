@@ -20,7 +20,8 @@ jobs:
           build: |
             mkdir -p public/preview
             npm install -g yarn
-            yarn && yarn build-preview -- public/preview
+            yarn
+            yarn build-preview -- public/preview
       - name: Get the output url
         run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
   preview2:
@@ -36,8 +37,9 @@ jobs:
           teardown: 'true'
           dist: public/preview2
           build: |
-            mkdir -p public/preview2
+            mkdir -p public/preview
             npm install -g yarn
-            yarn && yarn build-preview -- public/preview2
+            yarn
+            yarn build-preview -- public/preview2
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"

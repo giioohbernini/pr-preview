@@ -75,18 +75,19 @@ async function main() {
 	fail = (err: Error) => {
 		core.info('error message:')
 		core.info(JSON.stringify(err, null, 2))
+		const repoOwner = github.context.repo.owner
+		const repoName = github.context.repo.repo
+		const repoId = github.context.runId
+		const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`
+		const image = formatImage({
+			buildingLogUrl,
+			imageUrl:'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
+		})
 
 		commentIfNotForkedRepo(`
-		😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](https://github.com/${
-			github.context.repo.owner
-		}/${github.context.repo.repo}/actions/runs/${github.context.runId})
+			😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl})
 
-	${formatImage({
-		buildingLogUrl,
-		imageUrl:
-			'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
-	})}
-
+			${image}
     `)
 		if (failOnError) {
 			core.setFailed(err.message)
@@ -122,7 +123,7 @@ async function main() {
 
 	let checkRunId
 	if (data?.check_runs?.length >= 0) {
-		const checkRun = data?.check_runs?.find((item) => item.name === job)
+		const checkRun = data?.check_runs?.find(item => item.name === job)
 		checkRunId = checkRun?.id
 	}
 
