@@ -5,7 +5,6 @@
 [github-action-image]: https://github.com/giioohbernini/pr-preview/workflows/build-test/badge.svg
 [github-action-url]: https://github.com/giioohbernini/pr-preview/actions?query=workflow%3Abuild-test
 
-
 A GitHub action that preview website in [surge.sh](https://surge.sh/) for your pull requests.
 
 <img width="800" alt="image" src="https://user-images.githubusercontent.com/507615/90243810-2230b480-de62-11ea-9a2c-9e869a2067dd.png">

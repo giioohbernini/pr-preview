@@ -59,7 +59,6 @@ async function main() {
 	core.info(`Find PR number: ${prNumber}`)
 
 	const commentIfNotForkedRepo = (message: string) => {
-		// if it is forked repo, don't comment
 		if (fromForkedRepo) {
 			return
 		}
@@ -81,7 +80,8 @@ async function main() {
 		const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`
 		const image = formatImage({
 			buildingLogUrl,
-			imageUrl:'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
+			imageUrl:
+				'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
 		})
 
 		commentIfNotForkedRepo(`
@@ -123,7 +123,7 @@ async function main() {
 
 	let checkRunId
 	if (data?.check_runs?.length >= 0) {
-		const checkRun = data?.check_runs?.find(item => item.name === job)
+		const checkRun = data?.check_runs?.find((item) => item.name === job)
 		checkRunId = checkRun?.id
 	}
 

@@ -1,4 +1,4 @@
-import type { Octokit, Repo } from './commentToPullRequest'
+import type { Repo, Octokit } from './types'
 
 function headerComment(header?: string) {
 	return `<!-- Sticky Pull Request Comment${header || ''} -->`
