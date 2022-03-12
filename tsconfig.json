@@ -7,9 +7,7 @@
 		"strict": true,
 		"useUnknownInCatchVariables": false,
 		"esModuleInterop": true,
-		"lib": [
-			"ES2021.String"
-		]
+		"lib": ["ES2021.String"]
 	},
 	"exclude": ["node_modules", "**/*.test.ts"]
 }

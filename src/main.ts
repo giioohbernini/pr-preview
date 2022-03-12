@@ -85,9 +85,9 @@ async function main() {
 		})
 
 		commentIfNotForkedRepo(`
-			😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl})
+😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl})
 
-			${image}
+${image}
     `)
 		if (failOnError) {
 			core.setFailed(err.message)
@@ -123,7 +123,7 @@ async function main() {
 
 	let checkRunId
 	if (data?.check_runs?.length >= 0) {
-		const checkRun = data?.check_runs?.find((item) => item.name === job)
+		const checkRun = data?.check_runs?.find(item => item.name === job)
 		checkRunId = checkRun?.id
 	}
 
@@ -163,9 +163,9 @@ ${formatImage({
 	})
 
 	commentIfNotForkedRepo(`
-		⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${url}) ... [Build logs](${buildingLogUrl})
+⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${url}) ... [Build logs](${buildingLogUrl})
 
-		${deployingImage}
+${deployingImage}
   `)
 
 	const startTime = Date.now()
@@ -184,21 +184,22 @@ ${formatImage({
 		core.info(`Build time: ${duration} seconds`)
 		core.info(`Deploy to ${url}`)
 		core.setSecret(surgeToken)
+		const image = formatImage({
+			buildingLogUrl,
+			imageUrl:
+				'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
+		})
 
 		await execSurgeCommand({
 			command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
 		})
 
 		commentIfNotForkedRepo(`
-			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url}
+🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url}
 
-			:clock1: Build time: **${duration}s**
+:clock1: Build time: **${duration}s**
 
-			${formatImage({
-				buildingLogUrl,
-				imageUrl:
-					'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
-			})}
+${image}
     `)
 	} catch (err) {
 		fail?.(err)
