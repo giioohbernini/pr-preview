@@ -22,7 +22,7 @@ export async function comment({
 		return
 	}
 	const prefixedHeader = `: Surge Preview ${header}'`
-	const body = message.replaceAll('\t', '')
+	const body = message.replace(/\t/g, '')
 
 	try {
 		const previous = await findPreviousComment(
