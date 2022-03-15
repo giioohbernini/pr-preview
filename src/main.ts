@@ -84,11 +84,9 @@ async function main() {
 				'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
 		})
 
-		commentIfNotForkedRepo(`
-😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl})
-
-${image}
-    `)
+		commentIfNotForkedRepo(
+			`😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl}) \n ${image}`
+		)
 		if (failOnError) {
 			core.setFailed(err.message)
 		}
@@ -123,7 +121,7 @@ ${image}
 
 	let checkRunId
 	if (data?.check_runs?.length >= 0) {
-		const checkRun = data?.check_runs?.find((item) => item.name === job)
+		const checkRun = data?.check_runs?.find(item => item.name === job)
 		checkRunId = checkRun?.id
 	}
 
@@ -142,16 +140,15 @@ ${image}
 				command: ['surge', 'teardown', url, `--token`, surgeToken],
 			})
 
+			const image = formatImage({
+				buildingLogUrl,
+				imageUrl:
+					'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
+			})
+
 			return commentIfNotForkedRepo(`
-:recycle: [PR Preview](https://${url}) ${gitCommitSha} has been successfully destroyed since this PR has been closed.
-
-${formatImage({
-	buildingLogUrl,
-	imageUrl:
-		'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
-})}
-
-      `)
+				:recycle: [PR Preview](https://${url}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}
+			`)
 		} catch (err) {
 			return fail?.(err)
 		}
@@ -162,11 +159,9 @@ ${formatImage({
 			'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
 	})
 
-	commentIfNotForkedRepo(`
-⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${url}) ... [Build logs](${buildingLogUrl})
-
-${deployingImage}
-  `)
+	commentIfNotForkedRepo(
+		`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${url}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`
+	)
 
 	const startTime = Date.now()
 	try {
@@ -194,13 +189,9 @@ ${deployingImage}
 			command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
 		})
 
-		commentIfNotForkedRepo(`
-🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url}
-
-:clock1: Build time: **${duration}s**
-
-${image}
-    `)
+		commentIfNotForkedRepo(
+			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url} \n :clock1: Build time: **${duration}s** \n ${image}`
+		)
 	} catch (err) {
 		fail?.(err)
 	}
