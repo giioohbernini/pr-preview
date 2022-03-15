@@ -190,8 +190,7 @@ async function main() {
 		})
 
 		commentIfNotForkedRepo(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url}`
-			//`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url} \n :clock1: Build time: **${duration}s** \n ${image}`
+			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url} \n :clock1: Build time: **${duration}s** \n ${image}`
 		)
 	} catch (err) {
 		fail?.(err)
