@@ -121,7 +121,7 @@ async function main() {
 
 	let checkRunId
 	if (data?.check_runs?.length >= 0) {
-		const checkRun = data?.check_runs?.find(item => item.name === job)
+		const checkRun = data?.check_runs?.find((item) => item.name === job)
 		checkRunId = checkRun?.id
 	}
 
@@ -146,9 +146,9 @@ async function main() {
 					'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
 			})
 
-			return commentIfNotForkedRepo(`
-				:recycle: [PR Preview](https://${url}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}
-			`)
+			return commentIfNotForkedRepo(
+				`:recycle: [PR Preview](https://${url}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
+			)
 		} catch (err) {
 			return fail?.(err)
 		}
@@ -190,7 +190,8 @@ async function main() {
 		})
 
 		commentIfNotForkedRepo(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url} \n :clock1: Build time: **${duration}s** \n ${image}`
+			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url}`
+			//`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url} \n :clock1: Build time: **${duration}s** \n ${image}`
 		)
 	} catch (err) {
 		fail?.(err)
