@@ -62,6 +62,6 @@ jobs:
             npm install -g yarn
             yarn
             yarn build-preview -- public/preview3
-            mv public/preview3/index.html public/preview3/teste/
+            cp public/preview3/index.html public/preview3/teste/index.html
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
