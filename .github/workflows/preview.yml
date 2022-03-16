@@ -56,7 +56,7 @@ jobs:
           preview_path: '/teste/'
           preview_url: '{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}'
           teardown: 'true'
-          dist: public/preview2
+          dist: public/preview3
           build: |
             mkdir -p public/preview3/teste/
             npm install -g yarn
