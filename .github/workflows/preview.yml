@@ -37,7 +37,7 @@ jobs:
           teardown: 'true'
           dist: public/preview2
           build: |
-            mkdir -p public/preview
+            mkdir -p public/preview2
             npm install -g yarn
             yarn
             yarn build-preview -- public/preview2
