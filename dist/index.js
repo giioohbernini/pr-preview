@@ -278,7 +278,7 @@ function generateLogUrl() {
         core.debug(JSON.stringify(data === null || data === void 0 ? void 0 : data.check_runs, null, 2));
         let checkRunId;
         if (((_a = data === null || data === void 0 ? void 0 : data.check_runs) === null || _a === void 0 ? void 0 : _a.length) >= 0) {
-            const checkRun = (_b = data === null || data === void 0 ? void 0 : data.check_runs) === null || _b === void 0 ? void 0 : _b.find(item => item.name === job);
+            const checkRun = (_b = data === null || data === void 0 ? void 0 : data.check_runs) === null || _b === void 0 ? void 0 : _b.find((item) => item.name === job);
             checkRunId = checkRun === null || checkRun === void 0 ? void 0 : checkRun.id;
         }
         const buildingLogUrl = checkRunId
@@ -309,7 +309,7 @@ function fail(err) {
     });
 }
 function main() {
-    var _a, _b, _c, _d;
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const surgeToken = core.getInput('surge_token');
         const previewUrl = core.getInput('preview_url');
@@ -322,9 +322,7 @@ function main() {
         const { job, payload } = github.context;
         core.debug(`payload.after: ${payload.after}`);
         core.debug(`payload.after: ${payload.pull_request}`);
-        const gitCommitSha = payload.after ||
-            ((_c = (_b = payload === null || payload === void 0 ? void 0 : payload.pull_request) === null || _b === void 0 ? void 0 : _b.head) === null || _c === void 0 ? void 0 : _c.sha) ||
-            ((_d = payload === null || payload === void 0 ? void 0 : payload.workflow_run) === null || _d === void 0 ? void 0 : _d.head_sha);
+        const gitCommitSha = getGitCommitSha();
         core.debug(JSON.stringify(github.context.repo, null, 2));
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
@@ -338,9 +336,9 @@ function main() {
             .replace('{{repoName}}', repoName)
             .replace('{{job}}', job)
             .replace('{{prNumber}}', `${prNumber}`)
-            .concat('.surge.sh')
-            .concat(previewPath);
-        core.setOutput('preview_url', url);
+            .concat('.surge.sh');
+        const outputUrl = url.concat(previewPath);
+        core.setOutput('preview_url', outputUrl);
         const buildingLogUrl = yield generateLogUrl();
         core.debug(`teardown enabled?: ${teardown}`);
         core.debug(`event action?: ${payload.action}`);
@@ -355,7 +353,7 @@ function main() {
                     buildingLogUrl,
                     imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
                 });
-                return yield comment(`:recycle: [PR Preview](https://${url}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
+                return yield comment(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
             }
             catch (err) {
                 core.info('teardown error');
@@ -366,7 +364,7 @@ function main() {
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
         });
-        yield comment(`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${url}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`);
+        yield comment(`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`);
         const startTime = Date.now();
         try {
             if (!core.getInput('build')) {
@@ -391,7 +389,7 @@ function main() {
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
             });
-            yield comment(`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url} \n :clock1: Build time: **${duration}s** \n ${image}`);
+            yield comment(`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`);
         }
         catch (err) {
             core.info('run command error');
