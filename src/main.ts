@@ -140,10 +140,7 @@ async function main() {
 	const { job, payload } = github.context
 	core.debug(`payload.after: ${payload.after}`)
 	core.debug(`payload.after: ${payload.pull_request}`)
-	const gitCommitSha =
-		payload.after ||
-		payload?.pull_request?.head?.sha ||
-		payload?.workflow_run?.head_sha
+	const gitCommitSha = getGitCommitSha()
 	core.debug(JSON.stringify(github.context.repo, null, 2))
 
 	if (!prNumber) {
@@ -160,9 +157,10 @@ async function main() {
 		.replace('{{job}}', job)
 		.replace('{{prNumber}}', `${prNumber}`)
 		.concat('.surge.sh')
-		.concat(previewPath)
 
-	core.setOutput('preview_url', url)
+	const outputUrl = url.concat(previewPath)
+
+	core.setOutput('preview_url', outputUrl)
 
 	const buildingLogUrl = await generateLogUrl()
 
@@ -184,7 +182,7 @@ async function main() {
 			})
 
 			return await comment(
-				`:recycle: [PR Preview](https://${url}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
+				`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
 			)
 		} catch (err) {
 			core.info('teardown error')
@@ -198,7 +196,7 @@ async function main() {
 	})
 
 	await comment(
-		`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${url}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`
+		`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`
 	)
 
 	const startTime = Date.now()
@@ -228,7 +226,7 @@ async function main() {
 		})
 
 		await comment(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url} \n :clock1: Build time: **${duration}s** \n ${image}`
+			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`
 		)
 	} catch (err) {
 		core.info('run command error')

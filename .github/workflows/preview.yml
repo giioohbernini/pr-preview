@@ -63,6 +63,5 @@ jobs:
             yarn
             yarn build-preview -- public/preview3
             cp ./public/preview3/index.html ./public/preview3/teste/index.html
-            pwd
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
