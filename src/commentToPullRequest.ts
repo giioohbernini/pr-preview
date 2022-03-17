@@ -1,12 +1,6 @@
 import * as core from '@actions/core'
-import type { GitHub } from '@actions/github/lib/utils'
 import { createComment, findPreviousComment, updateComment } from './comment'
-
-export type Octokit = InstanceType<typeof GitHub>
-export type Repo = {
-	owner: string
-	repo: string
-}
+import type { Repo, Octokit } from './types'
 
 interface CommentConfig {
 	repo: Repo
@@ -28,6 +22,7 @@ export async function comment({
 		return
 	}
 	const prefixedHeader = `: Surge Preview ${header}'`
+	const body = message.replace(/\t/g, '')
 
 	try {
 		const previous = await findPreviousComment(
@@ -36,7 +31,6 @@ export async function comment({
 			number,
 			prefixedHeader
 		)
-		const body = message
 
 		if (previous) {
 			await updateComment(
@@ -51,6 +45,6 @@ export async function comment({
 			await createComment(octokit, repo, number, body, prefixedHeader)
 		}
 	} catch (err) {
-		core.setFailed(err.message)
+		core.setFailed(err.body)
 	}
 }

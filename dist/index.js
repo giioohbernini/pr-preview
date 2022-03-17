@@ -98,9 +98,9 @@ function comment({ repo, number, message, octokit, header, }) {
             return;
         }
         const prefixedHeader = `: Surge Preview ${header}'`;
+        const body = message.replace(/\t/g, '');
         try {
             const previous = yield (0, comment_1.findPreviousComment)(octokit, repo, number, prefixedHeader);
-            const body = message;
             if (previous) {
                 yield (0, comment_1.updateComment)(octokit, repo, previous.id, body, prefixedHeader, false);
             }
@@ -109,7 +109,7 @@ function comment({ repo, number, message, octokit, header, }) {
             }
         }
         catch (err) {
-            core.setFailed(err.message);
+            core.setFailed(err.body);
         }
     });
 }
@@ -201,36 +201,25 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
-let failOnErrorGlobal = false;
-let fail;
-function main() {
-    var _a, _b, _c, _d, _e, _f, _g;
+function getGitCommitSha() {
+    var _a, _b, _c;
+    const { payload } = github.context;
+    const gitCommitSha = payload.after ||
+        ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.pull_request) === null || _a === void 0 ? void 0 : _a.head) === null || _b === void 0 ? void 0 : _b.sha) ||
+        ((_c = payload === null || payload === void 0 ? void 0 : payload.workflow_run) === null || _c === void 0 ? void 0 : _c.head_sha);
+    return gitCommitSha;
+}
+function getPullRequestNumber() {
     return __awaiter(this, void 0, void 0, function* () {
-        const surgeToken = core.getInput('surge_token');
-        const previewUrl = core.getInput('preview_url');
-        const previewPath = core.getInput('preview_path');
         const token = core.getInput('github_token', { required: true });
-        const distFolder = core.getInput('dist');
-        const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
-        const failOnError = !!(core.getInput('failOnError') || process.env.FAIL_ON__ERROR);
-        failOnErrorGlobal = failOnError;
-        core.debug(`failOnErrorGlobal: ${typeof failOnErrorGlobal} + ${failOnErrorGlobal.toString()}`);
         const octokit = github.getOctokit(token);
-        let prNumber;
-        core.debug('github.context');
-        core.debug(JSON.stringify(github.context, null, 2));
-        const { job, payload } = github.context;
-        core.debug(`payload.after: ${payload.after}`);
-        core.debug(`payload.after: ${payload.pull_request}`);
-        const gitCommitSha = payload.after ||
-            ((_c = (_b = payload === null || payload === void 0 ? void 0 : payload.pull_request) === null || _b === void 0 ? void 0 : _b.head) === null || _c === void 0 ? void 0 : _c.sha) ||
-            ((_d = payload === null || payload === void 0 ? void 0 : payload.workflow_run) === null || _d === void 0 ? void 0 : _d.head_sha);
-        core.debug(JSON.stringify(github.context.repo, null, 2));
-        const fromForkedRepo = ((_e = payload.pull_request) === null || _e === void 0 ? void 0 : _e.owner) === github.context.repo.owner;
-        if (payload.number && payload.pull_request) {
-            prNumber = payload.number;
+        const { payload } = github.context;
+        const gitCommitSha = getGitCommitSha();
+        const prNumberExists = payload.number && payload.pull_request;
+        if (prNumberExists) {
+            return Number(payload.number);
         }
-        else {
+        if (!prNumberExists) {
             const result = yield octokit.rest.repos.listPullRequestsAssociatedWithCommit({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
@@ -239,52 +228,39 @@ function main() {
             const pr = result.data.length > 0 && result.data[0];
             core.debug('listPullRequestsAssociatedWithCommit');
             core.debug(JSON.stringify(pr, null, 2));
-            prNumber = pr ? pr.number : undefined;
+            const prNumber = pr ? Number(pr.number) : undefined;
+            return prNumber;
         }
-        if (!prNumber) {
-            core.info(`😢 No related PR found, skip it.`);
+    });
+}
+function comment(message) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const { job, payload } = github.context;
+        const prOwner = (_a = payload.pull_request) === null || _a === void 0 ? void 0 : _a.owner;
+        const fromForkedRepo = prOwner === github.context.repo.owner;
+        const token = core.getInput('github_token', { required: true });
+        const octokit = github.getOctokit(token);
+        const prNumber = yield getPullRequestNumber();
+        if (fromForkedRepo) {
             return;
         }
-        core.info(`Find PR number: ${prNumber}`);
-        const commentIfNotForkedRepo = (message) => {
-            // if it is forked repo, don't comment
-            if (fromForkedRepo) {
-                return;
-            }
-            (0, commentToPullRequest_1.comment)({
-                repo: github.context.repo,
-                number: Number(prNumber),
-                message,
-                octokit,
-                header: job,
-            });
-        };
-        fail = (err) => {
-            core.info('error message:');
-            core.info(JSON.stringify(err, null, 2));
-            commentIfNotForkedRepo(`
-		😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${github.context.runId})
-
-	${(0, helpers_1.formatImage)({
-                buildingLogUrl,
-                imageUrl: 'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
-            })}
-
-    `);
-            if (failOnError) {
-                core.setFailed(err.message);
-            }
-        };
-        const repoOwner = github.context.repo.owner.replace(/\./g, '-');
-        const repoName = github.context.repo.repo.replace(/\./g, '-');
-        const url = previewUrl
-            .replace('{{repoOwner}}', repoOwner)
-            .replace('{{repoName}}', repoName)
-            .replace('{{job}}', job)
-            .replace('{{prNumber}}', `${prNumber}`)
-            .concat('.surge.sh')
-            .concat(previewPath);
-        core.setOutput('preview_url', url);
+        (0, commentToPullRequest_1.comment)({
+            repo: github.context.repo,
+            number: Number(prNumber),
+            message,
+            octokit,
+            header: job,
+        });
+    });
+}
+function generateLogUrl() {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        const token = core.getInput('github_token', { required: true });
+        const octokit = github.getOctokit(token);
+        const { job } = github.context;
+        const gitCommitSha = getGitCommitSha();
         let data;
         try {
             const result = yield octokit.rest.checks.listForRef({
@@ -295,18 +271,75 @@ function main() {
             data = result.data;
         }
         catch (err) {
-            fail(err);
-            return;
+            core.info('generateLogUrl error');
+            yield fail(err);
+            return '';
         }
         core.debug(JSON.stringify(data === null || data === void 0 ? void 0 : data.check_runs, null, 2));
         let checkRunId;
-        if (((_f = data === null || data === void 0 ? void 0 : data.check_runs) === null || _f === void 0 ? void 0 : _f.length) >= 0) {
-            const checkRun = (_g = data === null || data === void 0 ? void 0 : data.check_runs) === null || _g === void 0 ? void 0 : _g.find((item) => item.name === job);
+        if (((_a = data === null || data === void 0 ? void 0 : data.check_runs) === null || _a === void 0 ? void 0 : _a.length) >= 0) {
+            const checkRun = (_b = data === null || data === void 0 ? void 0 : data.check_runs) === null || _b === void 0 ? void 0 : _b.find((item) => item.name === job);
             checkRunId = checkRun === null || checkRun === void 0 ? void 0 : checkRun.id;
         }
         const buildingLogUrl = checkRunId
             ? `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/runs/${checkRunId}`
             : `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${github.context.runId}`;
+        return buildingLogUrl;
+    });
+}
+function fail(err) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.info('error message:');
+        core.info(JSON.stringify(err, null, 2));
+        const repoOwner = github.context.repo.owner;
+        const repoName = github.context.repo.repo;
+        const repoId = github.context.runId;
+        const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`;
+        const buildingLogUrl = yield generateLogUrl();
+        const gitCommitSha = getGitCommitSha();
+        const image = (0, helpers_1.formatImage)({
+            buildingLogUrl,
+            imageUrl: 'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
+        });
+        yield comment(`😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl}) \n ${image}`);
+        const failOnError = !!(core.getInput('failOnError') || process.env.FAIL_ON__ERROR);
+        if (failOnError) {
+            core.setFailed(err.message);
+        }
+    });
+}
+function main() {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const surgeToken = core.getInput('surge_token');
+        const previewUrl = core.getInput('preview_url');
+        const previewPath = core.getInput('preview_path');
+        const distFolder = core.getInput('dist');
+        const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
+        const prNumber = yield getPullRequestNumber();
+        core.debug('github.context');
+        core.debug(JSON.stringify(github.context, null, 2));
+        const { job, payload } = github.context;
+        core.debug(`payload.after: ${payload.after}`);
+        core.debug(`payload.after: ${payload.pull_request}`);
+        const gitCommitSha = getGitCommitSha();
+        core.debug(JSON.stringify(github.context.repo, null, 2));
+        if (!prNumber) {
+            core.info(`😢 No related PR found, skip it.`);
+            return;
+        }
+        core.info(`Find PR number: ${prNumber}`);
+        const repoOwner = github.context.repo.owner.replace(/\./g, '-');
+        const repoName = github.context.repo.repo.replace(/\./g, '-');
+        const url = previewUrl
+            .replace('{{repoOwner}}', repoOwner)
+            .replace('{{repoName}}', repoName)
+            .replace('{{job}}', job)
+            .replace('{{prNumber}}', `${prNumber}`)
+            .concat('.surge.sh');
+        const outputUrl = url.concat(previewPath);
+        core.setOutput('preview_url', outputUrl);
+        const buildingLogUrl = yield generateLogUrl();
         core.debug(`teardown enabled?: ${teardown}`);
         core.debug(`event action?: ${payload.action}`);
         if (teardown && payload.action === 'closed') {
@@ -316,29 +349,22 @@ function main() {
                 yield (0, helpers_1.execSurgeCommand)({
                     command: ['surge', 'teardown', url, `--token`, surgeToken],
                 });
-                return commentIfNotForkedRepo(`
-:recycle: [PR Preview](https://${url}) ${gitCommitSha} has been successfully destroyed since this PR has been closed.
-
-${(0, helpers_1.formatImage)({
+                const image = (0, helpers_1.formatImage)({
                     buildingLogUrl,
                     imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
-                })}
-
-      `);
+                });
+                return yield comment(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
             }
             catch (err) {
-                return fail === null || fail === void 0 ? void 0 : fail(err);
+                core.info('teardown error');
+                return yield fail(err);
             }
         }
         const deployingImage = (0, helpers_1.formatImage)({
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
         });
-        commentIfNotForkedRepo(`
-		⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${url}) ... [Build logs](${buildingLogUrl})
-
-		${deployingImage}
-  `);
+        yield comment(`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`);
         const startTime = Date.now();
         try {
             if (!core.getInput('build')) {
@@ -356,29 +382,26 @@ ${(0, helpers_1.formatImage)({
             core.info(`Build time: ${duration} seconds`);
             core.info(`Deploy to ${url}`);
             core.setSecret(surgeToken);
+            const image = (0, helpers_1.formatImage)({
+                buildingLogUrl,
+                imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
+            });
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
             });
-            commentIfNotForkedRepo(`
-			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${url}
-
-			:clock1: Build time: **${duration}s**
-
-			${(0, helpers_1.formatImage)({
-                buildingLogUrl,
-                imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
-            })}
-    `);
+            yield comment(`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`);
         }
         catch (err) {
-            fail === null || fail === void 0 ? void 0 : fail(err);
+            core.info('run command error');
+            yield fail(err);
         }
     });
 }
 // eslint-disable-next-line github/no-then
-main().catch((err) => {
-    fail === null || fail === void 0 ? void 0 : fail(err);
-});
+main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
+    core.info('main error');
+    yield fail(err);
+}));
 
 
 /***/ }),
