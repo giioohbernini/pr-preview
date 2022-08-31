@@ -3,6 +3,8 @@ import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
+import { execSync } from 'child_process'
+import { vercelInit } from './vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -143,6 +145,24 @@ async function main() {
 	const gitCommitSha = getGitCommitSha()
 	core.debug(JSON.stringify(github.context.repo, null, 2))
 
+	// Vercel
+	const { context } = github
+	const { ref } = context
+	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+
+	const deploymentUrl = await vercelInit().vercelDeploy(ref, commit)
+	if (deploymentUrl) {
+		core.info('set preview-url output')
+		core.setOutput('preview-url', deploymentUrl)
+		core.setOutput(
+			'preview-url-host',
+			deploymentUrl.trim().replace(/https\:\/\//, '')
+		)
+	} else {
+		core.warning('get preview-url error')
+	}
+	// Vercel
+
 	if (!prNumber) {
 		core.info(`😢 No related PR found, skip it.`)
 		return
@@ -226,7 +246,9 @@ async function main() {
 		})
 
 		await comment(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`
+			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n
+			Test URL ${deploymentUrl}\n
+			:clock1: Build time: **${duration}s** \n ${image}`
 		)
 	} catch (err) {
 		core.info('run command error')
