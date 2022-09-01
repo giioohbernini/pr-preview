@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import exec from '@actions/exec'
+import { exec } from '@actions/exec'
 
 type MyOutPut = string
 type Options = Object
@@ -33,7 +33,7 @@ export const vercelDeploy = async (ref: string, commit: string) => {
 		}
 	}
 
-	await exec.exec(
+	await exec(
 		'npx',
 		[
 			vercelCli,

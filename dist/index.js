@@ -453,14 +453,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.vercelDeploy = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const exec_1 = __importDefault(__nccwpck_require__(1514));
+const exec_1 = __nccwpck_require__(1514);
 const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
     const { context } = github;
     const workingDirectory = core.getInput('working-directory');
@@ -483,7 +480,7 @@ const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
-    yield exec_1.default.exec('npx', [
+    yield (0, exec_1.exec)('npx', [
         vercelCli,
         ...vercelArgs.split(/ +/),
         '-t',
