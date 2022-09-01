@@ -100,7 +100,7 @@ async function generateLogUrl(): Promise<string> {
 }
 
 async function fail(err: Error) {
-	core.info('error message:')
+	core.info(`error message: ${err}`)
 	core.info(JSON.stringify(err, null, 2))
 	const repoOwner = github.context.repo.owner
 	const repoName = github.context.repo.repo
@@ -256,7 +256,6 @@ async function main() {
 		)
 	} catch (err) {
 		core.info('run command error')
-		core.info(`errrrrrr ${err}`)
 		await fail(err)
 	}
 }
