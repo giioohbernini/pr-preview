@@ -149,18 +149,7 @@ async function main() {
 	const { context } = github
 	const { ref } = context
 	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
-
-	const deploymentUrl = await vercelInit().vercelDeploy(ref, commit)
-	if (deploymentUrl) {
-		core.info('set preview-url output')
-		core.setOutput('preview-url', deploymentUrl)
-		core.setOutput(
-			'preview-url-host',
-			deploymentUrl.trim().replace(/https\:\/\//, '')
-		)
-	} else {
-		core.warning('get preview-url error')
-	}
+	const vercel = vercelInit()
 	// Vercel
 
 	if (!prNumber) {
@@ -240,6 +229,20 @@ async function main() {
 			imageUrl:
 				'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
 		})
+
+		// Vercel
+		const deploymentUrl = await vercel.vercelDeploy(ref, commit)
+		if (deploymentUrl) {
+			core.info('set preview-url output')
+			core.setOutput('preview-url', deploymentUrl)
+			core.setOutput(
+				'preview-url-host',
+				deploymentUrl.trim().replace(/https\:\/\//, '')
+			)
+		} else {
+			core.warning('get preview-url error')
+		}
+		// Vercel
 
 		await execSurgeCommand({
 			command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],

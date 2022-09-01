@@ -330,15 +330,7 @@ function main() {
         const { context } = github;
         const { ref } = context;
         const commit = (0, child_process_1.execSync)('git log -1 --pretty=format:%B').toString().trim();
-        const deploymentUrl = yield (0, vercel_1.vercelInit)().vercelDeploy(ref, commit);
-        if (deploymentUrl) {
-            core.info('set preview-url output');
-            core.setOutput('preview-url', deploymentUrl);
-            core.setOutput('preview-url-host', deploymentUrl.trim().replace(/https\:\/\//, ''));
-        }
-        else {
-            core.warning('get preview-url error');
-        }
+        const vercel = (0, vercel_1.vercelInit)();
         // Vercel
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
@@ -402,6 +394,17 @@ function main() {
                 buildingLogUrl,
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
+            // Vercel
+            const deploymentUrl = yield vercel.vercelDeploy(ref, commit);
+            if (deploymentUrl) {
+                core.info('set preview-url output');
+                core.setOutput('preview-url', deploymentUrl);
+                core.setOutput('preview-url-host', deploymentUrl.trim().replace(/https\:\/\//, ''));
+            }
+            else {
+                core.warning('get preview-url error');
+            }
+            // Vercel
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
             });
