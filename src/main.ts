@@ -146,9 +146,8 @@ async function main() {
 	core.debug(JSON.stringify(github.context.repo, null, 2))
 
 	// Vercel
-	const { context } = github
-	const { ref } = context
-	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+	// const { ref } = github.context
+	// const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
 	// Vercel
 
 	if (!prNumber) {
