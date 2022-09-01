@@ -3,7 +3,8 @@ import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
-import { vercelInit } from './vercel'
+import { execSync } from 'child_process'
+import { vercelDeploy } from './vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -147,8 +148,7 @@ async function main() {
 	// Vercel
 	const { context } = github
 	const { ref } = context
-	const commit = exec('git log -1 --pretty=format:%B').toString().trim()
-	const vercel = vercelInit()
+	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
 	// Vercel
 
 	if (!prNumber) {
@@ -230,7 +230,7 @@ async function main() {
 		})
 
 		// Vercel
-		const deploymentUrl = await vercel.vercelDeploy(ref, commit)
+		const deploymentUrl = await vercelDeploy(ref, commit)
 		// Vercel
 
 		await execSurgeCommand({
