@@ -37,7 +37,6 @@ export const vercelDeploy = async (ref: string, commit: string) => {
 		'npx',
 		[
 			vercelCli,
-			'--yes',
 			...vercelArgs.split(/ +/),
 			'-t',
 			vercelToken,

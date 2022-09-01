@@ -480,7 +480,6 @@ const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function
     }
     yield (0, exec_1.exec)('npx', [
         vercelCli,
-        '--yes',
         ...vercelArgs.split(/ +/),
         '-t',
         vercelToken,
