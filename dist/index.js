@@ -482,8 +482,6 @@ const vercelInspect = (deploymentUrl) => __awaiter(void 0, void 0, void 0, funct
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
     const args = ['vercel', 'inspect', deploymentUrl, '-t', vercelToken];
-    core.info(`Options ${options}`);
-    core.info(`Args ${args}`);
     yield (0, exec_1.exec)('npx', args, options);
     const match = myError.match(/^\s+name\s+(.+)$/m);
     return match && match.length ? match[1] : null;
