@@ -458,7 +458,7 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
     const { context } = github;
-    const workingDirectory = core.getInput('working-directory');
+    const workingDirectory = core.getInput('working_directory');
     // vercel
     const vercelCli = core.getInput('vercel_cli');
     const vercelToken = core.getInput('vercel_token', { required: true });

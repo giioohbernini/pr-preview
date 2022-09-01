@@ -42,6 +42,9 @@ inputs:
   vercel_project_id:
     required: false
     description: 'Vercel CLI'
+  working_directory:
+    required: false
+    description: the working directory
 outputs:
   preview_url:
     description: 'The url for the related PR preview'

@@ -7,7 +7,7 @@ type Options = Object
 
 export const vercelDeploy = async (ref: string, commit: string) => {
 	const { context } = github
-	const workingDirectory = core.getInput('working-directory')
+	const workingDirectory = core.getInput('working_directory')
 
 	// vercel
 	const vercelCli = core.getInput('vercel_cli')
