@@ -232,16 +232,17 @@ async function main() {
 
 		// Vercel
 		const deploymentUrl = await vercel.vercelDeploy(ref, commit)
-		if (deploymentUrl) {
-			core.info('set preview-url output')
-			core.setOutput('preview-url', deploymentUrl)
-			core.setOutput(
-				'preview-url-host',
-				deploymentUrl.trim().replace(/https\:\/\//, '')
-			)
-		} else {
-			core.warning('get preview-url error')
-		}
+		core.info(`Deploying ${deploymentUrl}`)
+		// if (deploymentUrl) {
+		// 	core.info('set preview-url output')
+		// 	core.setOutput('preview-url', deploymentUrl)
+		// 	core.setOutput(
+		// 		'preview-url-host',
+		// 		deploymentUrl.trim().replace(/https\:\/\//, '')
+		// 	)
+		// } else {
+		// 	core.warning('get preview-url error')
+		// }
 		// Vercel
 
 		await execSurgeCommand({
@@ -255,6 +256,7 @@ async function main() {
 		)
 	} catch (err) {
 		core.info('run command error')
+		core.info(`errrrrrr ${err}`)
 		await fail(err)
 	}
 }
