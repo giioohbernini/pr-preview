@@ -64,7 +64,8 @@ export function vercelInit() {
 			],
 			options
 		)
-
+		core.info('finalizing vercel deployment')
+		core.info(myOutput)
 		return myOutput
 	}
 

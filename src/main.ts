@@ -100,7 +100,7 @@ async function generateLogUrl(): Promise<string> {
 }
 
 async function fail(err: Error) {
-	core.info(`error message: ${err}`)
+	core.info('error message:')
 	core.info(JSON.stringify(err, null, 2))
 	const repoOwner = github.context.repo.owner
 	const repoName = github.context.repo.repo
@@ -232,17 +232,6 @@ async function main() {
 
 		// Vercel
 		const deploymentUrl = await vercel.vercelDeploy(ref, commit)
-		core.info(`Deploying ${deploymentUrl}`)
-		// if (deploymentUrl) {
-		// 	core.info('set preview-url output')
-		// 	core.setOutput('preview-url', deploymentUrl)
-		// 	core.setOutput(
-		// 		'preview-url-host',
-		// 		deploymentUrl.trim().replace(/https\:\/\//, '')
-		// 	)
-		// } else {
-		// 	core.warning('get preview-url error')
-		// }
 		// Vercel
 
 		await execSurgeCommand({
