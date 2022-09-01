@@ -8,12 +8,14 @@ type Options = Object
 export const vercelInspect = async (deploymentUrl: string) => {
 	const workingDirectory = core.getInput('working-directory')
 	const vercelToken = core.getInput('vercel_token', { required: true })
-	const vercelScope = core.getInput('scope')
 
+	let myOutput = ''
 	let myError = ''
 	let options: Options = {
 		listeners: {
 			stdout: (data: string) => {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				myOutput += data.toString()
 				core.info(data.toString())
 			},
 			stderr: (data: string) => {
@@ -30,10 +32,6 @@ export const vercelInspect = async (deploymentUrl: string) => {
 	}
 
 	const args = ['vercel', 'inspect', deploymentUrl, '-t', vercelToken]
-	if (vercelScope) {
-		core.info('using scope')
-		args.push('--scope', vercelScope)
-	}
 	await exec('npx', args, options)
 
 	const match = myError.match(/^\s+name\s+(.+)$/m)
