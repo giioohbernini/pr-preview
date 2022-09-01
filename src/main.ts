@@ -146,8 +146,8 @@ async function main() {
 	core.debug(JSON.stringify(github.context.repo, null, 2))
 
 	// Vercel
-	// const { ref } = github.context
-	// const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+	const { ref } = github.context
+	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
 	// Vercel
 
 	if (!prNumber) {
@@ -229,7 +229,7 @@ async function main() {
 		})
 
 		// Vercel
-		// const deploymentUrl = await vercelDeploy(ref, commit)
+		const deploymentUrl = await vercelDeploy(ref, commit)
 		// Vercel
 
 		await execSurgeCommand({
@@ -237,7 +237,9 @@ async function main() {
 		})
 
 		await comment(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`
+			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n
+			Test URL ${deploymentUrl}\n
+			:clock1: Build time: **${duration}s** \n ${image}`
 		)
 	} catch (err) {
 		core.info('run command error')

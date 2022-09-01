@@ -201,6 +201,8 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
+const child_process_1 = __nccwpck_require__(3129);
+const vercel_1 = __nccwpck_require__(1747);
 function getGitCommitSha() {
     var _a, _b, _c;
     const { payload } = github.context;
@@ -325,8 +327,8 @@ function main() {
         const gitCommitSha = getGitCommitSha();
         core.debug(JSON.stringify(github.context.repo, null, 2));
         // Vercel
-        // const { ref } = github.context
-        // const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+        const { ref } = github.context;
+        const commit = (0, child_process_1.execSync)('git log -1 --pretty=format:%B').toString().trim();
         // Vercel
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
@@ -391,12 +393,14 @@ function main() {
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
             // Vercel
-            // const deploymentUrl = await vercelDeploy(ref, commit)
+            const deploymentUrl = yield (0, vercel_1.vercelDeploy)(ref, commit);
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
             });
-            yield comment(`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`);
+            yield comment(`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n
+			Test URL ${deploymentUrl}\n
+			:clock1: Build time: **${duration}s** \n ${image}`);
         }
         catch (err) {
             core.info('run command error');
@@ -409,6 +413,104 @@ main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
     core.info('main error');
     yield fail(err);
 }));
+
+
+/***/ }),
+
+/***/ 1747:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.vercelDeploy = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const exec_1 = __importDefault(__nccwpck_require__(1514));
+const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
+    const { context } = github;
+    const workingDirectory = core.getInput('working-directory');
+    // vercel
+    const vercelCli = core.getInput('vercel_cli');
+    const vercelToken = core.getInput('vercel_token', { required: true });
+    const vercelArgs = core.getInput('vercel_args');
+    let myOutput = '';
+    let options = {
+        listeners: {
+            stdout: (data) => {
+                myOutput += data.toString();
+                core.info(data.toString());
+            },
+            stderr: (data) => {
+                core.info(data.toString());
+            },
+        },
+    };
+    if (workingDirectory) {
+        options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
+    }
+    yield exec_1.default.exec('npx', [
+        vercelCli,
+        ...vercelArgs.split(/ +/),
+        '-t',
+        vercelToken,
+        '-m',
+        `githubCommitSha=${context.sha}`,
+        '-m',
+        `githubCommitAuthorName=${context.actor}`,
+        '-m',
+        `githubCommitAuthorLogin=${context.actor}`,
+        '-m',
+        'githubDeployment=1',
+        '-m',
+        `githubOrg=${context.repo.owner}`,
+        '-m',
+        `githubRepo=${context.repo.repo}`,
+        '-m',
+        `githubCommitOrg=${context.repo.owner}`,
+        '-m',
+        `githubCommitRepo=${context.repo.repo}`,
+        '-m',
+        `githubCommitMessage="${commit}"`,
+        '-m',
+        `githubCommitRef=${ref}`,
+    ], options);
+    core.info('finalizing vercel deployment');
+    core.info(myOutput);
+    return myOutput;
+});
+exports.vercelDeploy = vercelDeploy;
 
 
 /***/ }),
