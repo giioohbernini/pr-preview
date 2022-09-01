@@ -30,7 +30,7 @@ export const vercelInspect = async (deploymentUrl: string) => {
 			cwp: workingDirectory,
 		}
 	}
-	const args = ['vercel', 'inspect', deploymentUrl, '-t', vercelToken]
+	const args = ['vercel', 'inspect', deploymentUrl, '-t --yes', vercelToken]
 	await exec('npx', args, options)
 
 	const match = myError.match(/^\s+name\s+(.+)$/m)
