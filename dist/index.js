@@ -458,6 +458,34 @@ exports.vercelDeploy = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
+const vercelInspect = (deploymentUrl) => __awaiter(void 0, void 0, void 0, function* () {
+    const workingDirectory = core.getInput('working-directory');
+    const vercelToken = core.getInput('vercel_token', { required: true });
+    const vercelScope = core.getInput('scope');
+    let myError = '';
+    let options = {
+        listeners: {
+            stdout: (data) => {
+                core.info(data.toString());
+            },
+            stderr: (data) => {
+                myError += data.toString();
+                core.info(data.toString());
+            },
+        },
+    };
+    if (workingDirectory) {
+        options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
+    }
+    const args = ['vercel', 'inspect', deploymentUrl, '-t', vercelToken];
+    if (vercelScope) {
+        core.info('using scope');
+        args.push('--scope', vercelScope);
+    }
+    yield (0, exec_1.exec)('npx', args, options);
+    const match = myError.match(/^\s+name\s+(.+)$/m);
+    return match && match.length ? match[1] : null;
+});
 const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
     const { context } = github;
     const workingDirectory = core.getInput('working-directory');
@@ -507,7 +535,7 @@ const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function
         `githubCommitRef=${ref}`,
     ], options);
     core.info('finalizing vercel deployment');
-    core.info(myOutput);
+    vercelInspect(myOutput);
     return myOutput;
 });
 exports.vercelDeploy = vercelDeploy;

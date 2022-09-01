@@ -5,6 +5,41 @@ import { exec } from '@actions/exec'
 type MyOutPut = string
 type Options = Object
 
+const vercelInspect = async (deploymentUrl: string) => {
+	const workingDirectory = core.getInput('working-directory')
+	const vercelToken = core.getInput('vercel_token', { required: true })
+	const vercelScope = core.getInput('scope')
+
+	let myError = ''
+	let options: Options = {
+		listeners: {
+			stdout: (data: string) => {
+				core.info(data.toString())
+			},
+			stderr: (data: string) => {
+				myError += data.toString()
+				core.info(data.toString())
+			},
+		},
+	}
+	if (workingDirectory) {
+		options = {
+			...options,
+			cwp: workingDirectory,
+		}
+	}
+
+	const args = ['vercel', 'inspect', deploymentUrl, '-t', vercelToken]
+	if (vercelScope) {
+		core.info('using scope')
+		args.push('--scope', vercelScope)
+	}
+	await exec('npx', args, options)
+
+	const match = myError.match(/^\s+name\s+(.+)$/m)
+	return match && match.length ? match[1] : null
+}
+
 export const vercelDeploy = async (ref: string, commit: string) => {
 	const { context } = github
 	const workingDirectory = core.getInput('working-directory')
@@ -63,7 +98,9 @@ export const vercelDeploy = async (ref: string, commit: string) => {
 		],
 		options
 	)
+
 	core.info('finalizing vercel deployment')
-	core.info(myOutput)
+
+	vercelInspect(myOutput)
 	return myOutput
 }
