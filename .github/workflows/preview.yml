@@ -24,6 +24,17 @@ jobs:
             yarn build-preview -- public/preview
       - name: Get the output url
         run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
+      - uses: ./
+        id: vercel-action
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-comment: false
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: prj_f5ftYibIb05ZFTRygVuCCYVXT7hm
+      - name: preview-url
+        run: |
+          echo ${{ steps.vercel-action.outputs.preview-url }}
   preview2:
     runs-on: ubuntu-latest
     steps:
