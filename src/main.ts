@@ -4,7 +4,7 @@ import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
 import { execSync } from 'child_process'
-import { vercelDeploy } from './vercel'
+import { vercelDeploy, vercelInspect } from './vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -148,7 +148,9 @@ async function main() {
 	// Vercel
 	core.info('Init config vercel')
 	const { ref } = github.context
+	core.info(`GitHub Context Ref ${ref}`)
 	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+	core.info(`Config Vercel commit ${commit}`)
 	// Vercel
 
 	if (!prNumber) {
@@ -231,6 +233,24 @@ async function main() {
 
 		// Vercel
 		const deploymentUrl = await vercelDeploy(ref, commit)
+		if (deploymentUrl) {
+			core.info('set preview-url output')
+			core.setOutput('preview-url', deploymentUrl)
+			core.setOutput(
+				'preview-url-host',
+				deploymentUrl.trim().replace(/https:\/\//, '')
+			)
+		} else {
+			core.warning('get preview-url error')
+		}
+
+		const deploymentName = await vercelInspect(deploymentUrl)
+		if (deploymentName) {
+			core.info('set preview-name output')
+			core.setOutput('preview-name', deploymentName)
+		} else {
+			core.warning('get preview-name error')
+		}
 		// Vercel
 
 		await execSurgeCommand({
