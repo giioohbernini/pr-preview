@@ -397,8 +397,6 @@ function main() {
             });
             // Vercel
             const deploymentUrl = yield (0, vercel_1.vercelDeploy)(ref, commit);
-            const deploymentName = yield (0, vercel_1.vercelInspect)(deploymentUrl);
-            core.info(`Deploying ${deploymentName}`);
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
@@ -456,37 +454,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.vercelDeploy = exports.vercelInspect = void 0;
+exports.vercelDeploy = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
-const vercelInspect = (deploymentUrl) => __awaiter(void 0, void 0, void 0, function* () {
-    const workingDirectory = core.getInput('working-directory');
-    const vercelToken = core.getInput('vercel_token', { required: true });
-    let myOutput = '';
-    let myError = '';
-    let options = {
-        listeners: {
-            stdout: (data) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                myOutput += data.toString();
-                core.info(data.toString());
-            },
-            stderr: (data) => {
-                myError += data.toString();
-                core.info(data.toString());
-            },
-        },
-    };
-    if (workingDirectory) {
-        options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
-    }
-    const args = ['vercel', 'inspect', deploymentUrl, '-t --yes', vercelToken];
-    yield (0, exec_1.exec)('npx', args, options);
-    const match = myError.match(/^\s+name\s+(.+)$/m);
-    return match && match.length ? match[1] : null;
-});
-exports.vercelInspect = vercelInspect;
 const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
     const { context } = github;
     const workingDirectory = core.getInput('working-directory');

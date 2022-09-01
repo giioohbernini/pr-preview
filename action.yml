@@ -39,7 +39,7 @@ inputs:
   vercel_args:
     description: ''
     required: false
-    default: ''
+    default: '--yes'
   vercel_token:
     description: 'Vercel token'
     required: true
