@@ -27,11 +27,11 @@ jobs:
       - uses: ./
         id: vercel-action
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-token: Dy5GHK73SylfFpzgVa8BpzmC
-          github-comment: false
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: prj_f5ftYibIb05ZFTRygVuCCYVXT7hm
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          vercel_token: Dy5GHK73SylfFpzgVa8BpzmC
+          github_comment: false
+          vercel_org_id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel_project_id: prj_f5ftYibIb05ZFTRygVuCCYVXT7hm
       - name: preview-url
         run: |
           echo ${{ steps.vercel-action.outputs.preview-url }}

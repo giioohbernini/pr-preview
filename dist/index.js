@@ -471,15 +471,15 @@ const exec_1 = __importDefault(__nccwpck_require__(1514));
 const common_tags_1 = __nccwpck_require__(3509);
 function vercelInit() {
     const { context } = github;
-    const githubToken = core.getInput('github-token');
-    const githubComment = core.getInput('github-comment') === 'true';
+    const githubToken = core.getInput('github_token');
+    const githubComment = core.getInput('github_comment') === 'true';
     const workingDirectory = core.getInput('working-directory');
     // vercel
-    const vercelCli = core.getInput('vercel-cli');
-    const vercelToken = core.getInput('vercel-token', { required: true });
-    const vercelArgs = core.getInput('vercel-args');
-    const vercelOrgId = core.getInput('vercel-org-id');
-    const vercelProjectId = core.getInput('vercel-project-id');
+    const vercelCli = core.getInput('vercel_cli');
+    const vercelToken = core.getInput('vercel_token', { required: true });
+    const vercelArgs = core.getInput('vercel_args');
+    const vercelOrgId = core.getInput('vercel_org_id');
+    const vercelProjectId = core.getInput('vercel_project_id');
     const vercelScope = core.getInput('scope');
     const octokit = github.getOctokit(githubToken);
     function setEnv() {
