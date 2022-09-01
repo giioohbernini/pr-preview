@@ -3,7 +3,6 @@ import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
-import { execSync } from 'child_process'
 import { vercelInit } from './vercel'
 
 function getGitCommitSha(): string {
@@ -148,7 +147,7 @@ async function main() {
 	// Vercel
 	const { context } = github
 	const { ref } = context
-	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+	const commit = exec('git log -1 --pretty=format:%B').toString().trim()
 	const vercel = vercelInit()
 	// Vercel
 
