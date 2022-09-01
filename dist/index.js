@@ -329,9 +329,7 @@ function main() {
         // Vercel
         core.info('Init config vercel');
         const { ref } = github.context;
-        core.info(`GitHub Context Ref ${ref}`);
         const commit = (0, child_process_1.execSync)('git log -1 --pretty=format:%B').toString().trim();
-        core.info(`Config Vercel commit ${commit}`);
         // Vercel
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
@@ -482,6 +480,7 @@ const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function
     }
     yield (0, exec_1.exec)('npx', [
         vercelCli,
+        '--yes',
         ...vercelArgs.split(/ +/),
         '-t',
         vercelToken,

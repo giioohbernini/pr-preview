@@ -36,10 +36,6 @@ inputs:
     description: 'Vercel command line. (can be override with "now" CLI)'
     required: false
     default: 'vercel'
-  vercel_args:
-    description: ''
-    required: false
-    default: '--yes'
   vercel_token:
     description: 'Vercel token'
     required: true
