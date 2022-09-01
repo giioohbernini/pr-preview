@@ -229,7 +229,7 @@ async function main() {
 		})
 
 		// Vercel
-		const deploymentUrl = await vercelDeploy(ref, commit)
+		// const deploymentUrl = await vercelDeploy(ref, commit)
 		// Vercel
 
 		await execSurgeCommand({
@@ -237,9 +237,7 @@ async function main() {
 		})
 
 		await comment(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n
-			Test URL ${deploymentUrl}\n
-			:clock1: Build time: **${duration}s** \n ${image}`
+			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`
 		)
 	} catch (err) {
 		core.info('run command error')
