@@ -32,54 +32,12 @@ inputs:
     description: 'Determines if the preview instance will be torn down on PR close'
     default: 'false'
     required: false
-  vercel_cli:
-    description: 'Vercel command line. (can be override with "now" CLI)'
-    required: false
-    default: 'vercel'
   vercel_token:
     description: 'Vercel token'
     required: true
-  vercel_args:
-    description: ''
-    required: false
-    default: ''
-  github_comment:
-    required: false
-    default: 'true'
-    description: 'if you want to comment on pr and commit, set true, default: true'
-  github_deployment:
-    required: false
-    default: 'false'
-    description: 'if you want to create github deployment, set true, default: false'
-  working_directory:
-    required: false
-    description: the working directory
   vercel_project_id:
     required: false
-    description: 'Vercel CLI 17+, ❗️  The `name` property in vercel.json is deprecated (https://zeit.ink/5F)'
-  vercel_org_id:
-    required: false
-    description: 'Vercel CLI 17+, ❗️  The `name` property in vercel.json is deprecated (https://zeit.ink/5F)'
-  scope:
-    required: false
-    description: 'If you are work in team scope, you should set this value to your team id.'
-  zeit_token:
-    description: 'zeit.co token'
-    required: true
-    deprecationMessage: 'Zeit is now Vercel. Use "vercel_token" instead'
-  now_args:
-    description: ''
-    required: false
-    default: ''
-    deprecationMessage: 'Zeit is now Vercel. Use "vercel_args" instead.'
-  now_project_id:
-    required: false
-    description: 'Vercel CLI 17+, ❗️  The `name` property in vercel.json is deprecated (https://zeit.ink/5F)'
-    deprecationMessage: 'Zeit is now Vercel. Use "vercel_project_id" instead.'
-  now_org_id:
-    required: false
-    description: 'Vercel CLI 17+, ❗️  The `name` property in vercel.json is deprecated (https://zeit.ink/5F)'
-    deprecationMessage: 'Zeit is now Vercel. Use "vercel_org_id" instead.'
+    description: 'Vercel CLI'
 outputs:
   preview_url:
     description: 'The url for the related PR preview'
