@@ -4,7 +4,7 @@ import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
 import { execSync } from 'child_process'
-import { vercelDeploy } from './vercel'
+import { vercelDeploy, vercelInspect } from './vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -233,6 +233,8 @@ async function main() {
 
 		// Vercel
 		const deploymentUrl = await vercelDeploy(ref, commit)
+		const deploymentName = await vercelInspect(deploymentUrl)
+		core.info(`Deploying ${deploymentName}`)
 		// Vercel
 
 		await execSurgeCommand({

@@ -5,7 +5,7 @@ import { exec } from '@actions/exec'
 type MyOutPut = string
 type Options = Object
 
-const vercelInspect = async (deploymentUrl: string) => {
+export const vercelInspect = async (deploymentUrl: string) => {
 	const workingDirectory = core.getInput('working-directory')
 	const vercelToken = core.getInput('vercel_token', { required: true })
 	const vercelScope = core.getInput('scope')
@@ -100,7 +100,5 @@ export const vercelDeploy = async (ref: string, commit: string) => {
 	)
 
 	core.info('finalizing vercel deployment')
-
-	vercelInspect(myOutput)
 	return myOutput
 }
