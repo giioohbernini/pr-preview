@@ -3,15 +3,9 @@ import * as github from '@actions/github'
 import exec from '@actions/exec'
 import { stripIndents } from 'common-tags'
 
-type Octokit = {
-	[option: string]: any
-}
 type MyOutPut = string
 type MyError = string
 type Options = Object
-type CommentPrans = {
-	body?: any
-}
 
 export function vercelInit() {
 	const { context } = github
@@ -26,11 +20,7 @@ export function vercelInit() {
 	const vercelProjectId = core.getInput('vercel-project-id')
 	const vercelScope = core.getInput('scope')
 
-	let octokit: Octokit
-
-	if (githubToken) {
-		octokit = github.getOctokit(githubToken)
-	}
+	const octokit = github.getOctokit(githubToken)
 
 	async function setEnv() {
 		core.info('set environment for vercel cli')
@@ -139,12 +129,12 @@ export function vercelInit() {
 
 		core.info('find comment')
 
-		const { data: comments } = await octokit.repos.listCommentsForCommit({
+		const { data: comments } = await octokit.rest.repos.listCommentsForCommit({
 			...context.repo,
 			commit_sha: context.sha,
 		})
 
-		const vercelPreviewURLComment = comments.find((comment: CommentPrans) =>
+		const vercelPreviewURLComment = comments.find((comment) =>
 			comment.body.startsWith(text)
 		)
 		if (vercelPreviewURLComment) {
@@ -174,13 +164,13 @@ export function vercelInit() {
 		`
 
 		if (commentId) {
-			await octokit.repos.updateCommitComment({
+			await octokit.rest.repos.updateCommitComment({
 				...context.repo,
 				comment_id: commentId,
 				body: commentBody,
 			})
 		} else {
-			await octokit.repos.createCommitComment({
+			await octokit.rest.repos.createCommitComment({
 				...context.repo,
 				commit_sha: context.sha,
 				body: commentBody,
@@ -208,13 +198,13 @@ export function vercelInit() {
 		`
 
 		if (commentId) {
-			await octokit.issues.updateComment({
+			await octokit.rest.issues.updateComment({
 				...context.repo,
 				comment_id: commentId,
 				body: commentBody,
 			})
 		} else {
-			await octokit.issues.createComment({
+			await octokit.rest.issues.createComment({
 				...context.repo,
 				issue_number: context.issue.number,
 				body: commentBody,
