@@ -9,7 +9,8 @@ const workingDirectory = core.getInput('working_directory')
 // vercel
 const vercelCli = core.getInput('vercel_cli')
 const vercelToken = core.getInput('vercel_token')
-const vercelArgs = core.getInput('vercel_args')
+const distFolder = core.getInput('dist')
+// const vercelArgs = core.getInput('vercel_args')
 
 const removeSchema = (url: string) => {
 	const regex = /^https?:\/\//
@@ -37,11 +38,7 @@ export const vercelDeploy = async () => {
 		}
 	}
 
-	await exec(
-		'npx',
-		[vercelCli, ...vercelArgs.split(/ +/), '-t', vercelToken],
-		options
-	)
+	await exec('npx', [vercelCli, `./${distFolder}`, '-t', vercelToken], options)
 
 	core.info('finalizing vercel deployment')
 	return myOutput
