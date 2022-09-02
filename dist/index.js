@@ -402,10 +402,9 @@ function main() {
                         .replace('{{repoName}}', repoName)
                         .replace('{{job}}', job)
                         .replace('{{prNumber}}', `${prNumber}`)
-                        .concat('.vercel.app')
-                        .concat(previewPath);
+                        .concat('.vercel.app');
                     yield (0, vercel_1.assignAlias)(deploymentUrlVercel, alias);
-                    deploymentUrlVercel = alias;
+                    deploymentUrlVercel = alias.concat(previewPath);
                 }
             }
             // Vercel

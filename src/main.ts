@@ -240,10 +240,9 @@ async function main() {
 					.replace('{{job}}', job)
 					.replace('{{prNumber}}', `${prNumber}`)
 					.concat('.vercel.app')
-					.concat(previewPath)
 
 				await assignAlias(deploymentUrlVercel, alias)
-				deploymentUrlVercel = alias
+				deploymentUrlVercel = alias.concat(previewPath)
 			}
 		}
 		// Vercel
