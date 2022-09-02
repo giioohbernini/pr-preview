@@ -45,7 +45,7 @@ inputs:
   vercel_args:
     description: ''
     required: false
-    default: '--force'
+    default: '--force --public'
   working_directory:
     required: false
     description: the working directory
