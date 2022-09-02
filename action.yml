@@ -45,7 +45,7 @@ inputs:
   vercel_args:
     description: ''
     required: false
-    default: 'deploy'
+    default: '--yes'
   working_directory:
     description: ''
     required: false
