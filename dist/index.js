@@ -398,7 +398,7 @@ function main() {
             // Vercel
             let deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(ref, commit);
             if (previewUrl) {
-                core.info(`Assigning custom domains to Vercel deployment`);
+                core.info(`Assigning custom URL to Vercel deployment`);
                 const alias = previewUrl
                     .replace('{{repoOwner}}', repoOwner)
                     .replace('{{repoName}}', repoName)
@@ -412,12 +412,25 @@ function main() {
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
             });
-            yield comment(`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n
-			Test URL ${deploymentUrlVercel}\n
-			:clock1: Build time: **${duration}s** \n ${image}`);
+            yield comment(`
+			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+		
+			<table>
+				<tr>
+					<td><strong>✅ Preview: Surge</strong></td>
+					<td><a href='${outputUrl}'>${outputUrl}</a></td>
+				</tr>
+				<tr>
+					<td><strong>✅ Preview: Vercel</strong></td>
+					<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
+				</tr>
+			</table>
+			
+			:clock1: Build time: **${duration}s** \n ${image}
+		`);
         }
         catch (err) {
-            core.info(`run command error ${err}`);
+            core.info('run command error');
             yield fail(err);
         }
     });
@@ -475,14 +488,6 @@ const workingDirectory = core.getInput('working_directory');
 const vercelCli = core.getInput('vercel_cli');
 const vercelToken = core.getInput('vercel_token', { required: true });
 const vercelArgs = core.getInput('vercel_args');
-const addSchema = (url) => {
-    const regex = /^https?:\/\//;
-    if (!regex.test(url)) {
-        return `https://${url}`;
-    }
-    return url;
-};
-exports.addSchema = addSchema;
 const removeSchema = (url) => {
     const regex = /^https?:\/\//;
     return url.replace(regex, '');
@@ -499,6 +504,14 @@ let options = {
         },
     },
 };
+const addSchema = (url) => {
+    const regex = /^https?:\/\//;
+    if (!regex.test(url)) {
+        return `https://${url}`;
+    }
+    return url;
+};
+exports.addSchema = addSchema;
 const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
@@ -546,6 +559,7 @@ const assignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0,
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
     const output = yield (0, exec_1.exec)('npx', commandArguments, options);
+    core.info('finalizing vercel assign alias');
     return output;
 });
 exports.assignAlias = assignAlias;

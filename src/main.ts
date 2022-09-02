@@ -234,7 +234,7 @@ async function main() {
 		// Vercel
 		let deploymentUrlVercel = await vercelDeploy(ref, commit)
 		if (previewUrl) {
-			core.info(`Assigning custom domains to Vercel deployment`)
+			core.info(`Assigning custom URL to Vercel deployment`)
 			const alias = previewUrl
 				.replace('{{repoOwner}}', repoOwner)
 				.replace('{{repoName}}', repoName)
@@ -252,13 +252,24 @@ async function main() {
 			command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
 		})
 
-		await comment(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n
-			Test URL ${deploymentUrlVercel}\n
-			:clock1: Build time: **${duration}s** \n ${image}`
-		)
+		await comment(`
+			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+		
+			<table>
+				<tr>
+					<td><strong>✅ Preview: Surge</strong></td>
+					<td><a href='${outputUrl}'>${outputUrl}</a></td>
+				</tr>
+				<tr>
+					<td><strong>✅ Preview: Vercel</strong></td>
+					<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
+				</tr>
+			</table>
+			
+			:clock1: Build time: **${duration}s** \n ${image}
+		`)
 	} catch (err) {
-		core.info(`run command error ${err}`)
+		core.info('run command error')
 		await fail(err)
 	}
 }
