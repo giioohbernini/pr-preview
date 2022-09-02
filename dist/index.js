@@ -402,7 +402,8 @@ function main() {
                         .replace('{{repoName}}', repoName)
                         .replace('{{job}}', job)
                         .replace('{{prNumber}}', `${prNumber}`)
-                        .concat('.vercel.app');
+                        .concat('.vercel.app')
+                        .concat(previewPath);
                     yield (0, vercel_1.assignAlias)(deploymentUrlVercel, alias);
                     deploymentUrlVercel = alias;
                 }
