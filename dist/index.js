@@ -201,6 +201,7 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
+// import { execSync } from 'child_process'
 const vercel_1 = __nccwpck_require__(403);
 function getGitCommitSha() {
     var _a, _b, _c;
@@ -427,7 +428,7 @@ function main() {
                 ? `
 							<tr>
 								<td><strong>✅ Preview: Vercel</strong></td>
-								<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
+								<td><a href='https://${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
 							</tr>
 						`
                 : ''}

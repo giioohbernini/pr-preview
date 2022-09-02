@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
-import { execSync } from 'child_process'
+// import { execSync } from 'child_process'
 import { vercelDeploy, assignAlias, addSchema } from './tenants/vercel'
 
 function getGitCommitSha(): string {
@@ -269,7 +269,7 @@ async function main() {
 						? `
 							<tr>
 								<td><strong>✅ Preview: Vercel</strong></td>
-								<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
+								<td><a href='https://${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
 							</tr>
 						`
 						: ''
