@@ -396,15 +396,17 @@ function main() {
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
             // Vercel
-            const deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(ref, commit);
+            let deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(ref, commit);
             if (previewUrl) {
                 core.info(`Assigning custom domains to Vercel deployment`);
                 const alias = previewUrl
                     .replace('{{repoOwner}}', repoOwner)
                     .replace('{{repoName}}', repoName)
                     .replace('{{job}}', job)
-                    .replace('{{prNumber}}', `${prNumber}`);
+                    .replace('{{prNumber}}', `${prNumber}`)
+                    .concat('.vercel.app');
                 yield (0, vercel_1.assignAlias)(deploymentUrlVercel, alias);
+                deploymentUrlVercel = (0, vercel_1.addSchema)(alias);
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
@@ -463,7 +465,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.assignAlias = exports.vercelDeploy = void 0;
+exports.assignAlias = exports.vercelDeploy = exports.addSchema = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
@@ -473,6 +475,14 @@ const workingDirectory = core.getInput('working_directory');
 const vercelCli = core.getInput('vercel_cli');
 const vercelToken = core.getInput('vercel_token', { required: true });
 const vercelArgs = core.getInput('vercel_args');
+const addSchema = (url) => {
+    const regex = /^https?:\/\//;
+    if (!regex.test(url)) {
+        return `https://${url}`;
+    }
+    return url;
+};
+exports.addSchema = addSchema;
 const removeSchema = (url) => {
     const regex = /^https?:\/\//;
     return url.replace(regex, '');
@@ -536,7 +546,6 @@ const assignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0,
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
     const output = yield (0, exec_1.exec)('npx', commandArguments, options);
-    core.info(`Alias URL ${output}`);
     return output;
 });
 exports.assignAlias = assignAlias;

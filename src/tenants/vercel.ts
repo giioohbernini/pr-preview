@@ -13,6 +13,15 @@ const vercelCli = core.getInput('vercel_cli')
 const vercelToken = core.getInput('vercel_token', { required: true })
 const vercelArgs = core.getInput('vercel_args')
 
+export const addSchema = (url: string) => {
+	const regex = /^https?:\/\//
+	if (!regex.test(url)) {
+		return `https://${url}`
+	}
+
+	return url
+}
+
 const removeSchema = (url: string) => {
 	const regex = /^https?:\/\//
 	return url.replace(regex, '')
@@ -95,6 +104,5 @@ export const assignAlias = async (
 	}
 
 	const output = await exec('npx', commandArguments, options)
-	core.info(`Alias URL ${output}`)
 	return output
 }
