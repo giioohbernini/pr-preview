@@ -45,7 +45,7 @@ inputs:
   vercel_args:
     description: ''
     required: false
-    default: '--yes'
+    default: '--yes --prod'
   working_directory:
     description: ''
     required: false
