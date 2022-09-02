@@ -17,7 +17,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           vercel_token: Dy5GHK73SylfFpzgVa8BpzmC
           vercel_project_id: prj_f5ftYibIb05ZFTRygVuCCYVXT7hm
-          working_directory: ./
           teardown: 'true'
           dist: public/preview
           build: |

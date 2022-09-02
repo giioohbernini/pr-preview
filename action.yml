@@ -45,10 +45,7 @@ inputs:
   vercel_args:
     description: ''
     required: false
-    default: '--force --public'
-  working_directory:
-    required: false
-    description: the working directory
+    default: ''
 outputs:
   preview_url:
     description: 'The url for the related PR preview'
