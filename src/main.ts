@@ -4,7 +4,7 @@ import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
 import { execSync } from 'child_process'
-import { vercelDeploy } from './vercel'
+import { vercelDeploy, assignAlias } from './tenants/vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -233,6 +233,17 @@ async function main() {
 
 		// Vercel
 		const deploymentUrlVercel = await vercelDeploy(ref, commit)
+		if (previewUrl) {
+			core.info(`Assigning custom domains to Vercel deployment`)
+			const alias = previewUrl
+				.replace('{{repoOwner}}', repoOwner)
+				.replace('{{repoName}}', repoName)
+				.replace('{{job}}', job)
+				.replace('{{prNumber}}', `${prNumber}`)
+
+			await assignAlias(deploymentUrlVercel, alias)
+		}
+
 		// Vercel
 
 		await execSurgeCommand({

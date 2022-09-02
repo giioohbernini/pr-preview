@@ -202,7 +202,7 @@ const exec_1 = __nccwpck_require__(1514);
 const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
 const child_process_1 = __nccwpck_require__(3129);
-const vercel_1 = __nccwpck_require__(1747);
+const vercel_1 = __nccwpck_require__(403);
 function getGitCommitSha() {
     var _a, _b, _c;
     const { payload } = github.context;
@@ -397,6 +397,15 @@ function main() {
             });
             // Vercel
             const deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(ref, commit);
+            if (previewUrl) {
+                core.info(`Assigning custom domains to Vercel deployment`);
+                const alias = previewUrl
+                    .replace('{{repoOwner}}', repoOwner)
+                    .replace('{{repoName}}', repoName)
+                    .replace('{{job}}', job)
+                    .replace('{{prNumber}}', `${prNumber}`);
+                yield (0, vercel_1.assignAlias)(deploymentUrlVercel, alias);
+            }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
@@ -420,7 +429,7 @@ main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
 
 /***/ }),
 
-/***/ 1747:
+/***/ 403:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -454,29 +463,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.vercelDeploy = void 0;
+exports.assignAlias = exports.vercelDeploy = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
-const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
-    const { context } = github;
-    const workingDirectory = core.getInput('working_directory');
-    // vercel
-    const vercelCli = core.getInput('vercel_cli');
-    const vercelToken = core.getInput('vercel_token', { required: true });
-    const vercelArgs = core.getInput('vercel_args');
-    let myOutput = '';
-    let options = {
-        listeners: {
-            stdout: (data) => {
-                myOutput += data.toString();
-                core.info(data.toString());
-            },
-            stderr: (data) => {
-                core.info(data.toString());
-            },
+const { context } = github;
+const workingDirectory = core.getInput('working_directory');
+// vercel
+const vercelCli = core.getInput('vercel_cli');
+const vercelToken = core.getInput('vercel_token', { required: true });
+const vercelArgs = core.getInput('vercel_args');
+const removeSchema = (url) => {
+    const regex = /^https?:\/\//;
+    return url.replace(regex, '');
+};
+let myOutput = '';
+let options = {
+    listeners: {
+        stdout: (data) => {
+            myOutput += data.toString();
+            core.info(data.toString());
         },
-    };
+        stderr: (data) => {
+            core.info(data.toString());
+        },
+    },
+};
+const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
@@ -510,19 +523,23 @@ const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function
     return myOutput;
 });
 exports.vercelDeploy = vercelDeploy;
-// export const assignAlias = async (prReview: string, aliasUrl: string) => {
-// 	const vercelToken = core.getInput('vercel_token', { required: true })
-// 	const workingDirectory = core.getInput('working_directory')
-// 	const commandArguments = [
-// 		`--token=${vercelToken}`,
-// 		'alias',
-// 		'set',
-// 		prReview,
-// 		removeSchema(aliasUrl),
-// 	]
-// 	const output = await exec('vercel', commandArguments, workingDirectory)
-// 	return output
-// }
+const assignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0, void 0, function* () {
+    const commandArguments = [
+        vercelCli,
+        `--token=${vercelToken}`,
+        'alias',
+        'set',
+        deploymentUrlVercel,
+        removeSchema(aliasUrl),
+    ];
+    if (workingDirectory) {
+        options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
+    }
+    const output = yield (0, exec_1.exec)('npx', commandArguments, options);
+    core.info(`Alias URL ${output}`);
+    return output;
+});
+exports.assignAlias = assignAlias;
 
 
 /***/ }),
