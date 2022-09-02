@@ -42,6 +42,10 @@ inputs:
   vercel_project_id:
     required: false
     description: 'Vercel CLI'
+  vercel_args:
+    description: ''
+    required: false
+    default: '--force'
   working_directory:
     required: false
     description: the working directory
