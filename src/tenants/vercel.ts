@@ -42,7 +42,7 @@ export const vercelDeploy = async () => {
 		'npx',
 		[
 			vercelCli,
-			...vercelArgs.concat(` ~/${distFolder}`).split(/ +/),
+			...vercelArgs.concat(` ./${distFolder}`).split(/ +/),
 			'-t',
 			vercelToken,
 		],
