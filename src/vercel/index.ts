@@ -33,6 +33,8 @@ export const vercelDeploy = async (ref: string, commit: string) => {
 		}
 	}
 
+	await exec('npx', [`${vercelCli} --yes`], options)
+
 	await exec(
 		'npx',
 		[
