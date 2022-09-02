@@ -4,7 +4,7 @@ import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
 import { execSync } from 'child_process'
-import { vercelDeploy, vercelInspect } from './vercel'
+import { vercelDeploy } from './vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -232,25 +232,7 @@ async function main() {
 		})
 
 		// Vercel
-		const deploymentUrl = await vercelDeploy(ref, commit)
-		if (deploymentUrl) {
-			core.info('set preview-url output')
-			core.setOutput('preview-url', deploymentUrl)
-			core.setOutput(
-				'preview-url-host',
-				deploymentUrl.trim().replace(/https:\/\//, '')
-			)
-		} else {
-			core.warning('get preview-url error')
-		}
-
-		const deploymentName = await vercelInspect(deploymentUrl)
-		if (deploymentName) {
-			core.info('set preview-name output')
-			core.setOutput('preview-name', deploymentName)
-		} else {
-			core.warning('get preview-name error')
-		}
+		const deploymentUrlVercel = await vercelDeploy(ref, commit)
 		// Vercel
 
 		await execSurgeCommand({
@@ -259,7 +241,7 @@ async function main() {
 
 		await comment(
 			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n
-			Test URL ${deploymentUrl}\n
+			Test URL ${deploymentUrlVercel}\n
 			:clock1: Build time: **${duration}s** \n ${image}`
 		)
 	} catch (err) {

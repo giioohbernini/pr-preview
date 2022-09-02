@@ -5,38 +5,6 @@ import { exec } from '@actions/exec'
 type MyOutPut = string
 type Options = Object
 
-export const vercelInspect = async (deploymentUrl: string) => {
-	const workingDirectory = core.getInput('working_directory')
-	const vercelToken = core.getInput('vercel_token', { required: true })
-
-	let myOutput = ''
-	let myError = ''
-	let options: Options = {
-		listeners: {
-			stdout: (data: string) => {
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				myOutput += data.toString()
-				core.info(data.toString())
-			},
-			stderr: (data: string) => {
-				myError += data.toString()
-				core.info(data.toString())
-			},
-		},
-	}
-	if (workingDirectory) {
-		options = {
-			...options,
-			cwp: workingDirectory,
-		}
-	}
-	const args = ['vercel', 'inspect', deploymentUrl, '-t', vercelToken]
-	await exec('npx', args, options)
-
-	const match = myError.match(/^\s+name\s+(.+)$/m)
-	return match && match.length ? match[1] : null
-}
-
 export const vercelDeploy = async (ref: string, commit: string) => {
 	const { context } = github
 	const workingDirectory = core.getInput('working_directory')
