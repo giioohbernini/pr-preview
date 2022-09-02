@@ -1,11 +1,9 @@
 import * as core from '@actions/core'
-// import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 
 type MyOutPut = string
 type Options = Object
 
-// const { context } = github
 const workingDirectory = core.getInput('working_directory')
 
 // vercel
@@ -29,15 +27,6 @@ let options: Options = {
 			core.info(data.toString())
 		},
 	},
-}
-
-export const addSchema = (url: string) => {
-	const regex = /^https?:\/\//
-	if (!regex.test(url)) {
-		return `https://${url}`
-	}
-
-	return url
 }
 
 export const vercelDeploy = async () => {

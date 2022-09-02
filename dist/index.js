@@ -201,7 +201,6 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
-// import { execSync } from 'child_process'
 const vercel_1 = __nccwpck_require__(403);
 function getGitCommitSha() {
     var _a, _b, _c;
@@ -329,10 +328,6 @@ function main() {
         // Vercel
         core.info('Init config vercel');
         const vercelToken = core.getInput('vercel_token');
-        // const { ref } = github.context
-        // core.info(`GitHub Context Ref ${ref}`)
-        // const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
-        // core.info(`Config Vercel commit ${commit}`)
         // Vercel
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
@@ -486,11 +481,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.assignAlias = exports.vercelDeploy = exports.addSchema = void 0;
+exports.assignAlias = exports.vercelDeploy = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-// import * as github from '@actions/github'
 const exec_1 = __nccwpck_require__(1514);
-// const { context } = github
 const workingDirectory = core.getInput('working_directory');
 // vercel
 const vercelCli = core.getInput('vercel_cli');
@@ -512,14 +505,6 @@ let options = {
         },
     },
 };
-const addSchema = (url) => {
-    const regex = /^https?:\/\//;
-    if (!regex.test(url)) {
-        return `https://${url}`;
-    }
-    return url;
-};
-exports.addSchema = addSchema;
 const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });

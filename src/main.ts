@@ -3,8 +3,7 @@ import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
-// import { execSync } from 'child_process'
-import { vercelDeploy, assignAlias, addSchema } from './tenants/vercel'
+import { vercelDeploy, assignAlias } from './tenants/vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -148,10 +147,6 @@ async function main() {
 	// Vercel
 	core.info('Init config vercel')
 	const vercelToken = core.getInput('vercel_token')
-	// const { ref } = github.context
-	// core.info(`GitHub Context Ref ${ref}`)
-	// const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
-	// core.info(`Config Vercel commit ${commit}`)
 	// Vercel
 
 	if (!prNumber) {
