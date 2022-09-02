@@ -45,7 +45,7 @@ inputs:
   vercel_args:
     description: ''
     required: false
-    default: '--yes --cwd'
+    default: '--yes --cwd {{dist}}'
 outputs:
   preview_url:
     description: 'The url for the related PR preview'
