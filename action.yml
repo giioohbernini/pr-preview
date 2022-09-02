@@ -46,6 +46,10 @@ inputs:
     description: ''
     required: false
     default: '--yes'
+  working_directory:
+    description: ''
+    required: false
+    default: './'
 outputs:
   preview_url:
     description: 'The url for the related PR preview'
