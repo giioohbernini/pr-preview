@@ -512,7 +512,7 @@ const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
     }
     yield (0, exec_1.exec)('npx', [
         vercelCli,
-        ...vercelArgs.concat(distFolder).split(/ +/),
+        ...vercelArgs.concat(`/${distFolder}`).split(/ +/),
         '-t',
         vercelToken,
     ], options);
