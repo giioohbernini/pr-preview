@@ -10,7 +10,7 @@ const workingDirectory = core.getInput('working_directory')
 
 // vercel
 const vercelCli = core.getInput('vercel_cli')
-const vercelToken = core.getInput('vercel_token', { required: true })
+const vercelToken = core.getInput('vercel_token')
 const vercelArgs = core.getInput('vercel_args')
 
 const removeSchema = (url: string) => {
