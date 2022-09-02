@@ -67,3 +67,20 @@ export const vercelDeploy = async (ref: string, commit: string) => {
 	core.info('finalizing vercel deployment')
 	return myOutput
 }
+
+// export const assignAlias = async (prReview: string, aliasUrl: string) => {
+// 	const vercelToken = core.getInput('vercel_token', { required: true })
+// 	const workingDirectory = core.getInput('working_directory')
+
+// 	const commandArguments = [
+// 		`--token=${vercelToken}`,
+// 		'alias',
+// 		'set',
+// 		prReview,
+// 		removeSchema(aliasUrl),
+// 	]
+
+// 	const output = await exec('vercel', commandArguments, workingDirectory)
+
+// 	return output
+// }

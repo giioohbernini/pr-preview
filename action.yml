@@ -45,11 +45,11 @@ inputs:
   vercel_args:
     description: ''
     required: false
-    default: '--yes --prod'
+    default: '--yes'
   working_directory:
     description: ''
     required: false
-    default: './'
+    default: './public'
 outputs:
   preview_url:
     description: 'The url for the related PR preview'
