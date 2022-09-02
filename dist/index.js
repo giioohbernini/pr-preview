@@ -328,6 +328,7 @@ function main() {
         core.debug(JSON.stringify(github.context.repo, null, 2));
         // Vercel
         core.info('Init config vercel');
+        const vercelToken = core.getInput('vercel_token');
         const { ref } = github.context;
         core.info(`GitHub Context Ref ${ref}`);
         const commit = (0, child_process_1.execSync)('git log -1 --pretty=format:%B').toString().trim();
@@ -396,17 +397,20 @@ function main() {
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
             // Vercel
-            let deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(ref, commit);
-            if (previewUrl) {
-                core.info(`Assigning custom URL to Vercel deployment`);
-                const alias = previewUrl
-                    .replace('{{repoOwner}}', repoOwner)
-                    .replace('{{repoName}}', repoName)
-                    .replace('{{job}}', job)
-                    .replace('{{prNumber}}', `${prNumber}`)
-                    .concat('.vercel.app');
-                yield (0, vercel_1.assignAlias)(deploymentUrlVercel, alias);
-                deploymentUrlVercel = (0, vercel_1.addSchema)(alias);
+            let deploymentUrlVercel = '';
+            if (vercelToken) {
+                deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(ref, commit);
+                if (previewUrl) {
+                    core.info(`Assigning custom URL to Vercel deployment`);
+                    const alias = previewUrl
+                        .replace('{{repoOwner}}', repoOwner)
+                        .replace('{{repoName}}', repoName)
+                        .replace('{{job}}', job)
+                        .replace('{{prNumber}}', `${prNumber}`)
+                        .concat('.vercel.app');
+                    yield (0, vercel_1.assignAlias)(deploymentUrlVercel, alias);
+                    deploymentUrlVercel = alias;
+                }
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
@@ -420,10 +424,14 @@ function main() {
 					<td><strong>✅ Preview: Surge</strong></td>
 					<td><a href='${outputUrl}'>${outputUrl}</a></td>
 				</tr>
-				<tr>
-					<td><strong>✅ Preview: Vercel</strong></td>
-					<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
-				</tr>
+				${vercelToken
+                ? `
+							<tr>
+								<td><strong>✅ Preview: Vercel</strong></td>
+								<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
+							</tr>
+						`
+                : null}
 			</table>
 			
 			:clock1: Build time: **${duration}s** \n ${image}

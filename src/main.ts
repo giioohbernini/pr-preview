@@ -147,6 +147,7 @@ async function main() {
 
 	// Vercel
 	core.info('Init config vercel')
+	const vercelToken = core.getInput('vercel_token')
 	const { ref } = github.context
 	core.info(`GitHub Context Ref ${ref}`)
 	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
@@ -232,20 +233,23 @@ async function main() {
 		})
 
 		// Vercel
-		let deploymentUrlVercel = await vercelDeploy(ref, commit)
-		if (previewUrl) {
-			core.info(`Assigning custom URL to Vercel deployment`)
-			const alias = previewUrl
-				.replace('{{repoOwner}}', repoOwner)
-				.replace('{{repoName}}', repoName)
-				.replace('{{job}}', job)
-				.replace('{{prNumber}}', `${prNumber}`)
-				.concat('.vercel.app')
+		let deploymentUrlVercel = ''
+		if (vercelToken) {
+			deploymentUrlVercel = await vercelDeploy(ref, commit)
 
-			await assignAlias(deploymentUrlVercel, alias)
-			deploymentUrlVercel = addSchema(alias)
+			if (previewUrl) {
+				core.info(`Assigning custom URL to Vercel deployment`)
+				const alias = previewUrl
+					.replace('{{repoOwner}}', repoOwner)
+					.replace('{{repoName}}', repoName)
+					.replace('{{job}}', job)
+					.replace('{{prNumber}}', `${prNumber}`)
+					.concat('.vercel.app')
+
+				await assignAlias(deploymentUrlVercel, alias)
+				deploymentUrlVercel = alias
+			}
 		}
-
 		// Vercel
 
 		await execSurgeCommand({
@@ -260,10 +264,16 @@ async function main() {
 					<td><strong>✅ Preview: Surge</strong></td>
 					<td><a href='${outputUrl}'>${outputUrl}</a></td>
 				</tr>
-				<tr>
-					<td><strong>✅ Preview: Vercel</strong></td>
-					<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
-				</tr>
+				${
+					vercelToken
+						? `
+							<tr>
+								<td><strong>✅ Preview: Vercel</strong></td>
+								<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
+							</tr>
+						`
+						: null
+				}
 			</table>
 			
 			:clock1: Build time: **${duration}s** \n ${image}
