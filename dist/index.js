@@ -201,7 +201,6 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
-const child_process_1 = __nccwpck_require__(3129);
 const vercel_1 = __nccwpck_require__(403);
 function getGitCommitSha() {
     var _a, _b, _c;
@@ -329,10 +328,10 @@ function main() {
         // Vercel
         core.info('Init config vercel');
         const vercelToken = core.getInput('vercel_token');
-        const { ref } = github.context;
-        core.info(`GitHub Context Ref ${ref}`);
-        const commit = (0, child_process_1.execSync)('git log -1 --pretty=format:%B').toString().trim();
-        core.info(`Config Vercel commit ${commit}`);
+        // const { ref } = github.context
+        // core.info(`GitHub Context Ref ${ref}`)
+        // const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+        // core.info(`Config Vercel commit ${commit}`)
         // Vercel
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
@@ -399,7 +398,7 @@ function main() {
             // Vercel
             let deploymentUrlVercel = '';
             if (vercelToken) {
-                deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(ref, commit);
+                deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
                 if (previewUrl) {
                     core.info(`Assigning custom URL to Vercel deployment`);
                     const alias = previewUrl
@@ -431,7 +430,7 @@ function main() {
 								<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
 							</tr>
 						`
-                : null}
+                : ''}
 			</table>
 			
 			:clock1: Build time: **${duration}s** \n ${image}
@@ -488,9 +487,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.assignAlias = exports.vercelDeploy = exports.addSchema = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const github = __importStar(__nccwpck_require__(5438));
+// import * as github from '@actions/github'
 const exec_1 = __nccwpck_require__(1514);
-const { context } = github;
+// const { context } = github
 const workingDirectory = core.getInput('working_directory');
 // vercel
 const vercelCli = core.getInput('vercel_cli');
@@ -520,36 +519,11 @@ const addSchema = (url) => {
     return url;
 };
 exports.addSchema = addSchema;
-const vercelDeploy = (ref, commit) => __awaiter(void 0, void 0, void 0, function* () {
+const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
-    yield (0, exec_1.exec)('npx', [
-        vercelCli,
-        ...vercelArgs.split(/ +/),
-        '-t',
-        vercelToken,
-        '-m',
-        `githubCommitSha=${context.sha}`,
-        '-m',
-        `githubCommitAuthorName=${context.actor}`,
-        '-m',
-        `githubCommitAuthorLogin=${context.actor}`,
-        '-m',
-        'githubDeployment=1',
-        '-m',
-        `githubOrg=${context.repo.owner}`,
-        '-m',
-        `githubRepo=${context.repo.repo}`,
-        '-m',
-        `githubCommitOrg=${context.repo.owner}`,
-        '-m',
-        `githubCommitRepo=${context.repo.repo}`,
-        '-m',
-        `githubCommitMessage="${commit}"`,
-        '-m',
-        `githubCommitRef=${ref}`,
-    ], options);
+    yield (0, exec_1.exec)('npx', [vercelCli, ...vercelArgs.split(/ +/), '-t', vercelToken], options);
     core.info('finalizing vercel deployment');
     return myOutput;
 });

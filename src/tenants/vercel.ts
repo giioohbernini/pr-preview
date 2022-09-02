@@ -1,11 +1,11 @@
 import * as core from '@actions/core'
-import * as github from '@actions/github'
+// import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 
 type MyOutPut = string
 type Options = Object
 
-const { context } = github
+// const { context } = github
 const workingDirectory = core.getInput('working_directory')
 
 // vercel
@@ -40,7 +40,7 @@ export const addSchema = (url: string) => {
 	return url
 }
 
-export const vercelDeploy = async (ref: string, commit: string) => {
+export const vercelDeploy = async () => {
 	if (workingDirectory) {
 		options = {
 			...options,
@@ -50,32 +50,7 @@ export const vercelDeploy = async (ref: string, commit: string) => {
 
 	await exec(
 		'npx',
-		[
-			vercelCli,
-			...vercelArgs.split(/ +/),
-			'-t',
-			vercelToken,
-			'-m',
-			`githubCommitSha=${context.sha}`,
-			'-m',
-			`githubCommitAuthorName=${context.actor}`,
-			'-m',
-			`githubCommitAuthorLogin=${context.actor}`,
-			'-m',
-			'githubDeployment=1',
-			'-m',
-			`githubOrg=${context.repo.owner}`,
-			'-m',
-			`githubRepo=${context.repo.repo}`,
-			'-m',
-			`githubCommitOrg=${context.repo.owner}`,
-			'-m',
-			`githubCommitRepo=${context.repo.repo}`,
-			'-m',
-			`githubCommitMessage="${commit}"`,
-			'-m',
-			`githubCommitRef=${ref}`,
-		],
+		[vercelCli, ...vercelArgs.split(/ +/), '-t', vercelToken],
 		options
 	)
 

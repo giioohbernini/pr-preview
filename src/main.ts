@@ -148,10 +148,10 @@ async function main() {
 	// Vercel
 	core.info('Init config vercel')
 	const vercelToken = core.getInput('vercel_token')
-	const { ref } = github.context
-	core.info(`GitHub Context Ref ${ref}`)
-	const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
-	core.info(`Config Vercel commit ${commit}`)
+	// const { ref } = github.context
+	// core.info(`GitHub Context Ref ${ref}`)
+	// const commit = execSync('git log -1 --pretty=format:%B').toString().trim()
+	// core.info(`Config Vercel commit ${commit}`)
 	// Vercel
 
 	if (!prNumber) {
@@ -235,7 +235,7 @@ async function main() {
 		// Vercel
 		let deploymentUrlVercel = ''
 		if (vercelToken) {
-			deploymentUrlVercel = await vercelDeploy(ref, commit)
+			deploymentUrlVercel = await vercelDeploy()
 
 			if (previewUrl) {
 				core.info(`Assigning custom URL to Vercel deployment`)
@@ -272,7 +272,7 @@ async function main() {
 								<td><a href='${deploymentUrlVercel}'>${deploymentUrlVercel}</a></td>
 							</tr>
 						`
-						: null
+						: ''
 				}
 			</table>
 			
