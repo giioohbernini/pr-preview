@@ -33,9 +33,6 @@
 		"@actions/core": "^1.2.6",
 		"@actions/exec": "^1.0.4",
 		"@actions/github": "^5.0.0",
-		"@octokit/webhooks": "latest",
-		"@types/common-tags": "^1.8.1",
-		"common-tags": "^1.8.0",
 		"vercel": "28.2.2"
 	},
 	"devDependencies": {
