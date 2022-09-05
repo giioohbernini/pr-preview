@@ -404,7 +404,7 @@ function main() {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
                 if (previewUrl) {
                     core.info(`Assigning custom URL to Vercel deployment`);
-                    yield (0, vercel_1.assignAlias)(deploymentUrlVercel, vercelAliasUrl);
+                    yield (0, vercel_1.vercelAssignAlias)(deploymentUrlVercel, vercelAliasUrl);
                     deploymentUrlVercel = vercelAliasUrl.concat(previewPath);
                 }
             }
@@ -418,7 +418,7 @@ function main() {
 			<table>
 				<tr>
 					<td><strong>✅ Preview: Surge</strong></td>
-					<td><a href='${outputUrl}'>${outputUrl}</a></td>
+					<td><a href='https://${outputUrl}'>${outputUrl}</a></td>
 				</tr>
 				${vercelToken
                 ? `
@@ -482,7 +482,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.vercelRemoveProjectDeploy = exports.assignAlias = exports.vercelDeploy = void 0;
+exports.vercelRemoveProjectDeploy = exports.vercelAssignAlias = exports.vercelDeploy = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const workingDirectory = core.getInput('working_directory');
@@ -521,7 +521,7 @@ const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
     return myOutput;
 });
 exports.vercelDeploy = vercelDeploy;
-const assignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0, void 0, function* () {
+const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0, void 0, function* () {
     const commandArguments = [
         vercelCli,
         `--token=${vercelToken}`,
@@ -537,7 +537,7 @@ const assignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0,
     core.info('finalizing vercel assign alias');
     return output;
 });
-exports.assignAlias = assignAlias;
+exports.vercelAssignAlias = vercelAssignAlias;
 const vercelRemoveProjectDeploy = (deploymentUrlVercel) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, exec_1.exec)('npx', [
         vercelCli,

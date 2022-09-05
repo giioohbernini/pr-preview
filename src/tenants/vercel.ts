@@ -53,7 +53,7 @@ export const vercelDeploy = async () => {
 	return myOutput
 }
 
-export const assignAlias = async (
+export const vercelAssignAlias = async (
 	deploymentUrlVercel: string,
 	aliasUrl: string
 ) => {

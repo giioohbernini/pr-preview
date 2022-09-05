@@ -5,7 +5,7 @@ import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
 import {
 	vercelDeploy,
-	assignAlias,
+	vercelAssignAlias,
 	vercelRemoveProjectDeploy,
 } from './tenants/vercel'
 
@@ -246,7 +246,7 @@ async function main() {
 
 			if (previewUrl) {
 				core.info(`Assigning custom URL to Vercel deployment`)
-				await assignAlias(deploymentUrlVercel, vercelAliasUrl)
+				await vercelAssignAlias(deploymentUrlVercel, vercelAliasUrl)
 				deploymentUrlVercel = vercelAliasUrl.concat(previewPath)
 			}
 		}
@@ -262,7 +262,7 @@ async function main() {
 			<table>
 				<tr>
 					<td><strong>✅ Preview: Surge</strong></td>
-					<td><a href='${outputUrl}'>${outputUrl}</a></td>
+					<td><a href='https://${outputUrl}'>${outputUrl}</a></td>
 				</tr>
 				${
 					vercelToken
