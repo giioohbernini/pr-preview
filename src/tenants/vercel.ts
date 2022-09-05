@@ -77,3 +77,16 @@ export const assignAlias = async (
 	core.info('finalizing vercel assign alias')
 	return output
 }
+
+export const vercelRemoveProjectDeploy = async (
+	deploymentUrlVercel: string
+) => {
+	await exec('npx', [
+		vercelCli,
+		'remove --yes',
+		deploymentUrlVercel,
+		'-t',
+		vercelToken,
+	])
+	core.info('finalizing vercel deployment remove')
+}

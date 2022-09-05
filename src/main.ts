@@ -3,7 +3,11 @@ import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
-import { vercelDeploy, assignAlias } from './tenants/vercel'
+import {
+	vercelDeploy,
+	assignAlias,
+	vercelRemoveProjectDeploy,
+} from './tenants/vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -144,11 +148,6 @@ async function main() {
 	const gitCommitSha = getGitCommitSha()
 	core.debug(JSON.stringify(github.context.repo, null, 2))
 
-	// Vercel
-	core.info('Init config vercel')
-	const vercelToken = core.getInput('vercel_token')
-	// Vercel
-
 	if (!prNumber) {
 		core.info(`😢 No related PR found, skip it.`)
 		return
@@ -173,6 +172,18 @@ async function main() {
 	core.debug(`teardown enabled?: ${teardown}`)
 	core.debug(`event action?: ${payload.action}`)
 
+	// Vercel
+	core.info('Init config vercel')
+	const vercelToken = core.getInput('vercel_token')
+	let deploymentUrlVercel = ''
+	const vercelAliasUrl = previewUrl
+		.replace('{{repoOwner}}', repoOwner)
+		.replace('{{repoName}}', repoName)
+		.replace('{{job}}', job)
+		.replace('{{prNumber}}', `${prNumber}`)
+		.concat('.vercel.app')
+	// Vercel
+
 	if (teardown && payload.action === 'closed') {
 		try {
 			core.info(`Teardown: ${url}`)
@@ -186,6 +197,8 @@ async function main() {
 				imageUrl:
 					'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
 			})
+
+			await vercelRemoveProjectDeploy(deploymentUrlVercel)
 
 			return await comment(
 				`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
@@ -228,21 +241,13 @@ async function main() {
 		})
 
 		// Vercel
-		let deploymentUrlVercel = ''
 		if (vercelToken) {
 			deploymentUrlVercel = await vercelDeploy()
 
 			if (previewUrl) {
 				core.info(`Assigning custom URL to Vercel deployment`)
-				const alias = previewUrl
-					.replace('{{repoOwner}}', repoOwner)
-					.replace('{{repoName}}', repoName)
-					.replace('{{job}}', job)
-					.replace('{{prNumber}}', `${prNumber}`)
-					.concat('.vercel.app')
-
-				await assignAlias(deploymentUrlVercel, alias)
-				deploymentUrlVercel = alias.concat(previewPath)
+				await assignAlias(deploymentUrlVercel, vercelAliasUrl)
+				deploymentUrlVercel = vercelAliasUrl.concat(previewPath)
 			}
 		}
 		// Vercel

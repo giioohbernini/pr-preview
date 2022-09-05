@@ -325,10 +325,6 @@ function main() {
         core.debug(`payload.after: ${payload.pull_request}`);
         const gitCommitSha = getGitCommitSha();
         core.debug(JSON.stringify(github.context.repo, null, 2));
-        // Vercel
-        core.info('Init config vercel');
-        const vercelToken = core.getInput('vercel_token');
-        // Vercel
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
             return;
@@ -347,6 +343,17 @@ function main() {
         const buildingLogUrl = yield generateLogUrl();
         core.debug(`teardown enabled?: ${teardown}`);
         core.debug(`event action?: ${payload.action}`);
+        // Vercel
+        core.info('Init config vercel');
+        const vercelToken = core.getInput('vercel_token');
+        let deploymentUrlVercel = '';
+        const vercelAliasUrl = previewUrl
+            .replace('{{repoOwner}}', repoOwner)
+            .replace('{{repoName}}', repoName)
+            .replace('{{job}}', job)
+            .replace('{{prNumber}}', `${prNumber}`)
+            .concat('.vercel.app');
+        // Vercel
         if (teardown && payload.action === 'closed') {
             try {
                 core.info(`Teardown: ${url}`);
@@ -358,6 +365,7 @@ function main() {
                     buildingLogUrl,
                     imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
                 });
+                yield (0, vercel_1.vercelRemoveProjectDeploy)(deploymentUrlVercel);
                 return yield comment(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
             }
             catch (err) {
@@ -392,19 +400,12 @@ function main() {
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
             // Vercel
-            let deploymentUrlVercel = '';
             if (vercelToken) {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
                 if (previewUrl) {
                     core.info(`Assigning custom URL to Vercel deployment`);
-                    const alias = previewUrl
-                        .replace('{{repoOwner}}', repoOwner)
-                        .replace('{{repoName}}', repoName)
-                        .replace('{{job}}', job)
-                        .replace('{{prNumber}}', `${prNumber}`)
-                        .concat('.vercel.app');
-                    yield (0, vercel_1.assignAlias)(deploymentUrlVercel, alias);
-                    deploymentUrlVercel = alias.concat(previewPath);
+                    yield (0, vercel_1.assignAlias)(deploymentUrlVercel, vercelAliasUrl);
+                    deploymentUrlVercel = vercelAliasUrl.concat(previewPath);
                 }
             }
             // Vercel
@@ -481,7 +482,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.assignAlias = exports.vercelDeploy = void 0;
+exports.vercelRemoveProjectDeploy = exports.assignAlias = exports.vercelDeploy = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const workingDirectory = core.getInput('working_directory');
@@ -537,6 +538,17 @@ const assignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0,
     return output;
 });
 exports.assignAlias = assignAlias;
+const vercelRemoveProjectDeploy = (deploymentUrlVercel) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, exec_1.exec)('npx', [
+        vercelCli,
+        'remove --yes',
+        deploymentUrlVercel,
+        '-t',
+        vercelToken,
+    ]);
+    core.info('finalizing vercel deployment remove');
+});
+exports.vercelRemoveProjectDeploy = vercelRemoveProjectDeploy;
 
 
 /***/ }),
