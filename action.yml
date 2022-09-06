@@ -39,9 +39,6 @@ inputs:
   vercel_token:
     description: 'Vercel token'
     required: false
-  vercel_project_id:
-    required: false
-    description: 'Vercel CLI'
   vercel_args:
     description: ''
     required: false
