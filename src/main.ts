@@ -198,7 +198,7 @@ async function main() {
 					'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
 			})
 
-			await vercelRemoveProjectDeploy(deploymentUrlVercel)
+			if (vercelToken) await vercelRemoveProjectDeploy(deploymentUrlVercel)
 
 			return await comment(
 				`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`

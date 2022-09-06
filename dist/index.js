@@ -365,7 +365,8 @@ function main() {
                     buildingLogUrl,
                     imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
                 });
-                yield (0, vercel_1.vercelRemoveProjectDeploy)(deploymentUrlVercel);
+                if (vercelToken)
+                    yield (0, vercel_1.vercelRemoveProjectDeploy)(deploymentUrlVercel);
                 return yield comment(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
             }
             catch (err) {
