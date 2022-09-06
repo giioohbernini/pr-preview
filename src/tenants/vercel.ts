@@ -39,7 +39,7 @@ export const vercelDeploy = async () => {
 
 	await exec(
 		'npx',
-		[`vercel --yes --cwd ./${distFolder}`, '-t', vercelToken],
+		[vercelCli, '--yes', '--cwd', ` ./${distFolder}`, '-t', vercelToken],
 		options
 	)
 
