@@ -32,10 +32,6 @@ inputs:
     description: 'Determines if the preview instance will be torn down on PR close'
     default: 'false'
     required: false
-  vercel_cli:
-    description: 'Vercel command line. (can be override with "now" CLI)'
-    required: false
-    default: 'vercel'
   vercel_token:
     description: 'Vercel token'
     required: false
