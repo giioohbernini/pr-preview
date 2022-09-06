@@ -15,7 +15,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          vercel_token: ${{ secrets.VERCELL_TOKEN }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
           teardown: 'true'
           dist: public/preview
           build: |
@@ -35,7 +35,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          vercel_token: ${{ secrets.VERCELL_TOKEN }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
           teardown: 'true'
           dist: public/preview2
           build: |
