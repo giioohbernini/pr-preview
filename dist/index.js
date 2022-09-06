@@ -488,7 +488,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const workingDirectory = core.getInput('working_directory');
 // vercel
-const vercelCli = core.getInput('vercel_cli');
+const vercelCli = 'vercel';
 const vercelToken = core.getInput('vercel_token');
 const distFolder = core.getInput('dist');
 const removeSchema = (url) => {
