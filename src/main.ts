@@ -244,11 +244,11 @@ async function main() {
 		if (vercelToken) {
 			deploymentUrlVercel = await vercelDeploy()
 
-			if (previewUrl) {
-				core.info(`Assigning custom URL to Vercel deployment`)
-				await vercelAssignAlias(deploymentUrlVercel, vercelAliasUrl)
-				deploymentUrlVercel = vercelAliasUrl.concat(previewPath)
-			}
+			// if (previewUrl) {
+			// 	core.info(`Assigning custom URL to Vercel deployment`)
+			// 	await vercelAssignAlias(deploymentUrlVercel, vercelAliasUrl)
+			// 	deploymentUrlVercel = vercelAliasUrl.concat(previewPath)
+			// }
 		}
 		// Vercel
 
