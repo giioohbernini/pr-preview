@@ -488,9 +488,8 @@ const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const workingDirectory = core.getInput('working_directory');
 // vercel
-const vercelCli = core.getInput('vercel_cli');
+const vercelCli = 'vercel';
 const vercelToken = core.getInput('vercel_token');
-const vercelArgs = core.getInput('vercel_args');
 const distFolder = core.getInput('dist');
 const removeSchema = (url) => {
     const regex = /^https?:\/\//;
@@ -512,12 +511,7 @@ const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
-    yield (0, exec_1.exec)('npx', [
-        vercelCli,
-        ...vercelArgs.concat(` ./${distFolder}`).split(/ +/),
-        '-t',
-        vercelToken,
-    ], options);
+    yield (0, exec_1.exec)('npx', [vercelCli, `--yes --cwd ./${distFolder}`, '-t', vercelToken], options);
     core.info('finalizing vercel deployment');
     return myOutput;
 });

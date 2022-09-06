@@ -7,9 +7,8 @@ type Options = Object
 const workingDirectory = core.getInput('working_directory')
 
 // vercel
-const vercelCli = core.getInput('vercel_cli')
+const vercelCli = 'vercel'
 const vercelToken = core.getInput('vercel_token')
-const vercelArgs = core.getInput('vercel_args')
 const distFolder = core.getInput('dist')
 
 const removeSchema = (url: string) => {
@@ -40,12 +39,7 @@ export const vercelDeploy = async () => {
 
 	await exec(
 		'npx',
-		[
-			vercelCli,
-			...vercelArgs.concat(` ./${distFolder}`).split(/ +/),
-			'-t',
-			vercelToken,
-		],
+		[vercelCli, `--yes --cwd ./${distFolder}`, '-t', vercelToken],
 		options
 	)
 
