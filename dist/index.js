@@ -528,7 +528,6 @@ const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, v
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
-    yield (0, exec_1.exec)('npx', [aliasUrl, 'ls', '-t', vercelToken]);
     const output = yield (0, exec_1.exec)('npx', commandArguments, options);
     core.info('finalizing vercel assign alias');
     return output;
