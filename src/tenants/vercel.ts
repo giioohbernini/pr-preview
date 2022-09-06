@@ -7,7 +7,7 @@ type Options = Object
 const workingDirectory = core.getInput('working_directory')
 
 // vercel
-const vercelCli = 'vercel'
+const vercelCli = core.getInput('vercel_cli')
 const vercelToken = core.getInput('vercel_token')
 const distFolder = core.getInput('dist')
 
@@ -39,7 +39,7 @@ export const vercelDeploy = async () => {
 
 	await exec(
 		'npx',
-		[vercelCli, '--yes', '--cwd', ` ./${distFolder}`, '-t', vercelToken],
+		[vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', vercelToken],
 		options
 	)
 
