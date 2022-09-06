@@ -69,7 +69,7 @@ export const vercelAssignAlias = async (
 
 	await exec(
 		'npx',
-		[vercelCli, 'inspec', deploymentUrlVercel, '-t', vercelToken],
+		[vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken],
 		options
 	)
 	const output = await exec('npx', commandArguments, options)
