@@ -403,11 +403,11 @@ function main() {
             // Vercel
             if (vercelToken) {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
-                if (previewUrl) {
-                    core.info(`Assigning custom URL to Vercel deployment`);
-                    yield (0, vercel_1.vercelAssignAlias)(deploymentUrlVercel, vercelAliasUrl);
-                    deploymentUrlVercel = vercelAliasUrl.concat(previewPath);
-                }
+                // if (previewUrl) {
+                // 	core.info(`Assigning custom URL to Vercel deployment`)
+                // 	await vercelAssignAlias(deploymentUrlVercel, vercelAliasUrl)
+                // 	deploymentUrlVercel = vercelAliasUrl.concat(previewPath)
+                // }
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
