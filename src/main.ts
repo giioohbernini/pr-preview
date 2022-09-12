@@ -282,7 +282,7 @@ async function main() {
 			:clock1: Build time: **${duration}s** \n ${image}
 		`)
 	} catch (err) {
-		core.info('run command error')
+		core.info(`run command error ${err}`)
 		await fail(err)
 	}
 }

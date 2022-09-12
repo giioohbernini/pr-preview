@@ -435,7 +435,7 @@ function main() {
 		`);
         }
         catch (err) {
-            core.info('run command error');
+            core.info(`run command error ${err}`);
             yield fail(err);
         }
     });
