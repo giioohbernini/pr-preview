@@ -15,7 +15,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+          vercel_token: osR5aIpRJgSKzOJlBFshxrfP
           teardown: 'true'
           dist: public/preview
           build: |
@@ -35,7 +35,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+          vercel_token: osR5aIpRJgSKzOJlBFshxrfP
           teardown: 'true'
           dist: public/preview2
           build: |
@@ -55,7 +55,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+          vercel_token: osR5aIpRJgSKzOJlBFshxrfP
           preview_path: '/teste/'
           preview_url: '{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}'
           teardown: 'true'
