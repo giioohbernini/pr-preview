@@ -11,7 +11,7 @@ const vercelCli = 'vercel'
 const vercelToken = core.getInput('vercel_token')
 const distFolder = core.getInput('dist')
 
-const removeSchema = (url: string) => {
+export const removeSchema = (url: string) => {
 	const regex = /^https?:\/\//
 	return url.replace(regex, '')
 }

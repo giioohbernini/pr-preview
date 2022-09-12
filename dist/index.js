@@ -404,9 +404,11 @@ function main() {
             if (vercelToken) {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
                 if (previewUrl) {
-                    core.info(`Assigning custom URL to Vercel deployment`);
-                    yield (0, vercel_1.vercelAssignAlias)(deploymentUrlVercel, vercelAliasUrl);
-                    deploymentUrlVercel = vercelAliasUrl.concat(previewPath);
+                    setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+                        core.info(`Assigning custom URL to Vercel deployment`);
+                        yield (0, vercel_1.vercelAssignAlias)(deploymentUrlVercel, vercelAliasUrl);
+                        deploymentUrlVercel = (0, vercel_1.removeSchema)(vercelAliasUrl.concat(previewPath));
+                    }), 1000);
                 }
             }
             // Vercel
@@ -483,7 +485,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.vercelRemoveProjectDeploy = exports.vercelAssignAlias = exports.vercelDeploy = void 0;
+exports.vercelRemoveProjectDeploy = exports.vercelAssignAlias = exports.vercelDeploy = exports.removeSchema = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const workingDirectory = core.getInput('working_directory');
@@ -495,6 +497,7 @@ const removeSchema = (url) => {
     const regex = /^https?:\/\//;
     return url.replace(regex, '');
 };
+exports.removeSchema = removeSchema;
 let myOutput = '';
 let options = {
     listeners: {
@@ -523,7 +526,7 @@ const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, v
         'alias',
         'set',
         deploymentUrlVercel,
-        removeSchema(aliasUrl),
+        (0, exports.removeSchema)(aliasUrl),
     ];
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
