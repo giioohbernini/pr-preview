@@ -488,7 +488,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const workingDirectory = core.getInput('working_directory');
 // vercel
-const vercelCli = core.getInput('vercel_cli');
+const vercelCli = 'vercel';
 const vercelToken = core.getInput('vercel_token');
 const distFolder = core.getInput('dist');
 const removeSchema = (url) => {
@@ -530,7 +530,7 @@ const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, v
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
     yield (0, exec_1.exec)('npx', [vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken], options);
-    const output = yield (0, exec_1.exec)('npx', commandArguments, options);
+    const output = yield (0, exec_1.exec)('npx', [...commandArguments], options);
     core.info('finalizing vercel assign alias');
     return output;
 });
