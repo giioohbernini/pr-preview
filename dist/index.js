@@ -404,11 +404,9 @@ function main() {
             if (vercelToken) {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
                 if (previewUrl) {
-                    setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                        core.info(`Assigning custom URL to Vercel deployment`);
-                        yield (0, vercel_1.vercelAssignAlias)(deploymentUrlVercel, vercelAliasUrl);
-                        deploymentUrlVercel = vercelAliasUrl.concat(previewPath);
-                    }), 1000);
+                    core.info(`Assigning custom URL to Vercel deployment`);
+                    yield (0, vercel_1.vercelAssignAlias)(deploymentUrlVercel, vercelAliasUrl);
+                    deploymentUrlVercel = vercelAliasUrl.concat(previewPath);
                 }
             }
             // Vercel
