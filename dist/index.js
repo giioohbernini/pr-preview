@@ -531,7 +531,7 @@ const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, v
     }
     yield (0, exec_1.exec)('npx', [vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken], options);
     const output = yield (0, exec_1.exec)('npx', [...commandArguments], options);
-    core.info(`finalizing vercel assign alias ${output}`);
+    core.info('finalizing vercel assign alias');
     return output;
 });
 exports.vercelAssignAlias = vercelAssignAlias;

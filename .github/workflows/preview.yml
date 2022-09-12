@@ -14,7 +14,7 @@ jobs:
         name: test pr-preview
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: 14O4V8qD7ci0K6w3uxLMa80t
           vercel_token: ${{ secrets.VERCEL_TOKEN }}
           teardown: 'true'
           dist: public/preview
@@ -34,7 +34,7 @@ jobs:
         name: test pr-preview
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: 14O4V8qD7ci0K6w3uxLMa80t
           vercel_token: ${{ secrets.VERCEL_TOKEN }}
           teardown: 'true'
           dist: public/preview2
@@ -54,7 +54,7 @@ jobs:
         name: test pr-preview
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: 14O4V8qD7ci0K6w3uxLMa80t
           vercel_token: ${{ secrets.VERCEL_TOKEN }}
           preview_path: '/teste/'
           preview_url: '{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}'
@@ -77,7 +77,7 @@ jobs:
         name: test pr-preview
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: 14O4V8qD7ci0K6w3uxLMa80t
           preview_path: '/teste/'
           preview_url: '{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}'
           teardown: 'true'

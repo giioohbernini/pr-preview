@@ -73,7 +73,7 @@ export const vercelAssignAlias = async (
 		options
 	)
 	const output = await exec('npx', [...commandArguments], options)
-	core.info(`finalizing vercel assign alias ${output}`)
+	core.info('finalizing vercel assign alias')
 	return output
 }
 
