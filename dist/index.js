@@ -518,6 +518,7 @@ const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.vercelDeploy = vercelDeploy;
 const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0, void 0, function* () {
+    core.info(`Alias ${aliasUrl}`);
     const commandArguments = [
         vercelCli,
         `--token=${vercelToken}`,

@@ -51,6 +51,7 @@ export const vercelAssignAlias = async (
 	deploymentUrlVercel: string,
 	aliasUrl: string
 ) => {
+	core.info(`Alias ${aliasUrl}`)
 	const commandArguments = [
 		vercelCli,
 		`--token=${vercelToken}`,
