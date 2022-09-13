@@ -397,6 +397,7 @@ function main() {
             // Vercel
             if (vercelToken) {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
+                deploymentUrlVercel.concat(previewPath);
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({

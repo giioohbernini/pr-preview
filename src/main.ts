@@ -237,6 +237,7 @@ async function main() {
 		// Vercel
 		if (vercelToken) {
 			deploymentUrlVercel = await vercelDeploy()
+			deploymentUrlVercel.concat(previewPath)
 		}
 		// Vercel
 
