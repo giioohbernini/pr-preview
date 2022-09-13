@@ -512,6 +512,7 @@ const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
+    yield (0, exec_1.exec)('npx', [vercelCli, '--yes', '-t', vercelToken], options);
     yield (0, exec_1.exec)('npx', [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', vercelToken], options);
     core.info('finalizing vercel deployment');
     return myOutput;
@@ -529,7 +530,6 @@ const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, v
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
-    yield (0, exec_1.exec)('npx', [vercelCli, 'switch', '--scope', '-t', vercelToken], options);
     yield (0, exec_1.exec)('npx', [vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken], options);
     const output = yield (0, exec_1.exec)('npx', commandArguments, options);
     core.info('finalizing vercel assign alias');
