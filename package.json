@@ -14,7 +14,8 @@
 		"test": "jest --passWithNoTests",
 		"pretty-quick": "pretty-quick",
 		"all": "yarn build && yarn format && yarn lint && yarn package && yarn test",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"pause": "node -e \"((time) => new Promise((resolve) => setTimeout(resolve, time)))(process.argv[1]).then(() => process.exit(0))\" 3000"
 	},
 	"repository": {
 		"type": "git",
