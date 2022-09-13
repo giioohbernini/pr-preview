@@ -31,7 +31,7 @@ let options: Options = {
 	},
 }
 
-export const vercelDeploy = async () => {
+export const vercelDeploy = async (previewPath: string) => {
 	if (workingDirectory) {
 		options = {
 			...options,
@@ -46,7 +46,7 @@ export const vercelDeploy = async () => {
 	)
 
 	core.info('finalizing vercel deployment')
-	return myOutput
+	return myOutput.concat(previewPath)
 }
 
 export const vercelAssignAlias = async (

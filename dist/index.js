@@ -396,8 +396,8 @@ function main() {
             });
             // Vercel
             if (vercelToken) {
-                deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
-                deploymentUrlVercel.concat(previewPath);
+                deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
+                core.info(`Adding preview path ${deploymentUrlVercel}`);
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
@@ -500,13 +500,13 @@ let options = {
         },
     },
 };
-const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
+const vercelDeploy = (previewPath) => __awaiter(void 0, void 0, void 0, function* () {
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
     }
     yield (0, exec_1.exec)('npx', [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', vercelToken], options);
     core.info('finalizing vercel deployment');
-    return myOutput;
+    return myOutput.concat(previewPath);
 });
 exports.vercelDeploy = vercelDeploy;
 const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0, void 0, function* () {
