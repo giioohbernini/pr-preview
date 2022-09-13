@@ -347,12 +347,6 @@ function main() {
         core.info('Init config vercel');
         const vercelToken = core.getInput('vercel_token');
         let deploymentUrlVercel = '';
-        const vercelAliasUrl = previewUrl
-            .replace('{{repoOwner}}', repoOwner)
-            .replace('{{repoName}}', repoName)
-            .replace('{{job}}', job)
-            .replace('{{prNumber}}', `${prNumber}`)
-            .concat('.vercel.app');
         // Vercel
         if (teardown && payload.action === 'closed') {
             try {
@@ -403,11 +397,6 @@ function main() {
             // Vercel
             if (vercelToken) {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
-                if (previewUrl) {
-                    core.info(`Assigning custom URL to Vercel deployment`);
-                    yield (0, vercel_1.vercelAssignAlias)(deploymentUrlVercel, vercelAliasUrl);
-                    deploymentUrlVercel = vercelAliasUrl.concat(previewPath);
-                }
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
