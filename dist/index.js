@@ -414,7 +414,7 @@ function main() {
                 ? `
 							<tr>
 								<td><strong>✅ Preview: Vercel</strong></td>
-								<td><a href='https://${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
+								<td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
 							</tr>
 						`
                 : ''}

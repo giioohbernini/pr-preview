@@ -257,7 +257,7 @@ async function main() {
 						? `
 							<tr>
 								<td><strong>✅ Preview: Vercel</strong></td>
-								<td><a href='https://${deploymentUrlVercel}'>${removeSchema(
+								<td><a href='${deploymentUrlVercel}'>${removeSchema(
 								deploymentUrlVercel
 						  )}</a></td>
 							</tr>
