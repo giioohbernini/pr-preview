@@ -237,7 +237,6 @@ async function main() {
 		// Vercel
 		if (vercelToken) {
 			deploymentUrlVercel = await vercelDeploy(previewPath)
-			core.info(`Adding preview path ${deploymentUrlVercel}`)
 		}
 		// Vercel
 

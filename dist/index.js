@@ -397,7 +397,6 @@ function main() {
             // Vercel
             if (vercelToken) {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
-                core.info(`Adding preview path ${deploymentUrlVercel}`);
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
