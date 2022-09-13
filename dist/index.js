@@ -348,9 +348,9 @@ function main() {
         const vercelToken = core.getInput('vercel_token');
         let deploymentUrlVercel = '';
         const vercelAliasUrl = previewUrl
+            .replace('{{job}}', job)
             .replace('{{repoOwner}}', repoOwner)
             .replace('{{repoName}}', repoName)
-            .replace('{{job}}', job)
             .replace('{{prNumber}}', `${prNumber}`)
             .concat('.vercel.app');
         // Vercel
