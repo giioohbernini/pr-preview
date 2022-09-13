@@ -32,7 +32,8 @@
 	"dependencies": {
 		"@actions/core": "^1.2.6",
 		"@actions/exec": "^1.0.4",
-		"@actions/github": "^5.0.0"
+		"@actions/github": "^5.0.0",
+		"vercel": "28.2.2"
 	},
 	"devDependencies": {
 		"@types/jest": "^27.0.1",

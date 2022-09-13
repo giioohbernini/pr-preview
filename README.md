@@ -1,4 +1,4 @@
-# PR Preview teste teste
+# PR Preview teste
 
 [![CI status][github-action-image]][github-action-url]
 

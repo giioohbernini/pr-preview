@@ -15,6 +15,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
           teardown: 'true'
           dist: public/preview
           build: |
@@ -34,6 +35,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
           teardown: 'true'
           dist: public/preview2
           build: |
@@ -44,6 +46,29 @@ jobs:
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
   preview3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        id: preview_action
+        name: test pr-preview
+        with:
+          surge_token: ${{ secrets.SURGE_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+          preview_path: '/teste/'
+          preview_url: '{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}'
+          teardown: 'true'
+          dist: public/preview3
+          build: |
+            mkdir -p public/preview3/teste/
+            npm install -g yarn
+            yarn
+            yarn build-preview -- public/preview3
+            cp ./public/preview3/index.html ./public/preview3/teste/index.html
+      - name: Get the output url
+        run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
+  preview4:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

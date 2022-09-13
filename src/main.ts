@@ -3,6 +3,11 @@ import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 import { comment as githubComment } from './commentToPullRequest'
 import { execSurgeCommand, formatImage } from './helpers'
+import {
+	vercelDeploy,
+	vercelRemoveProjectDeploy,
+	removeSchema,
+} from './tenants/vercel'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -167,6 +172,12 @@ async function main() {
 	core.debug(`teardown enabled?: ${teardown}`)
 	core.debug(`event action?: ${payload.action}`)
 
+	// Vercel
+	core.info('Init config vercel')
+	const vercelToken = core.getInput('vercel_token')
+	let deploymentUrlVercel = ''
+	// Vercel
+
 	if (teardown && payload.action === 'closed') {
 		try {
 			core.info(`Teardown: ${url}`)
@@ -180,6 +191,8 @@ async function main() {
 				imageUrl:
 					'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
 			})
+
+			if (vercelToken) await vercelRemoveProjectDeploy(deploymentUrlVercel)
 
 			return await comment(
 				`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
@@ -221,15 +234,42 @@ async function main() {
 				'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
 		})
 
+		// Vercel
+		if (vercelToken) {
+			deploymentUrlVercel = await vercelDeploy()
+		}
+		// Vercel
+
 		await execSurgeCommand({
 			command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
 		})
 
-		await comment(
-			`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`
-		)
+		await comment(`
+			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+		
+			<table>
+				<tr>
+					<td><strong>✅ Preview: Surge</strong></td>
+					<td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+				</tr>
+				${
+					vercelToken
+						? `
+							<tr>
+								<td><strong>✅ Preview: Vercel</strong></td>
+								<td><a href='${deploymentUrlVercel}'>${removeSchema(
+								deploymentUrlVercel
+						  )}</a></td>
+							</tr>
+						`
+						: ''
+				}
+			</table>
+			
+			:clock1: Build time: **${duration}s** \n ${image}
+		`)
 	} catch (err) {
-		core.info('run command error')
+		core.info(`run command error ${err}`)
 		await fail(err)
 	}
 }

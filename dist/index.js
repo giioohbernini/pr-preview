@@ -201,6 +201,7 @@ const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
+const vercel_1 = __nccwpck_require__(403);
 function getGitCommitSha() {
     var _a, _b, _c;
     const { payload } = github.context;
@@ -342,6 +343,11 @@ function main() {
         const buildingLogUrl = yield generateLogUrl();
         core.debug(`teardown enabled?: ${teardown}`);
         core.debug(`event action?: ${payload.action}`);
+        // Vercel
+        core.info('Init config vercel');
+        const vercelToken = core.getInput('vercel_token');
+        let deploymentUrlVercel = '';
+        // Vercel
         if (teardown && payload.action === 'closed') {
             try {
                 core.info(`Teardown: ${url}`);
@@ -353,6 +359,8 @@ function main() {
                     buildingLogUrl,
                     imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
                 });
+                if (vercelToken)
+                    yield (0, vercel_1.vercelRemoveProjectDeploy)(deploymentUrlVercel);
                 return yield comment(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
             }
             catch (err) {
@@ -386,13 +394,37 @@ function main() {
                 buildingLogUrl,
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
+            // Vercel
+            if (vercelToken) {
+                deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)();
+            }
+            // Vercel
             yield (0, helpers_1.execSurgeCommand)({
                 command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
             });
-            yield comment(`🎊 PR Preview ${gitCommitSha} has been successfully built and deployed to https://${outputUrl} \n :clock1: Build time: **${duration}s** \n ${image}`);
+            yield comment(`
+			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+		
+			<table>
+				<tr>
+					<td><strong>✅ Preview: Surge</strong></td>
+					<td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+				</tr>
+				${vercelToken
+                ? `
+							<tr>
+								<td><strong>✅ Preview: Vercel</strong></td>
+								<td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
+							</tr>
+						`
+                : ''}
+			</table>
+			
+			:clock1: Build time: **${duration}s** \n ${image}
+		`);
         }
         catch (err) {
-            core.info('run command error');
+            core.info(`run command error ${err}`);
             yield fail(err);
         }
     });
@@ -402,6 +434,110 @@ main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
     core.info('main error');
     yield fail(err);
 }));
+
+
+/***/ }),
+
+/***/ 403:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.vercelRemoveProjectDeploy = exports.vercelAssignAlias = exports.vercelDeploy = exports.removeSchema = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const exec_1 = __nccwpck_require__(1514);
+const workingDirectory = core.getInput('working_directory');
+// vercel
+const vercelCli = 'vercel';
+const vercelToken = core.getInput('vercel_token');
+const distFolder = core.getInput('dist');
+const { job } = github.context;
+const removeSchema = (url) => {
+    const regex = /^https?:\/\//;
+    return url.replace(regex, '');
+};
+exports.removeSchema = removeSchema;
+let myOutput = '';
+let options = {
+    listeners: {
+        stdout: (data) => {
+            myOutput += data.toString();
+            core.info(data.toString());
+        },
+        stderr: (data) => {
+            core.info(data.toString());
+        },
+    },
+};
+const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
+    if (workingDirectory) {
+        options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
+    }
+    yield (0, exec_1.exec)('npx', [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', vercelToken], options);
+    core.info('finalizing vercel deployment');
+    return myOutput;
+});
+exports.vercelDeploy = vercelDeploy;
+const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, void 0, void 0, function* () {
+    core.info(`Alias ${aliasUrl}`);
+    const commandArguments = [
+        vercelCli,
+        `--token=${vercelToken}`,
+        'alias',
+        'set',
+        deploymentUrlVercel,
+        `${job}-${aliasUrl}`,
+    ];
+    if (workingDirectory) {
+        options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
+    }
+    yield (0, exec_1.exec)('npx', [vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken], options);
+    const output = yield (0, exec_1.exec)('npx', commandArguments, options);
+    core.info('finalizing vercel assign alias');
+    return output;
+});
+exports.vercelAssignAlias = vercelAssignAlias;
+const vercelRemoveProjectDeploy = (deploymentUrlVercel) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, exec_1.exec)('npx', [
+        vercelCli,
+        'remove --yes',
+        deploymentUrlVercel,
+        '-t',
+        vercelToken,
+    ]);
+    core.info('finalizing vercel deployment remove');
+});
+exports.vercelRemoveProjectDeploy = vercelRemoveProjectDeploy;
 
 
 /***/ }),
