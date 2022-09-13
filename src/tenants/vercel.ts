@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 import { exec } from '@actions/exec'
 
 type MyOutPut = string
@@ -10,6 +11,7 @@ const workingDirectory = core.getInput('working_directory')
 const vercelCli = 'vercel'
 const vercelToken = core.getInput('vercel_token')
 const distFolder = core.getInput('dist')
+const { job } = github.context
 
 export const removeSchema = (url: string) => {
 	const regex = /^https?:\/\//
@@ -58,7 +60,7 @@ export const vercelAssignAlias = async (
 		'alias',
 		'set',
 		deploymentUrlVercel,
-		removeSchema(aliasUrl),
+		`${job}-${aliasUrl}`,
 	]
 
 	if (workingDirectory) {

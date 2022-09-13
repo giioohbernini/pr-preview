@@ -348,9 +348,9 @@ function main() {
         const vercelToken = core.getInput('vercel_token');
         let deploymentUrlVercel = '';
         const vercelAliasUrl = previewUrl
-            .replace('{{job}}', job)
             .replace('{{repoOwner}}', repoOwner)
             .replace('{{repoName}}', repoName)
+            .replace('{{job}}', job)
             .replace('{{prNumber}}', `${prNumber}`)
             .concat('.vercel.app');
         // Vercel
@@ -485,12 +485,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.vercelRemoveProjectDeploy = exports.vercelAssignAlias = exports.vercelDeploy = exports.removeSchema = void 0;
 const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
 const workingDirectory = core.getInput('working_directory');
 // vercel
 const vercelCli = 'vercel';
 const vercelToken = core.getInput('vercel_token');
 const distFolder = core.getInput('dist');
+const { job } = github.context;
 const removeSchema = (url) => {
     const regex = /^https?:\/\//;
     return url.replace(regex, '');
@@ -525,7 +527,7 @@ const vercelAssignAlias = (deploymentUrlVercel, aliasUrl) => __awaiter(void 0, v
         'alias',
         'set',
         deploymentUrlVercel,
-        (0, exports.removeSchema)(aliasUrl),
+        `${job}-${aliasUrl}`,
     ];
     if (workingDirectory) {
         options = Object.assign(Object.assign({}, options), { cwp: workingDirectory });
