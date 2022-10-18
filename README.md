@@ -1,4 +1,4 @@
-# PR Preview teste
+# PR Preview
 
 [![CI status][github-action-image]][github-action-url]
 
@@ -117,12 +117,15 @@ jobs:
 
 ### Inputs
 
-- `surge_token`: [Getting your Surge token](https://surge.sh/help/integrating-with-circleci).
-- `github_token`: `secrets.GITHUB_TOKEN`.
-- `build`: build scripts to run before deploy.
-- `dist`: dist folder deployed to [surge.sh](https://surge.sh/).
-- `failOnError`: Set `failed` if a deployment throws error, defaults to `false`.
-- `teardown`: Determines if the preview instance will be torn down on PR close, defaults to `false`.
+- `surge_token`: [Getting your Surge token](https://surge.sh/help/integrating-with-circleci)
+- `vercel_token`: [Getting your Vercel token](https://vercel.com/account/tokens), it's optional
+- `github_token`: `secrets.GITHUB_TOKEN`
+- `preview_url`: Ex: `dev-{{repoName}}-pr{{prNumber}}`, defaults to `{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}`
+- `preview_path`: Ex: `/my/path/`, defaults to `/`
+- `build`: build scripts to run before deploy
+- `dist`: Dist folder to be deployed
+- `failOnError`: Set `failed` if a deployment throws error, defaults to `false`
+- `teardown`: Determines if the preview instance will be torn down on PR close, defaults to `false`
 
 ### Outputs
 
