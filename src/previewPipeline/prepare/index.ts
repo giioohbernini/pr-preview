@@ -27,6 +27,8 @@ export default function prepare({
 	const gitCommitSha = getGitCommitSha()
 	core.debug(JSON.stringify(github.context.repo, null, 2))
 
+	core.info('Finalizing the initialization of the variables.')
+
 	return {
 		surgeToken,
 		previewUrl,

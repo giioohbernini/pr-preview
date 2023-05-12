@@ -471,6 +471,7 @@ function prepare({ getPullRequestNumber, getGitCommitSha, }) {
     core.debug(`payload.after: ${payload.pull_request}`);
     const gitCommitSha = getGitCommitSha();
     core.debug(JSON.stringify(github.context.repo, null, 2));
+    core.info('Finalizing the initialization of the variables.');
     return {
         surgeToken,
         previewUrl,
