@@ -1025,10 +1025,10 @@
   resolved "https://registry.yarnpkg.com/@vercel/hydrogen/-/hydrogen-0.0.17.tgz#240637418a610f7bf82e80c95cb30c82b314ccd6"
   integrity sha512-MiMPDWiivucJXtwDinnOkC1GupJObAUXgQcBSMhzNJgBHrjV/snd3Q37eOntc/aPUyaA3yKZLFRhS4nalnmwkw==
 
-"@vercel/ncc@^0.29.2":
-  version "0.29.2"
-  resolved "https://registry.yarnpkg.com/@vercel/ncc/-/ncc-0.29.2.tgz#29a35d21b03267a538b536168af766f4270ae8f4"
-  integrity sha512-eUxibZD92k+rY0oZJFZooGqdVpGkDrrHlUhj9UAWrtoyXCGmNOWC1Kcr2KPrZoHRSlWwHOcRnkn2nGT+aHY2KA==
+"@vercel/ncc@^0.36.1":
+  version "0.36.1"
+  resolved "https://registry.yarnpkg.com/@vercel/ncc/-/ncc-0.36.1.tgz#d4c01fdbbe909d128d1bf11c7f8b5431654c5b95"
+  integrity sha512-S4cL7Taa9yb5qbv+6wLgiKVZ03Qfkc4jGRuiUQMQ8HGBD5pcNRnHeYM33zBvJE4/zJGjJJ8GScB+WmTsn9mORw==
 
 "@vercel/next@3.1.24":
   version "3.1.24"
