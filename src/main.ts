@@ -8,6 +8,7 @@ import {
 	vercelRemoveProjectDeploy,
 	removeSchema,
 } from './tenants/vercel'
+import prepare from './previewPipeline/prepare'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -133,20 +134,17 @@ async function fail(err: Error) {
 }
 
 async function main() {
-	const surgeToken = core.getInput('surge_token')
-	const previewUrl = core.getInput('preview_url')
-	const previewPath = core.getInput('preview_path')
-	const distFolder = core.getInput('dist')
-	const teardown =
-		core.getInput('teardown')?.toString().toLowerCase() === 'true'
-	const prNumber = await getPullRequestNumber()
-	core.debug('github.context')
-	core.debug(JSON.stringify(github.context, null, 2))
-	const { job, payload } = github.context
-	core.debug(`payload.after: ${payload.after}`)
-	core.debug(`payload.after: ${payload.pull_request}`)
-	const gitCommitSha = getGitCommitSha()
-	core.debug(JSON.stringify(github.context.repo, null, 2))
+	const {
+		surgeToken,
+		previewUrl,
+		previewPath,
+		distFolder,
+		teardown,
+		prNumber,
+		jobContext,
+		payloadContext,
+		gitCommitSha,
+	} = prepare({ getPullRequestNumber, getGitCommitSha })
 
 	if (!prNumber) {
 		core.info(`😢 No related PR found, skip it.`)
@@ -159,7 +157,7 @@ async function main() {
 	const url = previewUrl
 		.replace('{{repoOwner}}', repoOwner)
 		.replace('{{repoName}}', repoName)
-		.replace('{{job}}', job)
+		.replace('{{job}}', jobContext)
 		.replace('{{prNumber}}', `${prNumber}`)
 		.concat('.surge.sh')
 
@@ -170,7 +168,7 @@ async function main() {
 	const buildingLogUrl = await generateLogUrl()
 
 	core.debug(`teardown enabled?: ${teardown}`)
-	core.debug(`event action?: ${payload.action}`)
+	core.debug(`event action?: ${payloadContext.action}`)
 
 	// Vercel
 	core.info('Init config vercel')
@@ -178,7 +176,7 @@ async function main() {
 	let deploymentUrlVercel = ''
 	// Vercel
 
-	if (teardown && payload.action === 'closed') {
+	if (teardown && payloadContext.action === 'closed') {
 		try {
 			core.info(`Teardown: ${url}`)
 			core.setSecret(surgeToken)
@@ -202,6 +200,7 @@ async function main() {
 			return await fail(err)
 		}
 	}
+
 	const deployingImage = formatImage({
 		buildingLogUrl,
 		imageUrl:
