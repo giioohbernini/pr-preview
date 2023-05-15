@@ -144,7 +144,7 @@ async function main() {
 		jobContext,
 		payloadContext,
 		gitCommitSha,
-	} = (await prepare({ getPullRequestNumber, getGitCommitSha })).factory()
+	} = await prepare({ getPullRequestNumber, getGitCommitSha })
 
 	if (!prNumber) {
 		core.info(`😢 No related PR found, skip it.`)
