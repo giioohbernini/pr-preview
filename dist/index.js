@@ -206,6 +206,7 @@ const commentToPullRequest_1 = __nccwpck_require__(1393);
 const helpers_1 = __nccwpck_require__(5008);
 const vercel_1 = __nccwpck_require__(403);
 const prepare_1 = __importDefault(__nccwpck_require__(6901));
+const build_1 = __importDefault(__nccwpck_require__(2577));
 function getGitCommitSha() {
     var _a, _b, _c;
     const { payload } = github.context;
@@ -315,36 +316,37 @@ function fail(err) {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { surgeToken, previewUrl, previewPath, distFolder, teardown, prNumber, jobContext, payloadContext, gitCommitSha, } = (yield (0, prepare_1.default)({ getPullRequestNumber, getGitCommitSha })).factory();
+        const { surgeToken, previewUrl, previewPath, distFolder, teardown, prNumber, jobContext, payloadContext, gitCommitSha, vercelToken, } = yield (0, prepare_1.default)({ getPullRequestNumber, getGitCommitSha });
         if (!prNumber) {
             core.info(`😢 No related PR found, skip it.`);
             return;
         }
         core.info(`Find PR number: ${prNumber}`);
-        const repoOwner = github.context.repo.owner.replace(/\./g, '-');
-        const repoName = github.context.repo.repo.replace(/\./g, '-');
-        const url = previewUrl
-            .replace('{{repoOwner}}', repoOwner)
-            .replace('{{repoName}}', repoName)
-            .replace('{{job}}', jobContext)
-            .replace('{{prNumber}}', `${prNumber}`)
-            .concat('.surge.sh');
-        const outputUrl = url.concat(previewPath);
-        core.setOutput('preview_url', outputUrl);
-        const buildingLogUrl = yield generateLogUrl();
-        core.debug(`teardown enabled?: ${teardown}`);
-        core.debug(`event action?: ${payloadContext.action}`);
+        const { mountedPreviewRrl, outputUrl, buildingLogUrl } = yield (0, build_1.default)({
+            previewUrl,
+            jobContext,
+            prNumber,
+            previewPath,
+            generateLogUrl,
+            teardown,
+            payloadContext,
+        });
         // Vercel
         core.info('Init config vercel');
-        const vercelToken = core.getInput('vercel_token');
         let deploymentUrlVercel = '';
         // Vercel
         if (teardown && payloadContext.action === 'closed') {
             try {
-                core.info(`Teardown: ${url}`);
+                core.info(`Teardown: ${mountedPreviewRrl}`);
                 core.setSecret(surgeToken);
                 yield (0, helpers_1.execSurgeCommand)({
-                    command: ['surge', 'teardown', url, `--token`, surgeToken],
+                    command: [
+                        'surge',
+                        'teardown',
+                        mountedPreviewRrl,
+                        `--token`,
+                        surgeToken,
+                    ],
                 });
                 const image = (0, helpers_1.formatImage)({
                     buildingLogUrl,
@@ -379,7 +381,7 @@ function main() {
             }
             const duration = (Date.now() - startTime) / 1000;
             core.info(`Build time: ${duration} seconds`);
-            core.info(`Deploy to ${url}`);
+            core.info(`Deploy to ${mountedPreviewRrl}`);
             core.setSecret(surgeToken);
             const image = (0, helpers_1.formatImage)({
                 buildingLogUrl,
@@ -391,7 +393,13 @@ function main() {
             }
             // Vercel
             yield (0, helpers_1.execSurgeCommand)({
-                command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
+                command: [
+                    'surge',
+                    `./${distFolder}`,
+                    mountedPreviewRrl,
+                    `--token`,
+                    surgeToken,
+                ],
             });
             yield comment(`
 			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
@@ -425,6 +433,67 @@ main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
     core.info('main error');
     yield fail(err);
 }));
+
+
+/***/ }),
+
+/***/ 2577:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const build = ({ previewUrl, jobContext, prNumber, previewPath, generateLogUrl, teardown, payloadContext, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const repoOwner = github.context.repo.owner.replace(/\./g, '-');
+    const repoName = github.context.repo.repo.replace(/\./g, '-');
+    const mountedPreviewRrl = previewUrl
+        .replace('{{repoOwner}}', repoOwner)
+        .replace('{{repoName}}', repoName)
+        .replace('{{job}}', jobContext)
+        .replace('{{prNumber}}', `${prNumber}`)
+        .concat('.surge.sh');
+    const outputUrl = mountedPreviewRrl.concat(previewPath);
+    core.setOutput('preview_url', outputUrl);
+    const buildingLogUrl = yield generateLogUrl();
+    core.debug(`teardown enabled?: ${teardown}`);
+    core.debug(`event action?: ${payloadContext.action}`);
+    return {
+        mountedPreviewRrl,
+        outputUrl,
+        buildingLogUrl,
+    };
+});
+exports["default"] = build;
 
 
 /***/ }),
@@ -480,21 +549,19 @@ const prepare = ({ getPullRequestNumber, getGitCommitSha, }) => __awaiter(void 0
     core.debug(`payload.after: ${payload.pull_request}`);
     const gitCommitSha = getGitCommitSha();
     core.debug(JSON.stringify(github.context.repo, null, 2));
+    const vercelToken = core.getInput('vercel_token');
     core.info('Finalizing the initialization of the variables.');
     return {
-        factory: () => {
-            return {
-                surgeToken,
-                previewUrl,
-                previewPath,
-                distFolder,
-                teardown,
-                prNumber,
-                jobContext: job,
-                payloadContext: payload,
-                gitCommitSha,
-            };
-        },
+        surgeToken,
+        previewUrl,
+        previewPath,
+        distFolder,
+        teardown,
+        prNumber,
+        jobContext: job,
+        payloadContext: payload,
+        gitCommitSha,
+        vercelToken,
     };
 });
 exports["default"] = prepare;

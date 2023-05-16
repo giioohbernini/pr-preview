@@ -9,6 +9,7 @@ import {
 	removeSchema,
 } from './tenants/vercel'
 import prepare from './previewPipeline/prepare'
+import build from './previewPipeline/build'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -144,6 +145,7 @@ async function main() {
 		jobContext,
 		payloadContext,
 		gitCommitSha,
+		vercelToken,
 	} = await prepare({ getPullRequestNumber, getGitCommitSha })
 
 	if (!prNumber) {
@@ -152,36 +154,33 @@ async function main() {
 	}
 	core.info(`Find PR number: ${prNumber}`)
 
-	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
-	const repoName = github.context.repo.repo.replace(/\./g, '-')
-	const url = previewUrl
-		.replace('{{repoOwner}}', repoOwner)
-		.replace('{{repoName}}', repoName)
-		.replace('{{job}}', jobContext)
-		.replace('{{prNumber}}', `${prNumber}`)
-		.concat('.surge.sh')
-
-	const outputUrl = url.concat(previewPath)
-
-	core.setOutput('preview_url', outputUrl)
-
-	const buildingLogUrl = await generateLogUrl()
-
-	core.debug(`teardown enabled?: ${teardown}`)
-	core.debug(`event action?: ${payloadContext.action}`)
+	const { mountedPreviewRrl, outputUrl, buildingLogUrl } = await build({
+		previewUrl,
+		jobContext,
+		prNumber,
+		previewPath,
+		generateLogUrl,
+		teardown,
+		payloadContext,
+	})
 
 	// Vercel
 	core.info('Init config vercel')
-	const vercelToken = core.getInput('vercel_token')
 	let deploymentUrlVercel = ''
 	// Vercel
 
 	if (teardown && payloadContext.action === 'closed') {
 		try {
-			core.info(`Teardown: ${url}`)
+			core.info(`Teardown: ${mountedPreviewRrl}`)
 			core.setSecret(surgeToken)
 			await execSurgeCommand({
-				command: ['surge', 'teardown', url, `--token`, surgeToken],
+				command: [
+					'surge',
+					'teardown',
+					mountedPreviewRrl,
+					`--token`,
+					surgeToken,
+				],
 			})
 
 			const image = formatImage({
@@ -225,7 +224,7 @@ async function main() {
 		}
 		const duration = (Date.now() - startTime) / 1000
 		core.info(`Build time: ${duration} seconds`)
-		core.info(`Deploy to ${url}`)
+		core.info(`Deploy to ${mountedPreviewRrl}`)
 		core.setSecret(surgeToken)
 		const image = formatImage({
 			buildingLogUrl,
@@ -240,7 +239,13 @@ async function main() {
 		// Vercel
 
 		await execSurgeCommand({
-			command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
+			command: [
+				'surge',
+				`./${distFolder}`,
+				mountedPreviewRrl,
+				`--token`,
+				surgeToken,
+			],
 		})
 
 		await comment(`

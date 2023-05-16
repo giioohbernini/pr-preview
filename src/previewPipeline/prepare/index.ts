@@ -27,6 +27,8 @@ const prepare = async ({
 	const gitCommitSha = getGitCommitSha()
 	core.debug(JSON.stringify(github.context.repo, null, 2))
 
+	const vercelToken = core.getInput('vercel_token')
+
 	core.info('Finalizing the initialization of the variables.')
 
 	return {
@@ -39,6 +41,7 @@ const prepare = async ({
 		jobContext: job,
 		payloadContext: payload,
 		gitCommitSha,
+		vercelToken,
 	}
 }
 
