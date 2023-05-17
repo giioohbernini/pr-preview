@@ -1,15 +1,15 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { exec } from '@actions/exec'
-import { comment as githubComment } from './commentToPullRequest'
-import { execSurgeCommand, formatImage } from './helpers'
+import { comment as githubComment } from './utils/commentToPullRequest'
+import { execSurgeCommand, formatImage } from './utils/helpers'
 import {
 	vercelDeploy,
 	vercelRemoveProjectDeploy,
 	removeSchema,
-} from '../tenants/vercel'
-import prepare from '../previewPipeline/prepare'
-import build from '../previewPipeline/build'
+} from './tenants/vercel'
+import prepare from './previewPipeline/prepare'
+import build from './previewPipeline/build'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
