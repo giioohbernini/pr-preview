@@ -399,7 +399,6 @@ const prepare = ({ getPullRequestNumber, getGitCommitSha, }) => __awaiter(void 0
         jobContext: job,
         payloadContext: payload,
         gitCommitSha,
-        // vercelToken,
         vercelConfig,
     };
 });

@@ -44,7 +44,6 @@ const prepare = async ({
 		jobContext: job,
 		payloadContext: payload,
 		gitCommitSha,
-		// vercelToken,
 		vercelConfig,
 	}
 }
