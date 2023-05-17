@@ -549,7 +549,10 @@ const prepare = ({ getPullRequestNumber, getGitCommitSha, }) => __awaiter(void 0
     core.debug(`payload.after: ${payload.pull_request}`);
     const gitCommitSha = getGitCommitSha();
     core.debug(JSON.stringify(github.context.repo, null, 2));
-    const vercelToken = core.getInput('vercel_token');
+    const vercelConfig = {
+        vercelToken: core.getInput('vercel_token'),
+        deploymentUrlVercel: '',
+    };
     core.info('Finalizing the initialization of the variables.');
     return {
         surgeToken,
@@ -561,7 +564,8 @@ const prepare = ({ getPullRequestNumber, getGitCommitSha, }) => __awaiter(void 0
         jobContext: job,
         payloadContext: payload,
         gitCommitSha,
-        vercelToken,
+        // vercelToken,
+        vercelConfig,
     };
 });
 exports["default"] = prepare;

@@ -7,9 +7,9 @@ import {
 	vercelDeploy,
 	vercelRemoveProjectDeploy,
 	removeSchema,
-} from './tenants/vercel'
-import prepare from './previewPipeline/prepare'
-import build from './previewPipeline/build'
+} from '../tenants/vercel'
+import prepare from '../previewPipeline/prepare'
+import build from '../previewPipeline/build'
 
 function getGitCommitSha(): string {
 	const { payload } = github.context
@@ -145,14 +145,14 @@ async function main() {
 		jobContext,
 		payloadContext,
 		gitCommitSha,
-		vercelToken,
+		vercelConfig,
 	} = await prepare({ getPullRequestNumber, getGitCommitSha })
+	let { vercelToken, deploymentUrlVercel } = vercelConfig
 
 	if (!prNumber) {
 		core.info(`😢 No related PR found, skip it.`)
 		return
 	}
-	core.info(`Find PR number: ${prNumber}`)
 
 	const { mountedPreviewRrl, outputUrl, buildingLogUrl } = await build({
 		previewUrl,
@@ -163,11 +163,6 @@ async function main() {
 		teardown,
 		payloadContext,
 	})
-
-	// Vercel
-	core.info('Init config vercel')
-	let deploymentUrlVercel = ''
-	// Vercel
 
 	if (teardown && payloadContext.action === 'closed') {
 		try {
