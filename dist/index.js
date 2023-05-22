@@ -1,7 +1,339 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 1667:
+/***/ 4454:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const __1 = __nccwpck_require__(9024);
+const commentToPullRequest_1 = __nccwpck_require__(3847);
+function comment(message) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const { job, payload } = github.context;
+        const prOwner = (_a = payload.pull_request) === null || _a === void 0 ? void 0 : _a.owner;
+        const fromForkedRepo = prOwner === github.context.repo.owner;
+        const token = core.getInput('github_token', { required: true });
+        const octokit = github.getOctokit(token);
+        const prNumber = yield (0, __1.getPullRequestNumber)();
+        if (fromForkedRepo) {
+            return;
+        }
+        (0, commentToPullRequest_1.comment)({
+            repo: github.context.repo,
+            number: Number(prNumber),
+            message,
+            octokit,
+            header: job,
+        });
+    });
+}
+exports["default"] = comment;
+
+
+/***/ }),
+
+/***/ 5766:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const __1 = __nccwpck_require__(9024);
+const formatImage_1 = __nccwpck_require__(8781);
+function fail(err) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.info('error message:');
+        core.info(JSON.stringify(err, null, 2));
+        const repoOwner = github.context.repo.owner;
+        const repoName = github.context.repo.repo;
+        const repoId = github.context.runId;
+        const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`;
+        const buildingLogUrl = yield (0, __1.generateLogUrl)();
+        const gitCommitSha = (0, __1.getGitCommitSha)();
+        const image = (0, formatImage_1.formatImage)({
+            buildingLogUrl,
+            imageUrl: 'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
+        });
+        yield (0, __1.comment)(`😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl}) \n ${image}`);
+        const failOnError = !!(core.getInput('failOnError') || process.env.FAIL_ON__ERROR);
+        if (failOnError) {
+            core.setFailed(err.message);
+        }
+    });
+}
+exports["default"] = fail;
+
+
+/***/ }),
+
+/***/ 9679:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const __1 = __nccwpck_require__(9024);
+function generateLogUrl() {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        const token = core.getInput('github_token', { required: true });
+        const octokit = github.getOctokit(token);
+        const { job } = github.context;
+        const gitCommitSha = (0, __1.getGitCommitSha)();
+        let data;
+        try {
+            const result = yield octokit.rest.checks.listForRef({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                ref: gitCommitSha,
+            });
+            data = result.data;
+        }
+        catch (err) {
+            core.info('generateLogUrl error');
+            yield (0, __1.fail)(err);
+            return '';
+        }
+        core.debug(JSON.stringify(data === null || data === void 0 ? void 0 : data.check_runs, null, 2));
+        let checkRunId;
+        if (((_a = data === null || data === void 0 ? void 0 : data.check_runs) === null || _a === void 0 ? void 0 : _a.length) >= 0) {
+            const checkRun = (_b = data === null || data === void 0 ? void 0 : data.check_runs) === null || _b === void 0 ? void 0 : _b.find((item) => item.name === job);
+            checkRunId = checkRun === null || checkRun === void 0 ? void 0 : checkRun.id;
+        }
+        const buildingLogUrl = checkRunId
+            ? `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/runs/${checkRunId}`
+            : `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${github.context.runId}`;
+        return buildingLogUrl;
+    });
+}
+exports["default"] = generateLogUrl;
+
+
+/***/ }),
+
+/***/ 6428:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const github = __importStar(__nccwpck_require__(5438));
+function getGitCommitSha() {
+    var _a, _b, _c;
+    const { payload } = github.context;
+    const gitCommitSha = payload.after ||
+        ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.pull_request) === null || _a === void 0 ? void 0 : _a.head) === null || _b === void 0 ? void 0 : _b.sha) ||
+        ((_c = payload === null || payload === void 0 ? void 0 : payload.workflow_run) === null || _c === void 0 ? void 0 : _c.head_sha);
+    return gitCommitSha;
+}
+exports["default"] = getGitCommitSha;
+
+
+/***/ }),
+
+/***/ 4719:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const __1 = __nccwpck_require__(9024);
+function getPullRequestNumber() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const token = core.getInput('github_token', { required: true });
+        const octokit = github.getOctokit(token);
+        const { payload } = github.context;
+        const gitCommitSha = (0, __1.getGitCommitSha)();
+        const prNumberExists = payload.number && payload.pull_request;
+        if (prNumberExists) {
+            return Number(payload.number);
+        }
+        if (!prNumberExists) {
+            const result = yield octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                commit_sha: gitCommitSha,
+            });
+            const pr = result.data.length > 0 && result.data[0];
+            core.debug('listPullRequestsAssociatedWithCommit');
+            core.debug(JSON.stringify(pr, null, 2));
+            const prNumber = pr ? Number(pr.number) : undefined;
+            return prNumber;
+        }
+    });
+}
+exports["default"] = getPullRequestNumber;
+
+
+/***/ }),
+
+/***/ 9024:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.fail = exports.comment = exports.generateLogUrl = exports.getPullRequestNumber = exports.getGitCommitSha = void 0;
+const getGitCommitSha_1 = __importDefault(__nccwpck_require__(6428));
+exports.getGitCommitSha = getGitCommitSha_1.default;
+const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(4719));
+exports.getPullRequestNumber = getPullRequestNumber_1.default;
+const generateLogUrl_1 = __importDefault(__nccwpck_require__(9679));
+exports.generateLogUrl = generateLogUrl_1.default;
+const comment_1 = __importDefault(__nccwpck_require__(4454));
+exports.comment = comment_1.default;
+const fail_1 = __importDefault(__nccwpck_require__(5766));
+exports.fail = fail_1.default;
+
+
+/***/ }),
+
+/***/ 6645:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -54,7 +386,7 @@ exports.deleteComment = deleteComment;
 
 /***/ }),
 
-/***/ 1393:
+/***/ 3847:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -90,7 +422,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.comment = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const comment_1 = __nccwpck_require__(1667);
+const comment_1 = __nccwpck_require__(6645);
 function comment({ repo, number, message, octokit, header, }) {
     return __awaiter(this, void 0, void 0, function* () {
         if (isNaN(number) || number < 1) {
@@ -118,7 +450,7 @@ exports.comment = comment;
 
 /***/ }),
 
-/***/ 5008:
+/***/ 5064:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -133,9 +465,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getCommentFooter = exports.formatImage = exports.execSurgeCommand = void 0;
+exports.execCommand = void 0;
 const exec_1 = __nccwpck_require__(1514);
-const execSurgeCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function* () {
+const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function* () {
     let myOutput = '';
     const options = {
         listeners: {
@@ -149,15 +481,22 @@ const execSurgeCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, fun
         throw new Error(myOutput);
     }
 });
-exports.execSurgeCommand = execSurgeCommand;
+exports.execCommand = execCommand;
+
+
+/***/ }),
+
+/***/ 8781:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.formatImage = void 0;
 const formatImage = ({ buildingLogUrl, imageUrl, }) => {
     return `<a href="${buildingLogUrl}"><img width="300" src="${imageUrl}"></a>`;
 };
 exports.formatImage = formatImage;
-const getCommentFooter = () => {
-    return '<sub>🤖 By [surge-preview](https://github.com/afc163/surge-preview)</sub>';
-};
-exports.getCommentFooter = getCommentFooter;
 
 
 /***/ }),
@@ -200,170 +539,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
-const github = __importStar(__nccwpck_require__(5438));
 const exec_1 = __nccwpck_require__(1514);
-const commentToPullRequest_1 = __nccwpck_require__(1393);
-const helpers_1 = __nccwpck_require__(5008);
+const actions_1 = __nccwpck_require__(9024);
+const execCommand_1 = __nccwpck_require__(5064);
+const formatImage_1 = __nccwpck_require__(8781);
 const vercel_1 = __nccwpck_require__(403);
 const prepare_1 = __importDefault(__nccwpck_require__(6901));
-function getGitCommitSha() {
-    var _a, _b, _c;
-    const { payload } = github.context;
-    const gitCommitSha = payload.after ||
-        ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.pull_request) === null || _a === void 0 ? void 0 : _a.head) === null || _b === void 0 ? void 0 : _b.sha) ||
-        ((_c = payload === null || payload === void 0 ? void 0 : payload.workflow_run) === null || _c === void 0 ? void 0 : _c.head_sha);
-    return gitCommitSha;
-}
-function getPullRequestNumber() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const token = core.getInput('github_token', { required: true });
-        const octokit = github.getOctokit(token);
-        const { payload } = github.context;
-        const gitCommitSha = getGitCommitSha();
-        const prNumberExists = payload.number && payload.pull_request;
-        if (prNumberExists) {
-            return Number(payload.number);
-        }
-        if (!prNumberExists) {
-            const result = yield octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                commit_sha: gitCommitSha,
-            });
-            const pr = result.data.length > 0 && result.data[0];
-            core.debug('listPullRequestsAssociatedWithCommit');
-            core.debug(JSON.stringify(pr, null, 2));
-            const prNumber = pr ? Number(pr.number) : undefined;
-            return prNumber;
-        }
-    });
-}
-function comment(message) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const { job, payload } = github.context;
-        const prOwner = (_a = payload.pull_request) === null || _a === void 0 ? void 0 : _a.owner;
-        const fromForkedRepo = prOwner === github.context.repo.owner;
-        const token = core.getInput('github_token', { required: true });
-        const octokit = github.getOctokit(token);
-        const prNumber = yield getPullRequestNumber();
-        if (fromForkedRepo) {
-            return;
-        }
-        (0, commentToPullRequest_1.comment)({
-            repo: github.context.repo,
-            number: Number(prNumber),
-            message,
-            octokit,
-            header: job,
-        });
-    });
-}
-function generateLogUrl() {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const token = core.getInput('github_token', { required: true });
-        const octokit = github.getOctokit(token);
-        const { job } = github.context;
-        const gitCommitSha = getGitCommitSha();
-        let data;
-        try {
-            const result = yield octokit.rest.checks.listForRef({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                ref: gitCommitSha,
-            });
-            data = result.data;
-        }
-        catch (err) {
-            core.info('generateLogUrl error');
-            yield fail(err);
-            return '';
-        }
-        core.debug(JSON.stringify(data === null || data === void 0 ? void 0 : data.check_runs, null, 2));
-        let checkRunId;
-        if (((_a = data === null || data === void 0 ? void 0 : data.check_runs) === null || _a === void 0 ? void 0 : _a.length) >= 0) {
-            const checkRun = (_b = data === null || data === void 0 ? void 0 : data.check_runs) === null || _b === void 0 ? void 0 : _b.find((item) => item.name === job);
-            checkRunId = checkRun === null || checkRun === void 0 ? void 0 : checkRun.id;
-        }
-        const buildingLogUrl = checkRunId
-            ? `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/runs/${checkRunId}`
-            : `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${github.context.runId}`;
-        return buildingLogUrl;
-    });
-}
-function fail(err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.info('error message:');
-        core.info(JSON.stringify(err, null, 2));
-        const repoOwner = github.context.repo.owner;
-        const repoName = github.context.repo.repo;
-        const repoId = github.context.runId;
-        const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`;
-        const buildingLogUrl = yield generateLogUrl();
-        const gitCommitSha = getGitCommitSha();
-        const image = (0, helpers_1.formatImage)({
-            buildingLogUrl,
-            imageUrl: 'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
-        });
-        yield comment(`😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl}) \n ${image}`);
-        const failOnError = !!(core.getInput('failOnError') || process.env.FAIL_ON__ERROR);
-        if (failOnError) {
-            core.setFailed(err.message);
-        }
-    });
-}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { surgeToken, previewUrl, previewPath, distFolder, teardown, prNumber, jobContext, payloadContext, gitCommitSha, } = (yield (0, prepare_1.default)({ getPullRequestNumber, getGitCommitSha })).factory();
-        if (!prNumber) {
-            core.info(`😢 No related PR found, skip it.`);
-            return;
-        }
-        core.info(`Find PR number: ${prNumber}`);
-        const repoOwner = github.context.repo.owner.replace(/\./g, '-');
-        const repoName = github.context.repo.repo.replace(/\./g, '-');
-        const url = previewUrl
-            .replace('{{repoOwner}}', repoOwner)
-            .replace('{{repoName}}', repoName)
-            .replace('{{job}}', jobContext)
-            .replace('{{prNumber}}', `${prNumber}`)
-            .concat('.surge.sh');
-        const outputUrl = url.concat(previewPath);
-        core.setOutput('preview_url', outputUrl);
-        const buildingLogUrl = yield generateLogUrl();
-        core.debug(`teardown enabled?: ${teardown}`);
-        core.debug(`event action?: ${payloadContext.action}`);
-        // Vercel
-        core.info('Init config vercel');
-        const vercelToken = core.getInput('vercel_token');
-        let deploymentUrlVercel = '';
-        // Vercel
+        const { surgeToken, previewPath, distFolder, teardown, payloadContext, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, configVercel, } = yield (0, prepare_1.default)();
+        let { vercelToken, deploymentUrlVercel } = configVercel;
         if (teardown && payloadContext.action === 'closed') {
             try {
-                core.info(`Teardown: ${url}`);
+                core.info(`Teardown: ${mountedUrl}`);
                 core.setSecret(surgeToken);
-                yield (0, helpers_1.execSurgeCommand)({
-                    command: ['surge', 'teardown', url, `--token`, surgeToken],
+                yield (0, execCommand_1.execCommand)({
+                    command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
                 });
-                const image = (0, helpers_1.formatImage)({
+                const image = (0, formatImage_1.formatImage)({
                     buildingLogUrl,
                     imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
                 });
                 if (vercelToken)
                     yield (0, vercel_1.vercelRemoveProjectDeploy)(deploymentUrlVercel);
-                return yield comment(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
+                return yield (0, actions_1.comment)(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
             }
             catch (err) {
                 core.info('teardown error');
-                return yield fail(err);
+                return yield (0, actions_1.fail)(err);
             }
         }
-        const deployingImage = (0, helpers_1.formatImage)({
+        const deployingImage = (0, formatImage_1.formatImage)({
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
         });
-        yield comment(`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`);
+        yield (0, actions_1.comment)(`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`);
         const startTime = Date.now();
         try {
             if (!core.getInput('build')) {
@@ -379,9 +589,9 @@ function main() {
             }
             const duration = (Date.now() - startTime) / 1000;
             core.info(`Build time: ${duration} seconds`);
-            core.info(`Deploy to ${url}`);
+            core.info(`Deploy to ${mountedUrl}`);
             core.setSecret(surgeToken);
-            const image = (0, helpers_1.formatImage)({
+            const image = (0, formatImage_1.formatImage)({
                 buildingLogUrl,
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
@@ -390,10 +600,10 @@ function main() {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
             }
             // Vercel
-            yield (0, helpers_1.execSurgeCommand)({
-                command: ['surge', `./${distFolder}`, url, `--token`, surgeToken],
+            yield (0, execCommand_1.execCommand)({
+                command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
             });
-            yield comment(`
+            yield (0, actions_1.comment)(`
 			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
 		
 			<table>
@@ -416,14 +626,14 @@ function main() {
         }
         catch (err) {
             core.info(`run command error ${err}`);
-            yield fail(err);
+            yield (0, actions_1.fail)(err);
         }
     });
 }
 // eslint-disable-next-line github/no-then
 main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
     core.info('main error');
-    yield fail(err);
+    yield (0, actions_1.fail)(err);
 }));
 
 
@@ -465,36 +675,60 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const prepare = ({ getPullRequestNumber, getGitCommitSha, }) => __awaiter(void 0, void 0, void 0, function* () {
+const actions_1 = __nccwpck_require__(9024);
+const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, function* () {
+    const prNumber = yield (0, actions_1.getPullRequestNumber)();
+    if (!prNumber) {
+        core.info(`😢 No related PR found, skip it.`);
+        return;
+    }
+    return prNumber;
+});
+const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const surgeToken = core.getInput('surge_token');
     const previewUrl = core.getInput('preview_url');
     const previewPath = core.getInput('preview_path');
     const distFolder = core.getInput('dist');
     const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
-    const prNumber = yield getPullRequestNumber();
+    const prNumber = yield checkingPullRequestNumber();
+    const { job, payload } = github.context;
+    const gitCommitSha = (0, actions_1.getGitCommitSha)();
+    const repoOwner = github.context.repo.owner.replace(/\./g, '-');
+    const repoName = github.context.repo.repo.replace(/\./g, '-');
+    const mountedUrl = previewUrl
+        .replace('{{repoOwner}}', repoOwner)
+        .replace('{{repoName}}', repoName)
+        .replace('{{job}}', job)
+        .replace('{{prNumber}}', `${prNumber}`)
+        .concat('.surge.sh');
+    const outputUrl = mountedUrl.concat(previewPath);
+    const buildingLogUrl = yield (0, actions_1.generateLogUrl)();
+    const configVercel = {
+        vercelToken: core.getInput('vercel_token'),
+        deploymentUrlVercel: '',
+    };
+    core.setOutput('preview_url', outputUrl);
     core.debug('github.context');
     core.debug(JSON.stringify(github.context, null, 2));
-    const { job, payload } = github.context;
+    core.debug(JSON.stringify(github.context.repo, null, 2));
     core.debug(`payload.after: ${payload.after}`);
     core.debug(`payload.after: ${payload.pull_request}`);
-    const gitCommitSha = getGitCommitSha();
-    core.debug(JSON.stringify(github.context.repo, null, 2));
+    core.debug(`event action?: ${payload.action}`);
+    core.debug(`teardown enabled?: ${teardown}`);
     core.info('Finalizing the initialization of the variables.');
+    core.info(`Find PR number: ${prNumber}`);
     return {
-        factory: () => {
-            return {
-                surgeToken,
-                previewUrl,
-                previewPath,
-                distFolder,
-                teardown,
-                prNumber,
-                jobContext: job,
-                payloadContext: payload,
-                gitCommitSha,
-            };
-        },
+        surgeToken,
+        previewPath,
+        distFolder,
+        teardown,
+        payloadContext: payload,
+        gitCommitSha,
+        mountedUrl,
+        outputUrl,
+        buildingLogUrl,
+        configVercel,
     };
 });
 exports["default"] = prepare;
