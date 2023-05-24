@@ -38,7 +38,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const __1 = __nccwpck_require__(9024);
-const commentToPullRequest_1 = __nccwpck_require__(3847);
+const helpers_1 = __nccwpck_require__(5008);
 function comment(message) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -51,7 +51,7 @@ function comment(message) {
         if (fromForkedRepo) {
             return;
         }
-        (0, commentToPullRequest_1.comment)({
+        (0, helpers_1.comment)({
             repo: github.context.repo,
             number: Number(prNumber),
             message,
@@ -102,7 +102,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const __1 = __nccwpck_require__(9024);
-const formatImage_1 = __nccwpck_require__(8781);
+const helpers_1 = __nccwpck_require__(5008);
 function fail(err) {
     return __awaiter(this, void 0, void 0, function* () {
         core.info('error message:');
@@ -113,7 +113,7 @@ function fail(err) {
         const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`;
         const buildingLogUrl = yield (0, __1.generateLogUrl)();
         const gitCommitSha = (0, __1.getGitCommitSha)();
-        const image = (0, formatImage_1.formatImage)({
+        const image = (0, helpers_1.formatImage)({
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
         });
@@ -333,124 +333,7 @@ exports.fail = fail_1.default;
 
 /***/ }),
 
-/***/ 6645:
-/***/ (function(__unused_webpack_module, exports) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deleteComment = exports.createComment = exports.updateComment = exports.findPreviousComment = void 0;
-function headerComment(header) {
-    return `<!-- Sticky Pull Request Comment${header || ''} -->`;
-}
-function findPreviousComment(octokit, repo, issue_number, header) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { data: comments } = yield octokit.rest.issues.listComments(Object.assign(Object.assign({}, repo), { issue_number }));
-        const h = headerComment(header);
-        return comments.find((comment) => { var _a; return (_a = comment.body) === null || _a === void 0 ? void 0 : _a.includes(h); });
-    });
-}
-exports.findPreviousComment = findPreviousComment;
-function updateComment(octokit, repo, comment_id, body, header, previousBody) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.rest.issues.updateComment(Object.assign(Object.assign({}, repo), { comment_id, body: previousBody
-                ? `${previousBody}\n${body}`
-                : `${body}\n${headerComment(header)}` }));
-    });
-}
-exports.updateComment = updateComment;
-function createComment(octokit, repo, issue_number, body, header, previousBody) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.rest.issues.createComment(Object.assign(Object.assign({}, repo), { issue_number, body: previousBody
-                ? `${previousBody}\n${body}`
-                : `${body}\n${headerComment(header)}` }));
-    });
-}
-exports.createComment = createComment;
-function deleteComment(octokit, repo, comment_id) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.rest.issues.deleteComment(Object.assign(Object.assign({}, repo), { comment_id }));
-    });
-}
-exports.deleteComment = deleteComment;
-
-
-/***/ }),
-
-/***/ 3847:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.comment = void 0;
-const core = __importStar(__nccwpck_require__(2186));
-const comment_1 = __nccwpck_require__(6645);
-function comment({ repo, number, message, octokit, header, }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (isNaN(number) || number < 1) {
-            core.info('no numbers given: skip step');
-            return;
-        }
-        const prefixedHeader = `: Surge Preview ${header}'`;
-        const body = message.replace(/\t/g, '');
-        try {
-            const previous = yield (0, comment_1.findPreviousComment)(octokit, repo, number, prefixedHeader);
-            if (previous) {
-                yield (0, comment_1.updateComment)(octokit, repo, previous.id, body, prefixedHeader, false);
-            }
-            else {
-                yield (0, comment_1.createComment)(octokit, repo, number, body, prefixedHeader);
-            }
-        }
-        catch (err) {
-            core.setFailed(err.body);
-        }
-    });
-}
-exports.comment = comment;
-
-
-/***/ }),
-
-/***/ 5064:
+/***/ 5008:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -465,9 +348,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.execCommand = void 0;
+exports.getCommentFooter = exports.formatImage = exports.execSurgeCommand = void 0;
 const exec_1 = __nccwpck_require__(1514);
-const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function* () {
+const execSurgeCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function* () {
     let myOutput = '';
     const options = {
         listeners: {
@@ -481,22 +364,15 @@ const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function
         throw new Error(myOutput);
     }
 });
-exports.execCommand = execCommand;
-
-
-/***/ }),
-
-/***/ 8781:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.formatImage = void 0;
+exports.execSurgeCommand = execSurgeCommand;
 const formatImage = ({ buildingLogUrl, imageUrl, }) => {
     return `<a href="${buildingLogUrl}"><img width="300" src="${imageUrl}"></a>`;
 };
 exports.formatImage = formatImage;
+const getCommentFooter = () => {
+    return '<sub>🤖 By [surge-preview](https://github.com/afc163/surge-preview)</sub>';
+};
+exports.getCommentFooter = getCommentFooter;
 
 
 /***/ }),
@@ -541,8 +417,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const actions_1 = __nccwpck_require__(9024);
-const execCommand_1 = __nccwpck_require__(5064);
-const formatImage_1 = __nccwpck_require__(8781);
+const helpers_1 = __nccwpck_require__(5008);
 const vercel_1 = __nccwpck_require__(403);
 const prepare_1 = __importDefault(__nccwpck_require__(6901));
 function main() {
@@ -553,10 +428,10 @@ function main() {
             try {
                 core.info(`Teardown: ${mountedUrl}`);
                 core.setSecret(surgeToken);
-                yield (0, execCommand_1.execCommand)({
+                yield (0, helpers_1.execCommand)({
                     command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
                 });
-                const image = (0, formatImage_1.formatImage)({
+                const image = (0, helpers_1.formatImage)({
                     buildingLogUrl,
                     imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
                 });
@@ -569,7 +444,7 @@ function main() {
                 return yield (0, actions_1.fail)(err);
             }
         }
-        const deployingImage = (0, formatImage_1.formatImage)({
+        const deployingImage = (0, helpers_1.formatImage)({
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
         });
@@ -591,7 +466,7 @@ function main() {
             core.info(`Build time: ${duration} seconds`);
             core.info(`Deploy to ${mountedUrl}`);
             core.setSecret(surgeToken);
-            const image = (0, formatImage_1.formatImage)({
+            const image = (0, helpers_1.formatImage)({
                 buildingLogUrl,
                 imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
@@ -600,7 +475,7 @@ function main() {
                 deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
             }
             // Vercel
-            yield (0, execCommand_1.execCommand)({
+            yield (0, helpers_1.execCommand)({
                 command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
             });
             yield (0, actions_1.comment)(`
