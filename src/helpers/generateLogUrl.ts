@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { getGitCommitSha } from '..'
-import fail from '../../helpers/fail'
+import { getGitCommitSha } from '../actions'
+import fail from './fail'
 
 export default async function generateLogUrl(): Promise<string> {
 	const token = core.getInput('github_token', { required: true })
