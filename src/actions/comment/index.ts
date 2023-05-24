@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { getPullRequestNumber } from '..'
-import { commentToPullRequest } from '../../helpers'
+import { commentToPullRequest } from '../../helpers/commentToPullRequest'
 
 export default async function comment(message: string): Promise<void> {
 	const { job, payload } = github.context

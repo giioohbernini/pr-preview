@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import type { Repo, Octokit } from './types'
+import type { Repo, Octokit } from '../types'
 
 interface CommentConfig {
 	repo: Repo
