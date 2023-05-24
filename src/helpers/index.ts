@@ -1,5 +1,3 @@
-import { commentToPullRequest } from './commentToPullRequest'
-import { execCommand } from './execCommand'
-import { formatImage } from './formatImage'
-
-export { commentToPullRequest, execCommand, formatImage }
+export * from './commentToPullRequest'
+export * from './execCommand'
+export * from './formatImage'
