@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { getPullRequestNumber } from '../actions/'
+import getPullRequestNumber from './getPullRequestNumber'
 import { commentToPullRequest } from './commentToPullRequest'
 
 export default async function comment(message: string): Promise<void> {

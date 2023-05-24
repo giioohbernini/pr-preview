@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import generateLogUrl from './generateLogUrl'
-import getGitCommitSha from '../actions/getGitCommitSha'
+import getGitCommitSha from './getGitCommitSha'
 import comment from './comment'
 import { formatImage } from './formatImage'
 

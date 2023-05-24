@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { getGitCommitSha } from '../actions'
+import getGitCommitSha from './getGitCommitSha'
 import fail from './fail'
 
 export default async function generateLogUrl(): Promise<string> {

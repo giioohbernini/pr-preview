@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { getGitCommitSha } from '..'
+import getGitCommitSha from './getGitCommitSha'
 
 export default async function getPullRequestNumber(): Promise<
 	number | undefined

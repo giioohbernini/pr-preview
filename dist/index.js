@@ -1,129 +1,6 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 6428:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const github = __importStar(__nccwpck_require__(5438));
-function getGitCommitSha() {
-    var _a, _b, _c;
-    const { payload } = github.context;
-    const gitCommitSha = payload.after ||
-        ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.pull_request) === null || _a === void 0 ? void 0 : _a.head) === null || _b === void 0 ? void 0 : _b.sha) ||
-        ((_c = payload === null || payload === void 0 ? void 0 : payload.workflow_run) === null || _c === void 0 ? void 0 : _c.head_sha);
-    return gitCommitSha;
-}
-exports["default"] = getGitCommitSha;
-
-
-/***/ }),
-
-/***/ 4719:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
-const github = __importStar(__nccwpck_require__(5438));
-const __1 = __nccwpck_require__(9024);
-function getPullRequestNumber() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const token = core.getInput('github_token', { required: true });
-        const octokit = github.getOctokit(token);
-        const { payload } = github.context;
-        const gitCommitSha = (0, __1.getGitCommitSha)();
-        const prNumberExists = payload.number && payload.pull_request;
-        if (prNumberExists) {
-            return Number(payload.number);
-        }
-        if (!prNumberExists) {
-            const result = yield octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                commit_sha: gitCommitSha,
-            });
-            const pr = result.data.length > 0 && result.data[0];
-            core.debug('listPullRequestsAssociatedWithCommit');
-            core.debug(JSON.stringify(pr, null, 2));
-            const prNumber = pr ? Number(pr.number) : undefined;
-            return prNumber;
-        }
-    });
-}
-exports["default"] = getPullRequestNumber;
-
-
-/***/ }),
-
-/***/ 9024:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getPullRequestNumber = exports.getGitCommitSha = void 0;
-const getGitCommitSha_1 = __importDefault(__nccwpck_require__(6428));
-exports.getGitCommitSha = getGitCommitSha_1.default;
-const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(4719));
-exports.getPullRequestNumber = getPullRequestNumber_1.default;
-
-
-/***/ }),
-
 /***/ 6645:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -157,10 +34,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const actions_1 = __nccwpck_require__(9024);
+const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(8350));
 const commentToPullRequest_1 = __nccwpck_require__(3847);
 function comment(message) {
     var _a;
@@ -170,7 +50,7 @@ function comment(message) {
         const fromForkedRepo = prOwner === github.context.repo.owner;
         const token = core.getInput('github_token', { required: true });
         const octokit = github.getOctokit(token);
-        const prNumber = yield (0, actions_1.getPullRequestNumber)();
+        const prNumber = yield (0, getPullRequestNumber_1.default)();
         if (fromForkedRepo) {
             return;
         }
@@ -351,7 +231,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const generateLogUrl_1 = __importDefault(__nccwpck_require__(2586));
-const getGitCommitSha_1 = __importDefault(__nccwpck_require__(6428));
+const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const formatImage_1 = __nccwpck_require__(8781);
 function fail(err) {
@@ -434,7 +314,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const actions_1 = __nccwpck_require__(9024);
+const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
 function generateLogUrl() {
     var _a, _b;
@@ -442,7 +322,7 @@ function generateLogUrl() {
         const token = core.getInput('github_token', { required: true });
         const octokit = github.getOctokit(token);
         const { job } = github.context;
-        const gitCommitSha = (0, actions_1.getGitCommitSha)();
+        const gitCommitSha = (0, getGitCommitSha_1.default)();
         let data;
         try {
             const result = yield octokit.rest.checks.listForRef({
@@ -470,6 +350,114 @@ function generateLogUrl() {
     });
 }
 exports["default"] = generateLogUrl;
+
+
+/***/ }),
+
+/***/ 2557:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const github = __importStar(__nccwpck_require__(5438));
+function getGitCommitSha() {
+    var _a, _b, _c;
+    const { payload } = github.context;
+    const gitCommitSha = payload.after ||
+        ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.pull_request) === null || _a === void 0 ? void 0 : _a.head) === null || _b === void 0 ? void 0 : _b.sha) ||
+        ((_c = payload === null || payload === void 0 ? void 0 : payload.workflow_run) === null || _c === void 0 ? void 0 : _c.head_sha);
+    return gitCommitSha;
+}
+exports["default"] = getGitCommitSha;
+
+
+/***/ }),
+
+/***/ 8350:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
+function getPullRequestNumber() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const token = core.getInput('github_token', { required: true });
+        const octokit = github.getOctokit(token);
+        const { payload } = github.context;
+        const gitCommitSha = (0, getGitCommitSha_1.default)();
+        const prNumberExists = payload.number && payload.pull_request;
+        if (prNumberExists) {
+            return Number(payload.number);
+        }
+        if (!prNumberExists) {
+            const result = yield octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                commit_sha: gitCommitSha,
+            });
+            const pr = result.data.length > 0 && result.data[0];
+            core.debug('listPullRequestsAssociatedWithCommit');
+            core.debug(JSON.stringify(pr, null, 2));
+            const prNumber = pr ? Number(pr.number) : undefined;
+            return prNumber;
+        }
+    });
+}
+exports["default"] = getPullRequestNumber;
 
 
 /***/ }),
@@ -653,9 +641,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const generateLogUrl_1 = __importDefault(__nccwpck_require__(2586));
-const actions_1 = __nccwpck_require__(9024);
+const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
+const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(8350));
 const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, function* () {
-    const prNumber = yield (0, actions_1.getPullRequestNumber)();
+    const prNumber = yield (0, getPullRequestNumber_1.default)();
     if (!prNumber) {
         core.info(`😢 No related PR found, skip it.`);
         return;
@@ -671,7 +660,7 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
     const prNumber = yield checkingPullRequestNumber();
     const { job, payload } = github.context;
-    const gitCommitSha = (0, actions_1.getGitCommitSha)();
+    const gitCommitSha = (0, getGitCommitSha_1.default)();
     const repoOwner = github.context.repo.owner.replace(/\./g, '-');
     const repoName = github.context.repo.repo.replace(/\./g, '-');
     const mountedUrl = previewUrl

@@ -2,7 +2,8 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { WebhookPayload } from '@actions/github/lib/interfaces'
 import generateLogUrl from '../../helpers/generateLogUrl'
-import { getPullRequestNumber, getGitCommitSha } from '../../actions'
+import getGitCommitSha from '../../helpers/getGitCommitSha'
+import getPullRequestNumber from '../../helpers/getPullRequestNumber'
 
 interface ReturnPrepare {
 	surgeToken: string
