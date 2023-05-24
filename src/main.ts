@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import { exec } from '@actions/exec'
-import { comment, fail } from './actions'
+import comment from './helpers/comment'
+import fail from './helpers/fail'
 import { execCommand } from './helpers/execCommand'
 import { formatImage } from './helpers/formatImage'
 import {
@@ -8,7 +9,7 @@ import {
 	vercelRemoveProjectDeploy,
 	removeSchema,
 } from './tenants/vercel'
-import prepare from './previewPipeline/prepare'
+import prepare from './pipeline/prepare'
 
 async function main() {
 	const {

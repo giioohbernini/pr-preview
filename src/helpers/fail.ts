@@ -1,7 +1,9 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { generateLogUrl, getGitCommitSha, comment } from '..'
-import { formatImage } from '../../helpers/formatImage'
+import generateLogUrl from '../actions/generateLogUrl'
+import getGitCommitSha from '../actions/getGitCommitSha'
+import comment from './comment'
+import { formatImage } from './formatImage'
 
 export default async function fail(err: Error) {
 	core.info('error message:')
