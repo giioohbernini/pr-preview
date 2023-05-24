@@ -238,13 +238,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(4719));
+const actions_1 = __nccwpck_require__(9024);
 const commentToPullRequest_1 = __nccwpck_require__(3847);
 function comment(message) {
     var _a;
@@ -254,7 +251,7 @@ function comment(message) {
         const fromForkedRepo = prOwner === github.context.repo.owner;
         const token = core.getInput('github_token', { required: true });
         const octokit = github.getOctokit(token);
-        const prNumber = yield (0, getPullRequestNumber_1.default)();
+        const prNumber = yield (0, actions_1.getPullRequestNumber)();
         if (fromForkedRepo) {
             return;
         }
