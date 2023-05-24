@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import { createComment, findPreviousComment, updateComment } from './comment'
 import type { Repo, Octokit } from './types'
 
 interface CommentConfig {
@@ -8,6 +7,74 @@ interface CommentConfig {
 	message: string
 	octokit: Octokit
 	header: string
+}
+
+interface Comment {
+	id: number
+	node_id: string
+	url: string
+	body?: string | undefined
+	body_text?: string | undefined
+	body_html?: string | undefined
+	html_url: string
+	user: {
+		name?: string | null | undefined
+		starred_at?: string | undefined
+	} | null
+	reactions?: {} | undefined
+}
+
+function headerComment(header?: string) {
+	return `<!-- Sticky Pull Request Comment${header || ''} -->`
+}
+
+async function findPreviousComment(
+	octokit: Octokit,
+	repo: Repo,
+	issue_number: number,
+	header?: string
+) {
+	const { data: comments } = await octokit.rest.issues.listComments({
+		...repo,
+		issue_number,
+	})
+	const h = headerComment(header)
+	// eslint-disable-next-line no-shadow
+	return comments.find((comment: Comment) => comment.body?.includes(h))
+}
+
+async function updateComment(
+	octokit: Octokit,
+	repo: Repo,
+	comment_id: number,
+	body: string,
+	header?: string,
+	previousBody?: string | false
+) {
+	await octokit.rest.issues.updateComment({
+		...repo,
+		comment_id,
+		body: previousBody
+			? `${previousBody}\n${body}`
+			: `${body}\n${headerComment(header)}`,
+	})
+}
+
+async function createComment(
+	octokit: Octokit,
+	repo: Repo,
+	issue_number: number,
+	body: string,
+	header?: string,
+	previousBody?: string | false
+) {
+	await octokit.rest.issues.createComment({
+		...repo,
+		issue_number,
+		body: previousBody
+			? `${previousBody}\n${body}`
+			: `${body}\n${headerComment(header)}`,
+	})
 }
 
 export async function comment({

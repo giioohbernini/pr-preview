@@ -1,8 +1,7 @@
 import * as core from '@actions/core'
 import { exec } from '@actions/exec'
 import { comment, fail } from './actions'
-import { execCommand } from './helpers/execCommand'
-import { formatImage } from './helpers/formatImage'
+import { execCommand, formatImage } from './helpers'
 import {
 	vercelDeploy,
 	vercelRemoveProjectDeploy,
