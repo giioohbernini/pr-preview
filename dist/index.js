@@ -51,7 +51,7 @@ function comment(message) {
         if (fromForkedRepo) {
             return;
         }
-        (0, helpers_1.comment)({
+        (0, helpers_1.commentToPullRequest)({
             repo: github.context.repo,
             number: Number(prNumber),
             message,

@@ -39,7 +39,6 @@ async function findPreviousComment(
 		issue_number,
 	})
 	const h = headerComment(header)
-	// eslint-disable-next-line no-shadow
 	return comments.find((comment: Comment) => comment.body?.includes(h))
 }
 
@@ -77,7 +76,7 @@ async function createComment(
 	})
 }
 
-export async function comment({
+export async function commentToPullRequest({
 	repo,
 	number,
 	message,
