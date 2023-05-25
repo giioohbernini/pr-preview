@@ -500,13 +500,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
-const exec_1 = __nccwpck_require__(1514);
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
 const execCommand_1 = __nccwpck_require__(5064);
 const formatImage_1 = __nccwpck_require__(8781);
 const vercel_1 = __nccwpck_require__(403);
 const prepare_1 = __importDefault(__nccwpck_require__(3233));
+const build_1 = __importDefault(__nccwpck_require__(644));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const { surgeToken, previewPath, distFolder, teardown, payloadContext, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, configVercel, } = yield (0, prepare_1.default)();
@@ -536,26 +536,11 @@ function main() {
             imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
         });
         yield (0, comment_1.default)(`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`);
-        const startTime = Date.now();
         try {
-            if (!core.getInput('build')) {
-                yield (0, exec_1.exec)(`npm install`);
-                yield (0, exec_1.exec)(`npm run build`);
-            }
-            else {
-                const buildCommands = core.getInput('build').split('\n');
-                for (const command of buildCommands) {
-                    core.info(`RUN: ${command}`);
-                    yield (0, exec_1.exec)(command);
-                }
-            }
-            const duration = (Date.now() - startTime) / 1000;
-            core.info(`Build time: ${duration} seconds`);
-            core.info(`Deploy to ${mountedUrl}`);
-            core.setSecret(surgeToken);
-            const image = (0, formatImage_1.formatImage)({
+            const { duration, image } = yield (0, build_1.default)({
+                mountedUrl,
+                surgeToken,
                 buildingLogUrl,
-                imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
             });
             // Vercel
             if (vercelToken) {
@@ -597,6 +582,71 @@ main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
     core.info('main error');
     yield (0, fail_1.default)(err);
 }));
+
+
+/***/ }),
+
+/***/ 644:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const exec_1 = __nccwpck_require__(1514);
+const formatImage_1 = __nccwpck_require__(8781);
+const build = ({ mountedUrl, surgeToken, buildingLogUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const startTime = Date.now();
+    if (!core.getInput('build')) {
+        yield (0, exec_1.exec)(`npm install`);
+        yield (0, exec_1.exec)(`npm run build`);
+    }
+    else {
+        const buildCommands = core.getInput('build').split('\n');
+        for (const command of buildCommands) {
+            core.info(`RUN: ${command}`);
+            yield (0, exec_1.exec)(command);
+        }
+    }
+    const duration = (Date.now() - startTime) / 1000;
+    core.info(`Build time: ${duration} seconds`);
+    core.info(`Deploy to ${mountedUrl}`);
+    core.setSecret(surgeToken);
+    const image = (0, formatImage_1.formatImage)({
+        buildingLogUrl,
+        imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
+    });
+    return { duration, image };
+});
+exports["default"] = build;
 
 
 /***/ }),
