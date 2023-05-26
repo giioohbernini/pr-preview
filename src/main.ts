@@ -13,17 +13,14 @@ async function main() {
 		surgeToken,
 		previewPath,
 		distFolder,
-		teardown,
-		payloadContext,
 		gitCommitSha,
 		mountedUrl,
 		outputUrl,
 		buildingLogUrl,
 		configVercel,
+		shouldShutdown,
 	} = await prepare()
 	let { vercelToken, deploymentUrlVercel } = configVercel
-
-	const shouldShutdown = teardown && payloadContext.action === 'closed'
 
 	if (shouldShutdown) {
 		return await shutDown({

@@ -510,9 +510,8 @@ const build_1 = __importDefault(__nccwpck_require__(644));
 const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { surgeToken, previewPath, distFolder, teardown, payloadContext, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, configVercel, } = yield (0, prepare_1.default)();
+        const { surgeToken, previewPath, distFolder, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, configVercel, shouldShutdown, } = yield (0, prepare_1.default)();
         let { vercelToken, deploymentUrlVercel } = configVercel;
-        const shouldShutdown = teardown && payloadContext.action === 'closed';
         if (shouldShutdown) {
             return yield (0, shutDown_1.default)({
                 mountedUrl,
@@ -718,6 +717,7 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         vercelToken: core.getInput('vercel_token'),
         deploymentUrlVercel: '',
     };
+    const shouldShutdown = teardown && payload.action === 'closed';
     core.setOutput('preview_url', outputUrl);
     core.debug('github.context');
     core.debug(JSON.stringify(github.context, null, 2));
@@ -732,13 +732,12 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         surgeToken,
         previewPath,
         distFolder,
-        teardown,
-        payloadContext: payload,
         gitCommitSha,
         mountedUrl,
         outputUrl,
         buildingLogUrl,
         configVercel,
+        shouldShutdown,
     };
 });
 exports["default"] = prepare;
