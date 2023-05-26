@@ -512,17 +512,18 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const { surgeToken, previewPath, distFolder, teardown, payloadContext, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, configVercel, } = yield (0, prepare_1.default)();
         let { vercelToken, deploymentUrlVercel } = configVercel;
-        yield (0, shutDown_1.default)({
-            teardown,
-            payloadContext,
-            mountedUrl,
-            surgeToken,
-            buildingLogUrl,
-            vercelToken,
-            deploymentUrlVercel,
-            outputUrl,
-            gitCommitSha,
-        });
+        const shouldShutdown = teardown && payloadContext.action === 'closed';
+        if (shouldShutdown) {
+            return yield (0, shutDown_1.default)({
+                mountedUrl,
+                surgeToken,
+                buildingLogUrl,
+                vercelToken,
+                deploymentUrlVercel,
+                outputUrl,
+                gitCommitSha,
+            });
+        }
         const deployingImage = (0, formatImage_1.formatImage)({
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
@@ -788,26 +789,24 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const vercel_1 = __nccwpck_require__(403);
 const execCommand_1 = __nccwpck_require__(5064);
 const formatImage_1 = __nccwpck_require__(8781);
-const shutDown = ({ teardown, payloadContext, mountedUrl, surgeToken, buildingLogUrl, vercelToken, deploymentUrlVercel, outputUrl, gitCommitSha, }) => __awaiter(void 0, void 0, void 0, function* () {
-    if (teardown && payloadContext.action === 'closed') {
-        try {
-            core.info(`Teardown: ${mountedUrl}`);
-            core.setSecret(surgeToken);
-            yield (0, execCommand_1.execCommand)({
-                command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
-            });
-            const image = (0, formatImage_1.formatImage)({
-                buildingLogUrl,
-                imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
-            });
-            if (vercelToken)
-                yield (0, vercel_1.vercelRemoveProjectDeploy)(deploymentUrlVercel);
-            return yield (0, comment_1.default)(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
-        }
-        catch (err) {
-            core.info('teardown error');
-            return yield (0, fail_1.default)(err);
-        }
+const shutDown = ({ mountedUrl, surgeToken, buildingLogUrl, vercelToken, deploymentUrlVercel, outputUrl, gitCommitSha, }) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        core.info(`Teardown: ${mountedUrl}`);
+        core.setSecret(surgeToken);
+        yield (0, execCommand_1.execCommand)({
+            command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
+        });
+        if (vercelToken)
+            yield (0, vercel_1.vercelRemoveProjectDeploy)(deploymentUrlVercel);
+        const image = (0, formatImage_1.formatImage)({
+            buildingLogUrl,
+            imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
+        });
+        return yield (0, comment_1.default)(`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
+    }
+    catch (err) {
+        core.info('teardown error');
+        return yield (0, fail_1.default)(err);
     }
 });
 exports["default"] = shutDown;
