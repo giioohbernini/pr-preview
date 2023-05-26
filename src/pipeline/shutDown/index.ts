@@ -8,8 +8,6 @@ import { formatImage } from '../../helpers/formatImage'
 
 interface shutDownPrams {
 	surgeToken: string
-	teardown: boolean
-	payloadContext: WebhookPayload
 	gitCommitSha: string
 	mountedUrl: string
 	outputUrl: string
@@ -19,8 +17,6 @@ interface shutDownPrams {
 }
 
 const shutDown = async ({
-	teardown,
-	payloadContext,
 	mountedUrl,
 	surgeToken,
 	buildingLogUrl,
@@ -29,30 +25,28 @@ const shutDown = async ({
 	outputUrl,
 	gitCommitSha,
 }: shutDownPrams): Promise<void> => {
-	if (teardown && payloadContext.action === 'closed') {
-		try {
-			core.info(`Teardown: ${mountedUrl}`)
-			core.setSecret(surgeToken)
+	try {
+		core.info(`Teardown: ${mountedUrl}`)
+		core.setSecret(surgeToken)
 
-			await execCommand({
-				command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
-			})
+		await execCommand({
+			command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
+		})
 
-			if (vercelToken) await vercelRemoveProjectDeploy(deploymentUrlVercel)
+		if (vercelToken) await vercelRemoveProjectDeploy(deploymentUrlVercel)
 
-			const image = formatImage({
-				buildingLogUrl,
-				imageUrl:
-					'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
-			})
+		const image = formatImage({
+			buildingLogUrl,
+			imageUrl:
+				'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
+		})
 
-			return await comment(
-				`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
-			)
-		} catch (err) {
-			core.info('teardown error')
-			return await fail(err)
-		}
+		return await comment(
+			`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
+		)
+	} catch (err) {
+		core.info('teardown error')
+		return await fail(err)
 	}
 }
 

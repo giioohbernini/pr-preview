@@ -23,17 +23,19 @@ async function main() {
 	} = await prepare()
 	let { vercelToken, deploymentUrlVercel } = configVercel
 
-	await shutDown({
-		teardown,
-		payloadContext,
-		mountedUrl,
-		surgeToken,
-		buildingLogUrl,
-		vercelToken,
-		deploymentUrlVercel,
-		outputUrl,
-		gitCommitSha,
-	})
+	const shouldShutdown = teardown && payloadContext.action === 'closed'
+
+	if (shouldShutdown) {
+		return await shutDown({
+			mountedUrl,
+			surgeToken,
+			buildingLogUrl,
+			vercelToken,
+			deploymentUrlVercel,
+			outputUrl,
+			gitCommitSha,
+		})
+	}
 
 	const deployingImage = formatImage({
 		buildingLogUrl,
