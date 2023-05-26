@@ -1,21 +1,19 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { WebhookPayload } from '@actions/github/lib/interfaces'
 import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
 
-interface ReturnPrepare {
+interface IReturnPrepare {
 	surgeToken: string
 	previewPath: string
 	distFolder: string
-	teardown: boolean
-	payloadContext: WebhookPayload
 	gitCommitSha: string
 	mountedUrl: string
 	outputUrl: string
 	buildingLogUrl: string
 	configVercel: { vercelToken: string; deploymentUrlVercel: string }
+	shouldShutdown: boolean
 }
 
 const checkingPullRequestNumber = async () => {
@@ -29,7 +27,7 @@ const checkingPullRequestNumber = async () => {
 	return prNumber
 }
 
-const prepare = async (): Promise<ReturnPrepare> => {
+const prepare = async (): Promise<IReturnPrepare> => {
 	const surgeToken = core.getInput('surge_token')
 	const previewUrl = core.getInput('preview_url')
 	const previewPath = core.getInput('preview_path')
@@ -55,6 +53,8 @@ const prepare = async (): Promise<ReturnPrepare> => {
 		deploymentUrlVercel: '',
 	}
 
+	const shouldShutdown = teardown && payload.action === 'closed'
+
 	core.setOutput('preview_url', outputUrl)
 
 	core.debug('github.context')
@@ -72,13 +72,12 @@ const prepare = async (): Promise<ReturnPrepare> => {
 		surgeToken,
 		previewPath,
 		distFolder,
-		teardown,
-		payloadContext: payload,
 		gitCommitSha,
 		mountedUrl,
 		outputUrl,
 		buildingLogUrl,
 		configVercel,
+		shouldShutdown,
 	}
 }
 
