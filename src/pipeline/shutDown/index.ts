@@ -5,7 +5,7 @@ import { vercelRemoveProjectDeploy } from '../../tenants/vercel'
 import { execCommand } from '../../helpers/execCommand'
 import { formatImage } from '../../helpers/formatImage'
 
-interface shutDownPrams {
+interface IShutDownPrams {
 	surgeToken: string
 	gitCommitSha: string
 	mountedUrl: string
@@ -23,7 +23,7 @@ const shutDown = async ({
 	deploymentUrlVercel,
 	outputUrl,
 	gitCommitSha,
-}: shutDownPrams): Promise<void> => {
+}: IShutDownPrams): Promise<void> => {
 	try {
 		core.info(`Teardown: ${mountedUrl}`)
 		core.setSecret(surgeToken)

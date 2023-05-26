@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import { exec } from '@actions/exec'
 import { formatImage } from '../../helpers/formatImage'
 
-interface BuildParams {
+interface IBuildParams {
 	surgeToken: string
 	mountedUrl: string
 	buildingLogUrl: string
@@ -12,7 +12,7 @@ const build = async ({
 	mountedUrl,
 	surgeToken,
 	buildingLogUrl,
-}: BuildParams) => {
+}: IBuildParams) => {
 	const startTime = Date.now()
 
 	if (!core.getInput('build')) {

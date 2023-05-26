@@ -4,7 +4,7 @@ import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
 
-interface ReturnPrepare {
+interface IReturnPrepare {
 	surgeToken: string
 	previewPath: string
 	distFolder: string
@@ -27,7 +27,7 @@ const checkingPullRequestNumber = async () => {
 	return prNumber
 }
 
-const prepare = async (): Promise<ReturnPrepare> => {
+const prepare = async (): Promise<IReturnPrepare> => {
 	const surgeToken = core.getInput('surge_token')
 	const previewUrl = core.getInput('preview_url')
 	const previewPath = core.getInput('preview_path')
