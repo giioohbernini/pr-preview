@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import { WebhookPayload } from '@actions/github/lib/interfaces'
 import fail from '../../helpers/fail'
 import comment from '../../helpers/comment'
 import { vercelRemoveProjectDeploy } from '../../tenants/vercel'
