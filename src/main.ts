@@ -50,7 +50,7 @@ async function main() {
 			buildingLogUrl,
 		})
 
-		deploy({
+		await deploy({
 			vercelToken,
 			deploymentUrlVercel,
 			previewPath,

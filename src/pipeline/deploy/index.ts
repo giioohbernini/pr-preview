@@ -35,7 +35,7 @@ const deploy = async ({
 		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
 	})
 
-	await comment(`
+	const commentString = `
     🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
   
     <table>
@@ -58,7 +58,9 @@ const deploy = async ({
     </table>
     
     :clock1: Build time: **${duration}s** \n ${image}
-  `)
+  `
+
+	return await comment(commentString)
 }
 
 export default deploy
