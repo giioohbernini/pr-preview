@@ -654,7 +654,7 @@ const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mou
     yield (0, execCommand_1.execCommand)({
         command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
     });
-    yield (0, comment_1.default)(`
+    return yield (0, comment_1.default)(`
     🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
   
     <table>

@@ -35,7 +35,7 @@ const deploy = async ({
 		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
 	})
 
-	await comment(`
+	return await comment(`
     🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
   
     <table>
