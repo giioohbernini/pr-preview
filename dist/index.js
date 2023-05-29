@@ -647,14 +647,21 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel_1 = __nccwpck_require__(403);
-const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, gitCommitSha, 
+// outputUrl,
+duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     if (vercelToken) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
     }
     yield (0, execCommand_1.execCommand)({
         command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
     });
-    yield (0, comment_1.default)(`Teste de comentário!`);
+    yield (0, comment_1.default)(`
+    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+    
+    :clock1: Build time: **${duration}s** \n ${image}
+	`);
     // await comment(`
     //   🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
     //   <table>

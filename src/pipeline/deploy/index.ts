@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import comment from '../../helpers/comment'
 import { execCommand } from '../../helpers/execCommand'
 import { vercelDeploy, removeSchema } from '../../tenants/vercel'
@@ -23,12 +22,13 @@ const deploy = async ({
 	distFolder,
 	mountedUrl,
 	surgeToken,
-}: // gitCommitSha,
-// outputUrl,
-// duration,
-// image,
-IDeployParams) => {
+	gitCommitSha,
+	// outputUrl,
+	duration,
+	image,
+}: IDeployParams) => {
 	if (vercelToken) {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		deploymentUrlVercel = await vercelDeploy(previewPath)
 	}
 
@@ -36,7 +36,11 @@ IDeployParams) => {
 		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
 	})
 
-	await comment(`Teste de comentário!`)
+	await comment(`
+    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+    
+    :clock1: Build time: **${duration}s** \n ${image}
+	`)
 
 	// await comment(`
 	//   🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
