@@ -1,4 +1,3 @@
-import comment from '../../helpers/comment'
 import { execCommand } from '../../helpers/execCommand'
 import { vercelDeploy, removeSchema } from '../../tenants/vercel'
 
@@ -15,6 +14,10 @@ interface IDeployParams {
 	image: string
 }
 
+interface IRetornDeploy {
+  commentString: string
+}
+
 const deploy = async ({
 	vercelToken,
 	deploymentUrlVercel,
@@ -26,7 +29,7 @@ const deploy = async ({
 	outputUrl,
 	duration,
 	image,
-}: IDeployParams) => {
+}: IDeployParams): Promise<IRetornDeploy> => {
 	if (vercelToken) {
 		deploymentUrlVercel = await vercelDeploy(previewPath)
 	}
@@ -60,7 +63,7 @@ const deploy = async ({
     :clock1: Build time: **${duration}s** \n ${image}
   `
 
-	return await comment(commentString)
+	return { commentString }
 }
 
 export default deploy

@@ -533,7 +533,7 @@ function main() {
                 surgeToken,
                 buildingLogUrl,
             });
-            yield (0, deploy_1.default)({
+            const { commentString } = yield (0, deploy_1.default)({
                 vercelToken,
                 deploymentUrlVercel,
                 previewPath,
@@ -545,6 +545,7 @@ function main() {
                 duration,
                 image,
             });
+            yield (0, comment_1.default)(commentString);
         }
         catch (err) {
             core.info(`run command error ${err}`);
@@ -640,11 +641,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const comment_1 = __importDefault(__nccwpck_require__(6645));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel_1 = __nccwpck_require__(403);
 const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -674,7 +671,7 @@ const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mou
     
     :clock1: Build time: **${duration}s** \n ${image}
   `;
-    return yield (0, comment_1.default)(commentString);
+    return { commentString };
 });
 exports["default"] = deploy;
 
