@@ -502,12 +502,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
-const execCommand_1 = __nccwpck_require__(5064);
 const formatImage_1 = __nccwpck_require__(8781);
-const vercel_1 = __nccwpck_require__(403);
 const prepare_1 = __importDefault(__nccwpck_require__(3233));
 const build_1 = __importDefault(__nccwpck_require__(644));
 const shutDown_1 = __importDefault(__nccwpck_require__(4858));
+const deploy_1 = __importDefault(__nccwpck_require__(8425));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const { surgeToken, previewPath, distFolder, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, configVercel, shouldShutdown, } = yield (0, prepare_1.default)();
@@ -534,34 +533,18 @@ function main() {
                 surgeToken,
                 buildingLogUrl,
             });
-            // Vercel
-            if (vercelToken) {
-                deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
-            }
-            // Vercel
-            yield (0, execCommand_1.execCommand)({
-                command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
+            yield (0, deploy_1.default)({
+                vercelToken,
+                deploymentUrlVercel,
+                previewPath,
+                distFolder,
+                mountedUrl,
+                surgeToken,
+                gitCommitSha,
+                outputUrl,
+                duration,
+                image,
             });
-            yield (0, comment_1.default)(`
-			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
-		
-			<table>
-				<tr>
-					<td><strong>✅ Preview: Surge</strong></td>
-					<td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-				</tr>
-				${vercelToken
-                ? `
-							<tr>
-								<td><strong>✅ Preview: Vercel</strong></td>
-								<td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
-							</tr>
-						`
-                : ''}
-			</table>
-			
-			:clock1: Build time: **${duration}s** \n ${image}
-		`);
         }
         catch (err) {
             core.info(`run command error ${err}`);
@@ -639,6 +622,60 @@ const build = ({ mountedUrl, surgeToken, buildingLogUrl, }) => __awaiter(void 0,
     return { duration, image };
 });
 exports["default"] = build;
+
+
+/***/ }),
+
+/***/ 8425:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const comment_1 = __importDefault(__nccwpck_require__(6645));
+const execCommand_1 = __nccwpck_require__(5064);
+const vercel_1 = __nccwpck_require__(403);
+const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
+    if (vercelToken) {
+        deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
+    }
+    yield (0, execCommand_1.execCommand)({
+        command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
+    });
+    yield (0, comment_1.default)(`
+    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+  
+    <table>
+      <tr>
+        <td><strong>✅ Preview: Surge</strong></td>
+        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+      </tr>
+      ${vercelToken
+        ? `
+            <tr>
+              <td><strong>✅ Preview: Vercel</strong></td>
+              <td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
+            </tr>
+          `
+        : ''}
+    </table>
+    
+    :clock1: Build time: **${duration}s** \n ${image}
+  `);
+});
+exports["default"] = deploy;
 
 
 /***/ }),

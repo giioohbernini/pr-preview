@@ -1,12 +1,11 @@
 import * as core from '@actions/core'
 import comment from './helpers/comment'
 import fail from './helpers/fail'
-import { execCommand } from './helpers/execCommand'
 import { formatImage } from './helpers/formatImage'
-import { vercelDeploy, removeSchema } from './tenants/vercel'
 import prepare from './pipeline/prepare'
 import build from './pipeline/build'
 import shutDown from './pipeline/shutDown'
+import deploy from './pipeline/deploy'
 
 async function main() {
 	const {
@@ -51,40 +50,18 @@ async function main() {
 			buildingLogUrl,
 		})
 
-		// Vercel
-		if (vercelToken) {
-			deploymentUrlVercel = await vercelDeploy(previewPath)
-		}
-		// Vercel
-
-		await execCommand({
-			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
+		await deploy({
+			vercelToken,
+			deploymentUrlVercel,
+			previewPath,
+			distFolder,
+			mountedUrl,
+			surgeToken,
+			gitCommitSha,
+			outputUrl,
+			duration,
+			image,
 		})
-
-		await comment(`
-			🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
-		
-			<table>
-				<tr>
-					<td><strong>✅ Preview: Surge</strong></td>
-					<td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-				</tr>
-				${
-					vercelToken
-						? `
-							<tr>
-								<td><strong>✅ Preview: Vercel</strong></td>
-								<td><a href='${deploymentUrlVercel}'>${removeSchema(
-								deploymentUrlVercel
-						  )}</a></td>
-							</tr>
-						`
-						: ''
-				}
-			</table>
-			
-			:clock1: Build time: **${duration}s** \n ${image}
-		`)
 	} catch (err) {
 		core.info(`run command error ${err}`)
 		await fail(err)
