@@ -54,6 +54,7 @@ function comment(message) {
         if (fromForkedRepo) {
             return;
         }
+        core.debug(`Message - ${message}`);
         (0, commentToPullRequest_1.commentToPullRequest)({
             repo: github.context.repo,
             number: Number(prNumber),
@@ -533,7 +534,7 @@ function main() {
                 surgeToken,
                 buildingLogUrl,
             });
-            const { commentString } = yield (0, deploy_1.default)({
+            yield (0, deploy_1.default)({
                 vercelToken,
                 deploymentUrlVercel,
                 previewPath,
@@ -545,7 +546,6 @@ function main() {
                 duration,
                 image,
             });
-            yield (0, comment_1.default)(commentString);
         }
         catch (err) {
             core.info(`run command error ${err}`);
@@ -632,6 +632,25 @@ exports["default"] = build;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -641,7 +660,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const comment_1 = __importDefault(__nccwpck_require__(6645));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel_1 = __nccwpck_require__(403);
 const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
@@ -651,7 +675,7 @@ const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mou
     yield (0, execCommand_1.execCommand)({
         command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
     });
-    const commentString = `
+    yield (0, comment_1.default)(`
     🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
   
     <table>
@@ -670,8 +694,8 @@ const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mou
     </table>
     
     :clock1: Build time: **${duration}s** \n ${image}
-  `;
-    return { commentString };
+  `);
+    core.debug('Finished deploy comment');
 });
 exports["default"] = deploy;
 

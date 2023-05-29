@@ -50,7 +50,7 @@ async function main() {
 			buildingLogUrl,
 		})
 
-		const { commentString } = await deploy({
+		await deploy({
 			vercelToken,
 			deploymentUrlVercel,
 			previewPath,
@@ -62,8 +62,6 @@ async function main() {
 			duration,
 			image,
 		})
-
-		await comment(commentString)
 	} catch (err) {
 		core.info(`run command error ${err}`)
 		await fail(err)

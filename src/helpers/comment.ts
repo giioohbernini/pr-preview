@@ -14,7 +14,7 @@ export default async function comment(message: string): Promise<void> {
 	if (fromForkedRepo) {
 		return
 	}
-
+	core.debug(`Message - ${message}`)
 	commentToPullRequest({
 		repo: github.context.repo,
 		number: Number(prNumber),

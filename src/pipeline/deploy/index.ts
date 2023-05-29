@@ -1,3 +1,5 @@
+import * as core from '@actions/core'
+import comment from '../../helpers/comment'
 import { execCommand } from '../../helpers/execCommand'
 import { vercelDeploy, removeSchema } from '../../tenants/vercel'
 
@@ -14,10 +16,6 @@ interface IDeployParams {
 	image: string
 }
 
-interface IRetornDeploy {
-  commentString: string
-}
-
 const deploy = async ({
 	vercelToken,
 	deploymentUrlVercel,
@@ -29,7 +27,7 @@ const deploy = async ({
 	outputUrl,
 	duration,
 	image,
-}: IDeployParams): Promise<IRetornDeploy> => {
+}: IDeployParams) => {
 	if (vercelToken) {
 		deploymentUrlVercel = await vercelDeploy(previewPath)
 	}
@@ -38,7 +36,7 @@ const deploy = async ({
 		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
 	})
 
-	const commentString = `
+	await comment(`
     🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
   
     <table>
@@ -61,9 +59,9 @@ const deploy = async ({
     </table>
     
     :clock1: Build time: **${duration}s** \n ${image}
-  `
+  `)
 
-	return { commentString }
+	core.debug('Finished deploy comment')
 }
 
 export default deploy
