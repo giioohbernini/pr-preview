@@ -137,6 +137,7 @@ function commentToPullRequest({ repo, number, message, octokit, header, }) {
         }
         const prefixedHeader = `: Surge Preview ${header}'`;
         const body = message.replace(/\t/g, '');
+        core.debug(`commentToPullRequest body - ${body}`);
         try {
             const previous = yield findPreviousComment(octokit, repo, number, prefixedHeader);
             if (previous) {
