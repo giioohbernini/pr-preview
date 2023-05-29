@@ -23,11 +23,11 @@ const deploy = async ({
 	distFolder,
 	mountedUrl,
 	surgeToken,
-	gitCommitSha,
-	outputUrl,
-	duration,
-	image,
-}: IDeployParams) => {
+}: // gitCommitSha,
+// outputUrl,
+// duration,
+// image,
+IDeployParams) => {
 	if (vercelToken) {
 		deploymentUrlVercel = await vercelDeploy(previewPath)
 	}
@@ -36,32 +36,32 @@ const deploy = async ({
 		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
 	})
 
-	await comment(`
-    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
-  
-    <table>
-      <tr>
-        <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-      </tr>
-      ${
-				vercelToken
-					? `
-            <tr>
-              <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${deploymentUrlVercel}'>${removeSchema(
-							deploymentUrlVercel
-					  )}</a></td>
-            </tr>
-          `
-					: ''
-			}
-    </table>
-    
-    :clock1: Build time: **${duration}s** \n ${image}
-  `)
+	await comment(`Teste de comentário!`)
 
-	core.debug('Finished deploy comment')
+	// await comment(`
+	//   🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+
+	//   <table>
+	//     <tr>
+	//       <td><strong>✅ Preview: Surge</strong></td>
+	//       <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+	//     </tr>
+	//     ${
+	// 			vercelToken
+	// 				? `
+	//           <tr>
+	//             <td><strong>✅ Preview: Vercel</strong></td>
+	//             <td><a href='${deploymentUrlVercel}'>${removeSchema(
+	// 						deploymentUrlVercel
+	// 				  )}</a></td>
+	//           </tr>
+	//         `
+	// 				: ''
+	// 		}
+	//   </table>
+
+	//   :clock1: Build time: **${duration}s** \n ${image}
+	// `)
 }
 
 export default deploy

@@ -89,7 +89,7 @@ export async function commentToPullRequest({
 	}
 	const prefixedHeader = `: Surge Preview ${header}'`
 	const body = message.replace(/\t/g, '')
-	core.debug(`commentToPullRequest body - ${body}`)
+
 	try {
 		const previous = await findPreviousComment(
 			octokit,

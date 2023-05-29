@@ -54,7 +54,6 @@ function comment(message) {
         if (fromForkedRepo) {
             return;
         }
-        core.debug(`Message - ${message}`);
         (0, commentToPullRequest_1.commentToPullRequest)({
             repo: github.context.repo,
             number: Number(prNumber),
@@ -137,7 +136,6 @@ function commentToPullRequest({ repo, number, message, octokit, header, }) {
         }
         const prefixedHeader = `: Surge Preview ${header}'`;
         const body = message.replace(/\t/g, '');
-        core.debug(`commentToPullRequest body - ${body}`);
         try {
             const previous = yield findPreviousComment(octokit, repo, number, prefixedHeader);
             if (previous) {
@@ -633,25 +631,6 @@ exports["default"] = build;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -665,38 +644,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel_1 = __nccwpck_require__(403);
-const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, }) => __awaiter(void 0, void 0, void 0, function* () {
     if (vercelToken) {
         deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
     }
     yield (0, execCommand_1.execCommand)({
         command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
     });
-    yield (0, comment_1.default)(`
-    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
-  
-    <table>
-      <tr>
-        <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-      </tr>
-      ${vercelToken
-        ? `
-            <tr>
-              <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
-            </tr>
-          `
-        : ''}
-    </table>
-    
-    :clock1: Build time: **${duration}s** \n ${image}
-  `);
-    core.debug('Finished deploy comment');
+    yield (0, comment_1.default)(`Teste de comentário!`);
+    // await comment(`
+    //   🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+    //   <table>
+    //     <tr>
+    //       <td><strong>✅ Preview: Surge</strong></td>
+    //       <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+    //     </tr>
+    //     ${
+    // 			vercelToken
+    // 				? `
+    //           <tr>
+    //             <td><strong>✅ Preview: Vercel</strong></td>
+    //             <td><a href='${deploymentUrlVercel}'>${removeSchema(
+    // 						deploymentUrlVercel
+    // 				  )}</a></td>
+    //           </tr>
+    //         `
+    // 				: ''
+    // 		}
+    //   </table>
+    //   :clock1: Build time: **${duration}s** \n ${image}
+    // `)
 });
 exports["default"] = deploy;
 
