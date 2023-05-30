@@ -22,11 +22,9 @@ export const deployInProgressTemplate = ({
 	deployingImage,
 }: IDeployInProgressPrams) => {
 	return `
-    <p>⚡️ Deploying PR Preview ${gitCommitSha} to:</p>
-    <ul>
-      <li>[surge.sh](https://${outputUrl})</li>
-      <li>[Build logs](${buildingLogUrl})</li>
-    </ul>
+    <p>
+      ⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+    </p>
     <p>${deployingImage}</p>
   `
 }

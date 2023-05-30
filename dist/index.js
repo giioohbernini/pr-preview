@@ -77,11 +77,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
 const deployInProgressTemplate = ({ gitCommitSha, outputUrl, buildingLogUrl, deployingImage, }) => {
     return `
-    <p>⚡️ Deploying PR Preview ${gitCommitSha} to:</p>
-    <ul>
-      <li>[surge.sh](https://${outputUrl})</li>
-      <li>[Build logs](${buildingLogUrl})</li>
-    </ul>
+    <p>
+      ⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+    </p>
     <p>${deployingImage}</p>
   `;
 };
