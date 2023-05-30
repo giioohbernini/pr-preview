@@ -77,7 +77,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
 const deployInProgressTemplate = ({ gitCommitSha, outputUrl, buildingLogUrl, deployingImage, }) => {
     return `
-    <p>⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl})</p>
+    <p>⚡️ Deploying PR Preview ${gitCommitSha} to:</p>
+    <ul>
+      <li>[surge.sh](https://${outputUrl})</li>
+      <li>[Build logs](${buildingLogUrl})</li>
+    </ul>
     <p>${deployingImage}</p>
   `;
 };
@@ -85,7 +89,6 @@ exports.deployInProgressTemplate = deployInProgressTemplate;
 const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, deploymentUrlVercel, removeSchema, duration, image, }) => {
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
-    
     <table>
       <tr>
         <td><strong>✅ Preview: Surge</strong></td>
@@ -100,7 +103,6 @@ const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, deploym
           `
         : ''}
     </table>
-    
     <p>:clock1: Build time: <b>${duration}s</b></p>
     <p>${image}</p>
   `;

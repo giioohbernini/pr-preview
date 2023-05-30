@@ -22,7 +22,11 @@ export const deployInProgressTemplate = ({
 	deployingImage,
 }: IDeployInProgressPrams) => {
 	return `
-    <p>⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl})</p>
+    <p>⚡️ Deploying PR Preview ${gitCommitSha} to:</p>
+    <ul>
+      <li>[surge.sh](https://${outputUrl})</li>
+      <li>[Build logs](${buildingLogUrl})</li>
+    </ul>
     <p>${deployingImage}</p>
   `
 }
@@ -38,7 +42,6 @@ export const deployFinalizedTemplate = ({
 }: IdeployFinalized) => {
 	return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
-    
     <table>
       <tr>
         <td><strong>✅ Preview: Surge</strong></td>
@@ -57,7 +60,6 @@ export const deployFinalizedTemplate = ({
 					: ''
 			}
     </table>
-    
     <p>:clock1: Build time: <b>${duration}s</b></p>
     <p>${image}</p>
   `
