@@ -88,7 +88,7 @@ export async function commentToPullRequest({
 		return
 	}
 	const prefixedHeader = `: Surge Preview ${header}'`
-	const body = message.replace(/\t/g, '')
+	const body = message.replace(/\s+/g, ' ')
 
 	try {
 		const previous = await findPreviousComment(

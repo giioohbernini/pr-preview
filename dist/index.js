@@ -135,7 +135,7 @@ function commentToPullRequest({ repo, number, message, octokit, header, }) {
             return;
         }
         const prefixedHeader = `: Surge Preview ${header}'`;
-        const body = message.replace(/\t/g, '');
+        const body = message.replace(/\s+/g, ' ');
         try {
             const previous = yield findPreviousComment(octokit, repo, number, prefixedHeader);
             if (previous) {
@@ -503,7 +503,6 @@ const core = __importStar(__nccwpck_require__(2186));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
 const formatImage_1 = __nccwpck_require__(8781);
-const vercel_1 = __nccwpck_require__(403);
 const prepare_1 = __importDefault(__nccwpck_require__(3233));
 const build_1 = __importDefault(__nccwpck_require__(644));
 const shutDown_1 = __importDefault(__nccwpck_require__(4858));
@@ -546,26 +545,6 @@ function main() {
                 duration,
                 image,
             });
-            yield (0, comment_1.default)(`
-    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
-  
-    <table>
-      <tr>
-        <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-      </tr>
-      ${vercelToken
-                ? `
-            <tr>
-              <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
-            </tr>
-          `
-                : ''}
-    </table>
-    
-    :clock1: Build time: **${duration}s** \n ${image}
-  `);
         }
         catch (err) {
             core.info(`run command error ${err}`);
@@ -661,44 +640,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// import comment from '../../helpers/comment'
+const comment_1 = __importDefault(__nccwpck_require__(6645));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel_1 = __nccwpck_require__(403);
-const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken,
-// gitCommitSha,
-// outputUrl,
-// duration,
-// image,
- }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     if (vercelToken) {
         deploymentUrlVercel = yield (0, vercel_1.vercelDeploy)(previewPath);
     }
     yield (0, execCommand_1.execCommand)({
         command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
     });
-    // await comment(`
-    //   🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
-    //   <table>
-    //     <tr>
-    //       <td><strong>✅ Preview: Surge</strong></td>
-    //       <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-    //     </tr>
-    //     ${
-    // 			vercelToken
-    // 				? `
-    //           <tr>
-    //             <td><strong>✅ Preview: Vercel</strong></td>
-    //             <td><a href='${deploymentUrlVercel}'>${removeSchema(
-    // 						deploymentUrlVercel
-    // 				  )}</a></td>
-    //           </tr>
-    //         `
-    // 				: ''
-    // 		}
-    //   </table>
-    //   :clock1: Build time: **${duration}s** \n ${image}
-    // `)
+    yield (0, comment_1.default)(`
+    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+  
+    <table>
+      <tr>
+        <td><strong>✅ Preview: Surge</strong></td>
+        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+      </tr>
+      ${vercelToken
+        ? `
+            <tr>
+              <td><strong>✅ Preview: Vercel</strong></td>
+              <td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
+            </tr>
+          `
+        : ''}
+    </table>
+    
+    :clock1: Build time: **${duration}s** \n ${image}
+  `);
 });
 exports["default"] = deploy;
 
