@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import comment from './helpers/comment'
 import fail from './helpers/fail'
 import { formatImage } from './helpers/formatImage'
+import { deployInProgressTemplate } from './helpers/commentTemplates'
 import prepare from './pipeline/prepare'
 import build from './pipeline/build'
 import shutDown from './pipeline/shutDown'
@@ -40,7 +41,12 @@ async function main() {
 	})
 
 	await comment(
-		`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`
+		deployInProgressTemplate({
+			gitCommitSha,
+			outputUrl,
+			buildingLogUrl,
+			deployingImage,
+		})
 	)
 
 	try {

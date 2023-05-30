@@ -68,6 +68,48 @@ exports["default"] = comment;
 
 /***/ }),
 
+/***/ 7662:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
+const deployInProgressTemplate = ({ gitCommitSha, outputUrl, buildingLogUrl, deployingImage, }) => {
+    return `
+    <p>⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl})</p>
+    <p>${deployingImage}</p>
+  `;
+};
+exports.deployInProgressTemplate = deployInProgressTemplate;
+const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, deploymentUrlVercel, removeSchema, duration, image, }) => {
+    return `
+    <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
+    
+    <table>
+      <tr>
+        <td><strong>✅ Preview: Surge</strong></td>
+        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+      </tr>
+      ${vercelToken
+        ? `
+            <tr>
+              <td><strong>✅ Preview: Vercel</strong></td>
+              <td><a href='${deploymentUrlVercel}'>${removeSchema(deploymentUrlVercel)}</a></td>
+            </tr>
+          `
+        : ''}
+    </table>
+    
+    <p>:clock1: Build time: <b>${duration}s</b></p>
+    <p>${image}</p>
+  `;
+};
+exports.deployFinalizedTemplate = deployFinalizedTemplate;
+
+
+/***/ }),
+
 /***/ 3847:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -503,6 +545,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
 const formatImage_1 = __nccwpck_require__(8781);
+const commentTemplates_1 = __nccwpck_require__(7662);
 const prepare_1 = __importDefault(__nccwpck_require__(3233));
 const build_1 = __importDefault(__nccwpck_require__(644));
 const shutDown_1 = __importDefault(__nccwpck_require__(4858));
@@ -526,7 +569,12 @@ function main() {
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
         });
-        yield (0, comment_1.default)(`⚡️ Deploying PR Preview ${gitCommitSha} to [surge.sh](https://${outputUrl}) ... [Build logs](${buildingLogUrl}) \n ${deployingImage}`);
+        yield (0, comment_1.default)((0, commentTemplates_1.deployInProgressTemplate)({
+            gitCommitSha,
+            outputUrl,
+            buildingLogUrl,
+            deployingImage,
+        }));
         try {
             const { duration, image } = yield (0, build_1.default)({
                 mountedUrl,
@@ -646,6 +694,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const execCommand_1 = __nccwpck_require__(5064);
+const commentTemplates_1 = __nccwpck_require__(7662);
 const vercel_1 = __nccwpck_require__(403);
 const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mountedUrl, surgeToken, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     if (vercelToken) {
@@ -654,27 +703,15 @@ const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mou
     yield (0, execCommand_1.execCommand)({
         command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
     });
-    yield (0, comment_1.default)(`
-    <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
-  
-    <table>
-      <tr>
-        <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-      </tr>
-      ${vercelToken
-        ? `
-            <tr>
-              <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${deploymentUrlVercel}'>${(0, vercel_1.removeSchema)(deploymentUrlVercel)}</a></td>
-            </tr>
-          `
-        : ''}
-    </table>
-    
-    <p>:clock1: Build time: **${duration}s**</p>
-    <p>${image}</p>
-  `);
+    yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
+        gitCommitSha,
+        outputUrl,
+        vercelToken,
+        deploymentUrlVercel,
+        removeSchema: vercel_1.removeSchema,
+        duration,
+        image,
+    }));
 });
 exports["default"] = deploy;
 

@@ -1,5 +1,6 @@
 import comment from '../../helpers/comment'
 import { execCommand } from '../../helpers/execCommand'
+import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { vercelDeploy, removeSchema } from '../../tenants/vercel'
 
 interface IDeployParams {
@@ -35,31 +36,17 @@ const deploy = async ({
 		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
 	})
 
-	await comment(`
-    <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
-  
-    <table>
-      <tr>
-        <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
-      </tr>
-      ${
-				vercelToken
-					? `
-            <tr>
-              <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${deploymentUrlVercel}'>${removeSchema(
-							deploymentUrlVercel
-					  )}</a></td>
-            </tr>
-          `
-					: ''
-			}
-    </table>
-    
-    <p>:clock1: Build time: **${duration}s**</p>
-    <p>${image}</p>
-  `)
+	await comment(
+		deployFinalizedTemplate({
+			gitCommitSha,
+			outputUrl,
+			vercelToken,
+			deploymentUrlVercel,
+			removeSchema,
+			duration,
+			image,
+		})
+	)
 }
 
 export default deploy
