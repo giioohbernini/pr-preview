@@ -655,7 +655,7 @@ const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mou
         command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
     });
     yield (0, comment_1.default)(`
-    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+    <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
   
     <table>
       <tr>
@@ -672,7 +672,8 @@ const deploy = ({ vercelToken, deploymentUrlVercel, previewPath, distFolder, mou
         : ''}
     </table>
     
-    :clock1: Build time: **${duration}s** \n ${image}
+    <p>:clock1: Build time: **${duration}s**</p>
+    <p>${image}</p>
   `);
 });
 exports["default"] = deploy;

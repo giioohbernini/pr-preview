@@ -36,7 +36,7 @@ const deploy = async ({
 	})
 
 	await comment(`
-    🎊 PR Preview ${gitCommitSha} has been successfully built and deployed
+    <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
   
     <table>
       <tr>
@@ -57,7 +57,8 @@ const deploy = async ({
 			}
     </table>
     
-    :clock1: Build time: **${duration}s** \n ${image}
+    <p>:clock1: Build time: **${duration}s**</p>
+    <p>${image}</p>
   `)
 }
 
