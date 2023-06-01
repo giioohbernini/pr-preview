@@ -1,11 +1,10 @@
 import comment from '../../helpers/comment'
-import { execCommand } from '../../helpers/execCommand'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
+import { surgeDeploy } from '../../tenants/surge'
 import { vercelDeploy, removeSchema } from '../../tenants/vercel'
 
 interface IDeployParams {
-	vercelToken: string
-	deploymentUrlVercel: string
+	tokenList: { surge: string; vercel: string }
 	previewPath: string
 	distFolder: string
 	mountedUrl: string
@@ -17,24 +16,29 @@ interface IDeployParams {
 }
 
 const deploy = async ({
-	vercelToken,
-	deploymentUrlVercel,
+	tokenList,
 	previewPath,
 	distFolder,
 	mountedUrl,
-	surgeToken,
 	gitCommitSha,
 	outputUrl,
 	duration,
 	image,
 }: IDeployParams) => {
+	const { surge: surgeToken, vercel: vercelToken } = tokenList
+	let deploymentUrlVercel = ''
+
+	if (surgeToken) {
+		await surgeDeploy({
+			distFolder,
+			mountedUrl,
+			surgeToken,
+		})
+	}
+
 	if (vercelToken) {
 		deploymentUrlVercel = await vercelDeploy(previewPath)
 	}
-
-	await execCommand({
-		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
-	})
 
 	await comment(
 		deployFinalizedTemplate({

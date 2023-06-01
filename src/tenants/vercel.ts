@@ -12,6 +12,7 @@ const vercelCli = 'vercel'
 const vercelToken = core.getInput('vercel_token')
 const distFolder = core.getInput('dist')
 const { job } = github.context
+let deploymentUrlVercel = ''
 
 export const removeSchema = (url: string) => {
 	const regex = /^https?:\/\//
@@ -49,10 +50,7 @@ export const vercelDeploy = async (previewPath: string) => {
 	return myOutput.concat(previewPath)
 }
 
-export const vercelAssignAlias = async (
-	deploymentUrlVercel: string,
-	aliasUrl: string
-) => {
+export const vercelAssignAlias = async (aliasUrl: string) => {
 	core.info(`Alias ${aliasUrl}`)
 	const commandArguments = [
 		vercelCli,
@@ -80,9 +78,7 @@ export const vercelAssignAlias = async (
 	return output
 }
 
-export const vercelRemoveProjectDeploy = async (
-	deploymentUrlVercel: string
-) => {
+export const vercelRemoveProjectDeploy = async () => {
 	await exec('npx', [
 		vercelCli,
 		'remove --yes',

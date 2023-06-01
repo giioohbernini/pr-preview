@@ -10,25 +10,22 @@ import deploy from './pipeline/deploy'
 
 async function main() {
 	const {
-		surgeToken,
+		tokenList,
 		previewPath,
 		distFolder,
 		gitCommitSha,
 		mountedUrl,
 		outputUrl,
 		buildingLogUrl,
-		configVercel,
 		shouldShutdown,
 	} = await prepare()
-	let { vercelToken, deploymentUrlVercel } = configVercel
+	const { surge: surgeToken, vercel: vercelToken } = tokenList
 
 	if (shouldShutdown) {
 		return await shutDown({
+			tokenList,
 			mountedUrl,
-			surgeToken,
 			buildingLogUrl,
-			vercelToken,
-			deploymentUrlVercel,
 			outputUrl,
 			gitCommitSha,
 		})
@@ -57,8 +54,7 @@ async function main() {
 		})
 
 		await deploy({
-			vercelToken,
-			deploymentUrlVercel,
+			tokenList,
 			previewPath,
 			distFolder,
 			mountedUrl,
