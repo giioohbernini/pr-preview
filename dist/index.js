@@ -88,7 +88,7 @@ const deployInProgressTemplate = ({ gitCommitSha, outputUrl, buildingLogUrl, dep
   `;
 };
 exports.deployInProgressTemplate = deployInProgressTemplate;
-const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, deploymentUrlVercel, duration, image, }) => {
+const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, returnVercelUrl, duration, image, }) => {
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
@@ -100,7 +100,7 @@ const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, deploym
         ? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${deploymentUrlVercel}'>${removeSchema(deploymentUrlVercel)}</a></td>
+              <td><a href='${returnVercelUrl()}'>${removeSchema(returnVercelUrl())}</a></td>
             </tr>
           `
         : ''}
@@ -701,25 +701,6 @@ exports["default"] = build;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -733,30 +714,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(7224));
 const vercel_1 = __importDefault(__nccwpck_require__(403));
 const deploy = ({ previewPath, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy, surgeToken } = (0, surge_1.default)();
-    const { vercelDeploy, vercelToken, deploymentUrlVercel } = (0, vercel_1.default)();
+    const { vercelDeploy, vercelToken, returnVercelUrl } = (0, vercel_1.default)();
     if (surgeToken) {
-        core.info('Starting surge deploy');
         surgeDeploy({
             distFolder,
             mountedUrl,
         });
     }
     if (vercelToken) {
-        core.info(`Starting vercel deploy - ${deploymentUrlVercel}`);
         vercelDeploy(previewPath);
     }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
         outputUrl,
         vercelToken,
-        deploymentUrlVercel,
+        returnVercelUrl,
         duration,
         image,
     }));
@@ -1083,12 +1061,13 @@ const vercel = () => {
         core.info('finalizing vercel assign alias');
         return output;
     });
+    const returnVercelUrl = () => deploymentUrlVercel;
     return {
         vercelToken,
         vercelDeploy,
         vercelRemoveProjectDeploy,
         vercelAssignAlias,
-        deploymentUrlVercel,
+        returnVercelUrl,
     };
 };
 exports["default"] = vercel;

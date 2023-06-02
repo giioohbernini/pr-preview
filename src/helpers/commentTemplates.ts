@@ -9,7 +9,7 @@ interface IdeployFinalized {
 	gitCommitSha: string
 	outputUrl: string
 	vercelToken: string
-	deploymentUrlVercel: string
+	returnVercelUrl: () => string
 	duration: number
 	image: string
 }
@@ -37,7 +37,7 @@ export const deployFinalizedTemplate = ({
 	gitCommitSha,
 	outputUrl,
 	vercelToken,
-	deploymentUrlVercel,
+	returnVercelUrl,
 	duration,
 	image,
 }: IdeployFinalized) => {
@@ -53,8 +53,8 @@ export const deployFinalizedTemplate = ({
 					? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${deploymentUrlVercel}'>${removeSchema(
-							deploymentUrlVercel
+              <td><a href='${returnVercelUrl()}'>${removeSchema(
+							returnVercelUrl()
 					  )}</a></td>
             </tr>
           `

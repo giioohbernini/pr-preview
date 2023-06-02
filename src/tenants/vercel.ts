@@ -7,7 +7,7 @@ interface IVercelReturn {
 	vercelDeploy: (previewPath: string) => void
 	vercelRemoveProjectDeploy: () => void
 	vercelAssignAlias: (aliasUrl: string) => void
-	deploymentUrlVercel: string
+	returnVercelUrl: () => string
 }
 
 const vercel = (): IVercelReturn => {
@@ -71,12 +71,14 @@ const vercel = (): IVercelReturn => {
 		return output
 	}
 
+	const returnVercelUrl = () => deploymentUrlVercel
+
 	return {
 		vercelToken,
 		vercelDeploy,
 		vercelRemoveProjectDeploy,
 		vercelAssignAlias,
-		deploymentUrlVercel,
+		returnVercelUrl,
 	}
 }
 
