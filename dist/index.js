@@ -257,10 +257,10 @@ const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function
             },
         },
     };
-    yield (0, exec_1.exec)(`npx`, command, options);
-    if (myOutput && !myOutput.includes('Success')) {
-        throw new Error(myOutput);
-    }
+    yield (0, exec_1.exec)(`npx`, [...command], options);
+    // if (myOutput && !myOutput.includes('Success')) {
+    // 	throw new Error(myOutput)
+    // }
     return myOutput;
 });
 exports.execCommand = execCommand;

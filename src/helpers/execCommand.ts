@@ -21,11 +21,12 @@ export const execCommand = async ({
 			},
 		},
 	}
-	await exec(`npx`, command, options)
 
-	if (myOutput && !myOutput.includes('Success')) {
-		throw new Error(myOutput)
-	}
+	await exec(`npx`, [...command], options)
+
+	// if (myOutput && !myOutput.includes('Success')) {
+	// 	throw new Error(myOutput)
+	// }
 
 	return myOutput
 }
