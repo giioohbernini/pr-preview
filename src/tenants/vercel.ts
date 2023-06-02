@@ -4,7 +4,7 @@ import { execCommand } from '../helpers/execCommand'
 
 interface IVercelReturn {
 	vercelToken: string
-	vercelDeploy: () => void
+	vercelDeploy: (previewPath: string) => void
 	vercelRemoveProjectDeploy: () => void
 	vercelAssignAlias: (aliasUrl: string) => void
 	deploymentUrlVercel: string
@@ -17,8 +17,8 @@ const vercel = (): IVercelReturn => {
 	const { job } = github.context
 	let deploymentUrlVercel = ''
 
-	const vercelDeploy = async () => {
-		await execCommand({
+	const vercelDeploy = async (previewPath: string) => {
+		const outputPath = await execCommand({
 			command: [
 				vercelCli,
 				'--yes',
@@ -29,6 +29,7 @@ const vercel = (): IVercelReturn => {
 			],
 		})
 
+		deploymentUrlVercel = outputPath.concat(previewPath)
 		core.info('finalizing vercel deployment')
 	}
 

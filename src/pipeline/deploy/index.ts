@@ -14,6 +14,7 @@ interface IDeployParams {
 }
 
 const deploy = async ({
+	previewPath,
 	distFolder,
 	mountedUrl,
 	gitCommitSha,
@@ -32,7 +33,7 @@ const deploy = async ({
 	}
 
 	if (vercelToken) {
-		vercelDeploy()
+		vercelDeploy(previewPath)
 	}
 
 	await comment(

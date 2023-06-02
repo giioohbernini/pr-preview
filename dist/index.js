@@ -249,10 +249,10 @@ const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function
         listeners: {
             stdout: (data) => {
                 myOutput += data.toString();
-                core.info(data.toString());
+                core.info(`stdout - ${data.toString()}`);
             },
             stderr: (data) => {
-                core.info(data.toString());
+                core.info(`stderr - ${data.toString()}`);
             },
             // stdout: (stdoutData: Buffer) => {
             // 	myOutput += stdoutData.toString()
@@ -263,6 +263,7 @@ const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function
     if (myOutput && !myOutput.includes('Success')) {
         throw new Error(myOutput);
     }
+    return myOutput;
 });
 exports.execCommand = execCommand;
 
@@ -727,7 +728,7 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(7224));
 const vercel_1 = __importDefault(__nccwpck_require__(403));
-const deploy = ({ distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ previewPath, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy, surgeToken } = (0, surge_1.default)();
     const { vercelDeploy, vercelToken } = (0, vercel_1.default)();
     if (surgeToken) {
@@ -737,7 +738,7 @@ const deploy = ({ distFolder, mountedUrl, gitCommitSha, outputUrl, duration, ima
         });
     }
     if (vercelToken) {
-        vercelDeploy();
+        vercelDeploy(previewPath);
     }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
@@ -1023,8 +1024,8 @@ const vercel = () => {
     const distFolder = core.getInput('dist');
     const { job } = github.context;
     let deploymentUrlVercel = '';
-    const vercelDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, execCommand_1.execCommand)({
+    const vercelDeploy = (previewPath) => __awaiter(void 0, void 0, void 0, function* () {
+        const outputPath = yield (0, execCommand_1.execCommand)({
             command: [
                 vercelCli,
                 '--yes',
@@ -1034,6 +1035,7 @@ const vercel = () => {
                 vercelToken,
             ],
         });
+        deploymentUrlVercel = outputPath.concat(previewPath);
         core.info('finalizing vercel deployment');
     });
     const vercelRemoveProjectDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
