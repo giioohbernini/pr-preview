@@ -250,13 +250,11 @@ const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function
             stdout: (data) => {
                 myOutput += data.toString();
                 core.info(`stdout - ${data.toString()}`);
+                core.info(`myOutput ${myOutput}`);
             },
             stderr: (data) => {
                 core.info(`stderr - ${data.toString()}`);
             },
-            // stdout: (stdoutData: Buffer) => {
-            // 	myOutput += stdoutData.toString()
-            // },
         },
     };
     yield (0, exec_1.exec)(`npx`, command, options);
@@ -1036,6 +1034,7 @@ const vercel = () => {
             ],
         });
         deploymentUrlVercel = outputPath.concat(previewPath);
+        core.info(`Deployment Url Vercel - ${deploymentUrlVercel}`);
         core.info('finalizing vercel deployment');
     });
     const vercelRemoveProjectDeploy = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -1048,6 +1047,7 @@ const vercel = () => {
                 vercelToken,
             ],
         });
+        core.info(`Vercel Remove Project Deploy - ${deploymentUrlVercel}`);
         core.info('finalizing vercel deployment remove');
     });
     const vercelAssignAlias = (aliasUrl) => __awaiter(void 0, void 0, void 0, function* () {

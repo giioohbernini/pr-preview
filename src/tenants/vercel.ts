@@ -30,6 +30,7 @@ const vercel = (): IVercelReturn => {
 		})
 
 		deploymentUrlVercel = outputPath.concat(previewPath)
+		core.info(`Deployment Url Vercel - ${deploymentUrlVercel}`)
 		core.info('finalizing vercel deployment')
 	}
 
@@ -44,6 +45,7 @@ const vercel = (): IVercelReturn => {
 			],
 		})
 
+		core.info(`Vercel Remove Project Deploy - ${deploymentUrlVercel}`)
 		core.info('finalizing vercel deployment remove')
 	}
 
