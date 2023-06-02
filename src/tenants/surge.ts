@@ -1,31 +1,48 @@
+import * as core from '@actions/core'
 import { execCommand } from '../helpers/execCommand'
 
 interface ISurgeDeployParams {
 	distFolder: string
 	mountedUrl: string
-	surgeToken: string
 }
 
 interface ISurgeRemoveProjectDeployParams {
 	mountedUrl: string
+}
+
+interface ISurgeReturn {
 	surgeToken: string
+	surgeDeploy: ({ distFolder, mountedUrl }: ISurgeDeployParams) => void
+	surgeRemoveProjectDeploy: ({
+		mountedUrl,
+	}: ISurgeRemoveProjectDeployParams) => void
 }
 
-export const surgeDeploy = async ({
-	distFolder,
-	mountedUrl,
-	surgeToken,
-}: ISurgeDeployParams) => {
-	await execCommand({
-		command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
-	})
+const surge = (): ISurgeReturn => {
+	const surgeToken = core.getInput('surge_token')
+
+	const surgeDeploy = async ({
+		distFolder,
+		mountedUrl,
+	}: ISurgeDeployParams) => {
+		await execCommand({
+			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
+		})
+	}
+
+	const surgeRemoveProjectDeploy = async ({
+		mountedUrl,
+	}: ISurgeRemoveProjectDeployParams) => {
+		await execCommand({
+			command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
+		})
+	}
+
+	return {
+		surgeToken,
+		surgeDeploy,
+		surgeRemoveProjectDeploy,
+	}
 }
 
-export const surgeRemoveProjectDeploy = async ({
-	mountedUrl,
-	surgeToken,
-}: ISurgeRemoveProjectDeployParams) => {
-	await execCommand({
-		command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
-	})
-}
+export default surge

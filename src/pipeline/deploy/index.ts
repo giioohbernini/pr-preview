@@ -1,14 +1,12 @@
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
-import { surgeDeploy } from '../../tenants/surge'
-import { vercelDeploy, removeSchema } from '../../tenants/vercel'
+import surge from '../../tenants/surge'
+import vercel from '../../tenants/vercel'
 
 interface IDeployParams {
-	tokenList: { surge: string; vercel: string }
 	previewPath: string
 	distFolder: string
 	mountedUrl: string
-	surgeToken: string
 	gitCommitSha: string
 	outputUrl: string
 	duration: number
@@ -16,8 +14,6 @@ interface IDeployParams {
 }
 
 const deploy = async ({
-	tokenList,
-	previewPath,
 	distFolder,
 	mountedUrl,
 	gitCommitSha,
@@ -25,19 +21,18 @@ const deploy = async ({
 	duration,
 	image,
 }: IDeployParams) => {
-	const { surge: surgeToken, vercel: vercelToken } = tokenList
-	let deploymentUrlVercel = ''
+	const { surgeDeploy, surgeToken } = surge()
+	const { vercelDeploy, vercelToken } = vercel()
 
 	if (surgeToken) {
-		await surgeDeploy({
+		surgeDeploy({
 			distFolder,
 			mountedUrl,
-			surgeToken,
 		})
 	}
 
 	if (vercelToken) {
-		deploymentUrlVercel = await vercelDeploy(previewPath)
+		vercelDeploy()
 	}
 
 	await comment(
@@ -45,8 +40,6 @@ const deploy = async ({
 			gitCommitSha,
 			outputUrl,
 			vercelToken,
-			deploymentUrlVercel,
-			removeSchema,
 			duration,
 			image,
 		})

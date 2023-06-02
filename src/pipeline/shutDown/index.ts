@@ -1,12 +1,11 @@
 import * as core from '@actions/core'
 import fail from '../../helpers/fail'
 import comment from '../../helpers/comment'
-import { surgeRemoveProjectDeploy } from '../../tenants/surge'
-import { vercelRemoveProjectDeploy } from '../../tenants/vercel'
+import surge from '../../tenants/surge'
+import vercel from '../../tenants/vercel'
 import { formatImage } from '../../helpers/formatImage'
 
 interface IShutDownPrams {
-	tokenList: { surge: string; vercel: string }
 	gitCommitSha: string
 	mountedUrl: string
 	outputUrl: string
@@ -14,21 +13,21 @@ interface IShutDownPrams {
 }
 
 const shutDown = async ({
-	tokenList,
 	mountedUrl,
 	buildingLogUrl,
 	outputUrl,
 	gitCommitSha,
 }: IShutDownPrams): Promise<void> => {
 	try {
-		const { surge: surgeToken, vercel: vercelToken } = tokenList
+		const { surgeToken, surgeRemoveProjectDeploy } = surge()
+		const { vercelToken, vercelRemoveProjectDeploy } = vercel()
 
 		core.info(`Teardown: ${mountedUrl}`)
 		core.setSecret(surgeToken)
 
-		if (surgeToken) await surgeRemoveProjectDeploy({ mountedUrl, surgeToken })
+		if (surgeToken) surgeRemoveProjectDeploy({ mountedUrl })
 
-		if (vercelToken) await vercelRemoveProjectDeploy()
+		if (vercelToken) vercelRemoveProjectDeploy()
 
 		const image = formatImage({
 			buildingLogUrl,

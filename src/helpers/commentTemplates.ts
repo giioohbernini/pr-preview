@@ -1,3 +1,5 @@
+import vercel from '../tenants/vercel'
+
 interface IDeployInProgressPrams {
 	gitCommitSha: string
 	outputUrl: string
@@ -9,10 +11,13 @@ interface IdeployFinalized {
 	gitCommitSha: string
 	outputUrl: string
 	vercelToken: string
-	deploymentUrlVercel: string
-	removeSchema: (params: string) => string
 	duration: number
 	image: string
+}
+
+const removeSchema = (url: string) => {
+	const regex = /^https?:\/\//
+	return url.replace(regex, '')
 }
 
 export const deployInProgressTemplate = ({
@@ -33,11 +38,11 @@ export const deployFinalizedTemplate = ({
 	gitCommitSha,
 	outputUrl,
 	vercelToken,
-	deploymentUrlVercel,
-	removeSchema,
 	duration,
 	image,
 }: IdeployFinalized) => {
+	const { deploymentUrlVercel } = vercel()
+
 	return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>

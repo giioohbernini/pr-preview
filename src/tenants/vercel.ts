@@ -1,90 +1,80 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { exec } from '@actions/exec'
+import { execCommand } from '../helpers/execCommand'
 
-type MyOutPut = string
-type Options = Object
-
-const workingDirectory = core.getInput('working_directory')
-
-// vercel
-const vercelCli = 'vercel'
-const vercelToken = core.getInput('vercel_token')
-const distFolder = core.getInput('dist')
-const { job } = github.context
-let deploymentUrlVercel = ''
-
-export const removeSchema = (url: string) => {
-	const regex = /^https?:\/\//
-	return url.replace(regex, '')
+interface IVercelReturn {
+	vercelToken: string
+	vercelDeploy: () => void
+	vercelRemoveProjectDeploy: () => void
+	vercelAssignAlias: (aliasUrl: string) => void
+	deploymentUrlVercel: string
 }
 
-let myOutput: MyOutPut = ''
-let options: Options = {
-	listeners: {
-		stdout: (data: string): void => {
-			myOutput += data.toString()
-			core.info(data.toString())
-		},
-		stderr: (data: string): void => {
-			core.info(data.toString())
-		},
-	},
-}
+const vercel = (): IVercelReturn => {
+	const vercelToken = core.getInput('vercel_token')
+	const vercelCli = 'vercel'
+	const distFolder = core.getInput('dist')
+	const { job } = github.context
+	let deploymentUrlVercel = ''
 
-export const vercelDeploy = async (previewPath: string) => {
-	if (workingDirectory) {
-		options = {
-			...options,
-			cwp: workingDirectory,
-		}
+	const vercelDeploy = async () => {
+		await execCommand({
+			command: [
+				vercelCli,
+				'--yes',
+				'--cwd',
+				`./${distFolder}`,
+				'-t',
+				vercelToken,
+			],
+		})
+
+		core.info('finalizing vercel deployment')
 	}
 
-	await exec(
-		'npx',
-		[vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', vercelToken],
-		options
-	)
+	const vercelRemoveProjectDeploy = async () => {
+		await execCommand({
+			command: [
+				vercelCli,
+				'remove --yes',
+				deploymentUrlVercel,
+				'-t',
+				vercelToken,
+			],
+		})
 
-	core.info('finalizing vercel deployment')
-	return myOutput.concat(previewPath)
-}
-
-export const vercelAssignAlias = async (aliasUrl: string) => {
-	core.info(`Alias ${aliasUrl}`)
-	const commandArguments = [
-		vercelCli,
-		`--token=${vercelToken}`,
-		'alias',
-		'set',
-		deploymentUrlVercel,
-		`${job}-${aliasUrl}`,
-	]
-
-	if (workingDirectory) {
-		options = {
-			...options,
-			cwp: workingDirectory,
-		}
+		core.info('finalizing vercel deployment remove')
 	}
 
-	await exec(
-		'npx',
-		[vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken],
-		options
-	)
-	const output = await exec('npx', commandArguments, options)
-	core.info('finalizing vercel assign alias')
-	return output
-}
+	const vercelAssignAlias = async (aliasUrl: string) => {
+		core.info(`Alias ${aliasUrl}`)
 
-export const vercelRemoveProjectDeploy = async () => {
-	await exec('npx', [
-		vercelCli,
-		'remove --yes',
-		deploymentUrlVercel,
-		'-t',
+		await execCommand({
+			command: [vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken],
+		})
+
+		const output = await execCommand({
+			command: [
+				vercelCli,
+				`--token=${vercelToken}`,
+				'alias',
+				'set',
+				deploymentUrlVercel,
+				`${job}-${aliasUrl}`,
+			],
+		})
+
+		core.info('finalizing vercel assign alias')
+		return output
+	}
+
+	return {
 		vercelToken,
-	])
-	core.info('finalizing vercel deployment remove')
+		vercelDeploy,
+		vercelRemoveProjectDeploy,
+		vercelAssignAlias,
+		deploymentUrlVercel,
+	}
 }
+
+export default vercel
