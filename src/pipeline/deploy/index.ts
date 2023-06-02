@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import surge from '../../tenants/surge'
@@ -26,6 +27,7 @@ const deploy = async ({
 	const { vercelDeploy, vercelToken, deploymentUrlVercel } = vercel()
 
 	if (surgeToken) {
+		core.info('Starting surge deploy')
 		surgeDeploy({
 			distFolder,
 			mountedUrl,
@@ -33,6 +35,7 @@ const deploy = async ({
 	}
 
 	if (vercelToken) {
+		core.info(`Starting vercel deploy - ${deploymentUrlVercel}`)
 		vercelDeploy(previewPath)
 	}
 
