@@ -69,16 +69,12 @@ exports["default"] = comment;
 /***/ }),
 
 /***/ 7662:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
-const vercel_1 = __importDefault(__nccwpck_require__(403));
 const removeSchema = (url) => {
     const regex = /^https?:\/\//;
     return url.replace(regex, '');
@@ -92,8 +88,7 @@ const deployInProgressTemplate = ({ gitCommitSha, outputUrl, buildingLogUrl, dep
   `;
 };
 exports.deployInProgressTemplate = deployInProgressTemplate;
-const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, duration, image, }) => {
-    const { deploymentUrlVercel } = (0, vercel_1.default)();
+const deployFinalizedTemplate = ({ gitCommitSha, outputUrl, vercelToken, deploymentUrlVercel, duration, image, }) => {
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
@@ -258,9 +253,6 @@ const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function
         },
     };
     yield (0, exec_1.exec)(`npx`, [...command], options);
-    // if (myOutput && !myOutput.includes('Success')) {
-    // 	throw new Error(myOutput)
-    // }
     return myOutput;
 });
 exports.execCommand = execCommand;
@@ -728,7 +720,7 @@ const surge_1 = __importDefault(__nccwpck_require__(7224));
 const vercel_1 = __importDefault(__nccwpck_require__(403));
 const deploy = ({ previewPath, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy, surgeToken } = (0, surge_1.default)();
-    const { vercelDeploy, vercelToken } = (0, vercel_1.default)();
+    const { vercelDeploy, vercelToken, deploymentUrlVercel } = (0, vercel_1.default)();
     if (surgeToken) {
         surgeDeploy({
             distFolder,
@@ -742,6 +734,7 @@ const deploy = ({ previewPath, distFolder, mountedUrl, gitCommitSha, outputUrl, 
         gitCommitSha,
         outputUrl,
         vercelToken,
+        deploymentUrlVercel,
         duration,
         image,
     }));

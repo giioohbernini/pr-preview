@@ -23,7 +23,7 @@ const deploy = async ({
 	image,
 }: IDeployParams) => {
 	const { surgeDeploy, surgeToken } = surge()
-	const { vercelDeploy, vercelToken } = vercel()
+	const { vercelDeploy, vercelToken, deploymentUrlVercel } = vercel()
 
 	if (surgeToken) {
 		surgeDeploy({
@@ -41,6 +41,7 @@ const deploy = async ({
 			gitCommitSha,
 			outputUrl,
 			vercelToken,
+			deploymentUrlVercel,
 			duration,
 			image,
 		})
