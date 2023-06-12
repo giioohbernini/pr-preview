@@ -714,6 +714,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/*eslint eslint-comments/no-unused-disable: error, no-undef: error */
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(7224));
@@ -722,13 +723,13 @@ const deploy = ({ previewPath, distFolder, mountedUrl, gitCommitSha, outputUrl, 
     const { surgeDeploy, surgeToken } = (0, surge_1.default)();
     const { vercelDeploy, vercelToken, returnVercelUrl } = (0, vercel_1.default)();
     if (surgeToken) {
-        surgeDeploy({
+        yield surgeDeploy({
             distFolder,
             mountedUrl,
         });
     }
     if (vercelToken) {
-        vercelDeploy(previewPath);
+        yield vercelDeploy(previewPath);
     }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,

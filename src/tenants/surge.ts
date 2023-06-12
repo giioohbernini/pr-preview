@@ -12,7 +12,7 @@ interface ISurgeRemoveProjectDeployParams {
 
 interface ISurgeReturn {
 	surgeToken: string
-	surgeDeploy: ({ distFolder, mountedUrl }: ISurgeDeployParams) => void
+	surgeDeploy: ({ distFolder, mountedUrl }: ISurgeDeployParams) => Promise<void>
 	surgeRemoveProjectDeploy: ({
 		mountedUrl,
 	}: ISurgeRemoveProjectDeployParams) => void

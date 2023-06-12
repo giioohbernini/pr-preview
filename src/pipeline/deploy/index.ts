@@ -1,3 +1,4 @@
+/*eslint eslint-comments/no-unused-disable: error, no-undef: error */
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import surge from '../../tenants/surge'
@@ -26,14 +27,14 @@ const deploy = async ({
 	const { vercelDeploy, vercelToken, returnVercelUrl } = vercel()
 
 	if (surgeToken) {
-		surgeDeploy({
+		await surgeDeploy({
 			distFolder,
 			mountedUrl,
 		})
 	}
 
 	if (vercelToken) {
-		vercelDeploy(previewPath)
+		await vercelDeploy(previewPath)
 	}
 
 	await comment(
