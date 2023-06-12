@@ -4,13 +4,7 @@ import comment from '../../helpers/comment'
 import surge from '../../tenants/surge'
 import vercel from '../../tenants/vercel'
 import { formatImage } from '../../helpers/formatImage'
-
-interface IShutDownPrams {
-	gitCommitSha: string
-	mountedUrl: string
-	outputUrl: string
-	buildingLogUrl: string
-}
+import { IShutDownPrams } from './types'
 
 const shutDown = async ({
 	mountedUrl,

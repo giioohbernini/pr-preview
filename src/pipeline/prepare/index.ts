@@ -1,19 +1,9 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { IReturnPrepare } from './types'
 import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
-
-interface IReturnPrepare {
-	tokenList: { surge: string; vercel: string }
-	previewPath: string
-	distFolder: string
-	gitCommitSha: string
-	mountedUrl: string
-	outputUrl: string
-	buildingLogUrl: string
-	shouldShutdown: boolean
-}
 
 const checkingPullRequestNumber = async () => {
 	const prNumber = await getPullRequestNumber()

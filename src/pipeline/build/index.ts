@@ -1,12 +1,7 @@
 import * as core from '@actions/core'
 import { exec } from '@actions/exec'
 import { formatImage } from '../../helpers/formatImage'
-
-interface IBuildParams {
-	surgeToken: string
-	mountedUrl: string
-	buildingLogUrl: string
-}
+import { IBuildParams } from './types'
 
 const build = async ({
 	mountedUrl,

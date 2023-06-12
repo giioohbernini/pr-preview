@@ -1,17 +1,8 @@
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
+import { IDeployParams } from './types'
 import surge from '../../tenants/surge'
 import vercel from '../../tenants/vercel'
-
-interface IDeployParams {
-	previewPath: string
-	distFolder: string
-	mountedUrl: string
-	gitCommitSha: string
-	outputUrl: string
-	duration: number
-	image: string
-}
 
 const deploy = async ({
 	previewPath,
