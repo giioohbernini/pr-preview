@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import surge from '../../tenants/surge'

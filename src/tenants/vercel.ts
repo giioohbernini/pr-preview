@@ -71,7 +71,9 @@ const vercel = (): IVercelReturn => {
 		return output
 	}
 
-	const returnVercelUrl = () => deploymentUrlVercel
+	const returnVercelUrl = () => {
+		return deploymentUrlVercel
+	}
 
 	return {
 		vercelToken,

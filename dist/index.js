@@ -1061,7 +1061,9 @@ const vercel = () => {
         core.info('finalizing vercel assign alias');
         return output;
     });
-    const returnVercelUrl = () => deploymentUrlVercel;
+    const returnVercelUrl = () => {
+        return deploymentUrlVercel;
+    };
     return {
         vercelToken,
         vercelDeploy,
