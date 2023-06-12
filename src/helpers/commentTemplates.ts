@@ -1,18 +1,4 @@
-interface IDeployInProgressPrams {
-	gitCommitSha: string
-	outputUrl: string
-	buildingLogUrl: string
-	deployingImage: string
-}
-
-interface IdeployFinalized {
-	gitCommitSha: string
-	outputUrl: string
-	vercelToken: string
-	returnVercelUrl: () => string
-	duration: number
-	image: string
-}
+import { IDeployInProgressPrams, IdeployFinalized } from './types'
 
 const removeSchema = (url: string) => {
 	const regex = /^https?:\/\//

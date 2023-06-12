@@ -336,7 +336,7 @@ exports["default"] = fail;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.formatImage = void 0;
-const formatImage = ({ buildingLogUrl, imageUrl, }) => {
+const formatImage = ({ buildingLogUrl, imageUrl }) => {
     return `<a href="${buildingLogUrl}"><img width="300" src="${imageUrl}"></a>`;
 };
 exports.formatImage = formatImage;

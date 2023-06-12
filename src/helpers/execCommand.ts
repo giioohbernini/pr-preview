@@ -1,13 +1,10 @@
 import * as core from '@actions/core'
 import { exec } from '@actions/exec'
-
-interface ExecCommandOptions {
-	command: string[]
-}
+import { IExecCommandOptions } from './types'
 
 export const execCommand = async ({
 	command,
-}: ExecCommandOptions): Promise<string> => {
+}: IExecCommandOptions): Promise<string> => {
 	let myOutput = ''
 	const options: Object = {
 		listeners: {
