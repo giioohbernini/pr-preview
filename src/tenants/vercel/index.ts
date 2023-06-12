@@ -1,14 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { execCommand } from '../helpers/execCommand'
-
-interface IVercelReturn {
-	vercelToken: string
-	vercelDeploy: (previewPath: string) => Promise<void>
-	vercelRemoveProjectDeploy: () => void
-	vercelAssignAlias: (aliasUrl: string) => void
-	returnVercelUrl: () => string
-}
+import { execCommand } from '../../helpers/execCommand'
+import { IVercelReturn } from './types'
 
 const vercel = (): IVercelReturn => {
 	const vercelToken = core.getInput('vercel_token')

@@ -1,4 +1,3 @@
-/*eslint eslint-comments/no-unused-disable: error, no-undef: error */
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import surge from '../../tenants/surge'
