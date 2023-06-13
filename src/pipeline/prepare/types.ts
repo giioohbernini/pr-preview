@@ -1,5 +1,7 @@
+import { TokenList } from '../../types'
+
 export interface IReturnPrepare {
-	tokenList: { surge: string; vercel: string }
+	tokenList: TokenList
 	previewPath: string
 	distFolder: string
 	gitCommitSha: string

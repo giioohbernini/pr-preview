@@ -5,6 +5,7 @@ import surge from '../../tenants/surge'
 import vercel from '../../tenants/vercel'
 
 const deploy = async ({
+	tokenList,
 	previewPath,
 	distFolder,
 	mountedUrl,
@@ -13,25 +14,30 @@ const deploy = async ({
 	duration,
 	image,
 }: IDeployParams) => {
-	const { surgeDeploy, surgeToken } = surge()
-	const { vercelDeploy, vercelToken, returnVercelUrl } = vercel()
+	const { surgeDeploy } = surge()
+	const { vercelDeploy, returnVercelUrl } = vercel()
 
-	if (surgeToken) {
+	if (tokenList.surge) {
 		await surgeDeploy({
+			tokenList,
 			distFolder,
 			mountedUrl,
 		})
 	}
 
-	if (vercelToken) {
-		await vercelDeploy(previewPath)
+	if (tokenList.vercel) {
+		await vercelDeploy({
+			tokenList,
+			distFolder,
+			previewPath,
+		})
 	}
 
 	await comment(
 		deployFinalizedTemplate({
+			tokenList,
 			gitCommitSha,
 			outputUrl,
-			vercelToken,
 			returnVercelUrl,
 			duration,
 			image,

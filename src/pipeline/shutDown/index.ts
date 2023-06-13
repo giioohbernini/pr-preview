@@ -7,21 +7,21 @@ import { formatImage } from '../../helpers/formatImage'
 import { IShutDownPrams } from './types'
 
 const shutDown = async ({
+	tokenList,
 	mountedUrl,
 	buildingLogUrl,
 	outputUrl,
 	gitCommitSha,
 }: IShutDownPrams): Promise<void> => {
 	try {
-		const { surgeToken, surgeRemoveProjectDeploy } = surge()
-		const { vercelToken, vercelRemoveProjectDeploy } = vercel()
+		const { surgeRemoveProjectDeploy } = surge()
+		const { vercelRemoveProjectDeploy } = vercel()
 
 		core.info(`Teardown: ${mountedUrl}`)
-		core.setSecret(surgeToken)
 
-		if (surgeToken) surgeRemoveProjectDeploy({ mountedUrl })
+		if (tokenList.surge) surgeRemoveProjectDeploy({ tokenList, mountedUrl })
 
-		if (vercelToken) vercelRemoveProjectDeploy()
+		if (tokenList.vercel) vercelRemoveProjectDeploy({ tokenList })
 
 		const image = formatImage({
 			buildingLogUrl,

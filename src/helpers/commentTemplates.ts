@@ -20,9 +20,9 @@ export const deployInProgressTemplate = ({
 }
 
 export const deployFinalizedTemplate = ({
+	tokenList,
 	gitCommitSha,
 	outputUrl,
-	vercelToken,
 	returnVercelUrl,
 	duration,
 	image,
@@ -35,7 +35,7 @@ export const deployFinalizedTemplate = ({
         <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
       </tr>
       ${
-				vercelToken
+				tokenList.vercel
 					? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>

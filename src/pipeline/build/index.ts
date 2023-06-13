@@ -3,11 +3,7 @@ import { exec } from '@actions/exec'
 import { formatImage } from '../../helpers/formatImage'
 import { IBuildParams } from './types'
 
-const build = async ({
-	mountedUrl,
-	surgeToken,
-	buildingLogUrl,
-}: IBuildParams) => {
+const build = async ({ mountedUrl, buildingLogUrl }: IBuildParams) => {
 	const startTime = Date.now()
 
 	if (!core.getInput('build')) {
@@ -23,7 +19,6 @@ const build = async ({
 	const duration = (Date.now() - startTime) / 1000
 	core.info(`Build time: ${duration} seconds`)
 	core.info(`Deploy to ${mountedUrl}`)
-	core.setSecret(surgeToken)
 
 	const image = formatImage({
 		buildingLogUrl,

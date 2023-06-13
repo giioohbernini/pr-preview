@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import { execCommand } from '../../helpers/execCommand'
 import {
 	ISurgeDeployParams,
@@ -7,27 +6,32 @@ import {
 } from './types'
 
 const surge = (): ISurgeReturn => {
-	const surgeToken = core.getInput('surge_token')
-
 	const surgeDeploy = async ({
+		tokenList,
 		distFolder,
 		mountedUrl,
 	}: ISurgeDeployParams) => {
 		await execCommand({
-			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, surgeToken],
+			command: [
+				'surge',
+				`./${distFolder}`,
+				mountedUrl,
+				`--token`,
+				tokenList.surge,
+			],
 		})
 	}
 
 	const surgeRemoveProjectDeploy = async ({
+		tokenList,
 		mountedUrl,
 	}: ISurgeRemoveProjectDeployParams) => {
 		await execCommand({
-			command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
+			command: ['surge', 'teardown', mountedUrl, `--token`, tokenList.surge],
 		})
 	}
 
 	return {
-		surgeToken,
 		surgeDeploy,
 		surgeRemoveProjectDeploy,
 	}

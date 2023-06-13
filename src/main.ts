@@ -3,16 +3,14 @@ import comment from './helpers/comment'
 import fail from './helpers/fail'
 import { formatImage } from './helpers/formatImage'
 import { deployInProgressTemplate } from './helpers/commentTemplates'
-import surge from './tenants/surge'
 import prepare from './pipeline/prepare'
 import build from './pipeline/build'
 import shutDown from './pipeline/shutDown'
 import deploy from './pipeline/deploy'
 
 async function main() {
-	const { surgeToken } = surge()
-
 	const {
+		tokenList,
 		previewPath,
 		distFolder,
 		gitCommitSha,
@@ -24,6 +22,7 @@ async function main() {
 
 	if (shouldShutdown) {
 		return await shutDown({
+			tokenList,
 			mountedUrl,
 			buildingLogUrl,
 			outputUrl,
@@ -49,11 +48,11 @@ async function main() {
 	try {
 		const { duration, image } = await build({
 			mountedUrl,
-			surgeToken,
 			buildingLogUrl,
 		})
 
 		await deploy({
+			tokenList,
 			previewPath,
 			distFolder,
 			mountedUrl,

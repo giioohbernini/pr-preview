@@ -1,4 +1,4 @@
-import type { Repo, Octokit } from '../types'
+import type { Repo, Octokit, TokenList } from '../types'
 
 interface IDeployInProgressPrams {
 	gitCommitSha: string
@@ -8,9 +8,9 @@ interface IDeployInProgressPrams {
 }
 
 interface IdeployFinalized {
+	tokenList: TokenList
 	gitCommitSha: string
 	outputUrl: string
-	vercelToken: string
 	returnVercelUrl: () => string
 	duration: number
 	image: string

@@ -1,16 +1,22 @@
-import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { execCommand } from '../../helpers/execCommand'
-import { IVercelReturn } from './types'
+import {
+	IVercelDeployParams,
+	IVercelRemoveProjectDeploy,
+	IVercelAssignAlias,
+	IVercelReturn,
+} from './types'
 
 const vercel = (): IVercelReturn => {
-	const vercelToken = core.getInput('vercel_token')
 	const vercelCli = 'vercel'
-	const distFolder = core.getInput('dist')
 	const { job } = github.context
 	let deploymentUrlVercel = ''
 
-	const vercelDeploy = async (previewPath: string) => {
+	const vercelDeploy = async ({
+		tokenList,
+		distFolder,
+		previewPath,
+	}: IVercelDeployParams) => {
 		const outputPath = await execCommand({
 			command: [
 				vercelCli,
@@ -18,41 +24,45 @@ const vercel = (): IVercelReturn => {
 				'--cwd',
 				`./${distFolder}`,
 				'-t',
-				vercelToken,
+				tokenList.vercel,
 			],
 		})
 
 		deploymentUrlVercel = outputPath.concat(previewPath)
-		core.info(`Deployment Url Vercel - ${deploymentUrlVercel}`)
-		core.info('finalizing vercel deployment')
 	}
 
-	const vercelRemoveProjectDeploy = async () => {
+	const vercelRemoveProjectDeploy = async ({
+		tokenList,
+	}: IVercelRemoveProjectDeploy) => {
 		await execCommand({
 			command: [
 				vercelCli,
 				'remove --yes',
 				deploymentUrlVercel,
 				'-t',
-				vercelToken,
+				tokenList.vercel,
 			],
 		})
-
-		core.info(`Vercel Remove Project Deploy - ${deploymentUrlVercel}`)
-		core.info('finalizing vercel deployment remove')
 	}
 
-	const vercelAssignAlias = async (aliasUrl: string) => {
-		core.info(`Alias ${aliasUrl}`)
-
+	const vercelAssignAlias = async ({
+		tokenList,
+		aliasUrl,
+	}: IVercelAssignAlias) => {
 		await execCommand({
-			command: [vercelCli, 'inspect', deploymentUrlVercel, '-t', vercelToken],
+			command: [
+				vercelCli,
+				'inspect',
+				deploymentUrlVercel,
+				'-t',
+				tokenList.vercel,
+			],
 		})
 
 		const output = await execCommand({
 			command: [
 				vercelCli,
-				`--token=${vercelToken}`,
+				`--token=${tokenList.vercel}`,
 				'alias',
 				'set',
 				deploymentUrlVercel,
@@ -60,7 +70,6 @@ const vercel = (): IVercelReturn => {
 			],
 		})
 
-		core.info('finalizing vercel assign alias')
 		return output
 	}
 
@@ -69,7 +78,6 @@ const vercel = (): IVercelReturn => {
 	}
 
 	return {
-		vercelToken,
 		vercelDeploy,
 		vercelRemoveProjectDeploy,
 		vercelAssignAlias,
