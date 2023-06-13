@@ -17,6 +17,7 @@ export interface IVercelAssignAlias {
 
 export interface IVercelReturn {
 	vercelDeploy: ({
+		tokenList,
 		distFolder,
 		previewPath,
 	}: IVercelDeployParams) => Promise<void>
