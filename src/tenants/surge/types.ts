@@ -1,13 +1,11 @@
-import { TokenList } from '../../types'
-
 interface ISurgeDeployParams {
-	tokenList: TokenList
+	token: string
 	distFolder: string
 	mountedUrl: string
 }
 
 interface ISurgeRemoveProjectDeployParams {
-	tokenList: TokenList
+	token: string
 	mountedUrl: string
 }
 

@@ -16,18 +16,19 @@ const deploy = async ({
 }: IDeployParams) => {
 	const { surgeDeploy } = surge()
 	const { vercelDeploy, returnVercelUrl } = vercel()
+	const { surge: surgeToken, vercel: vercelToken } = tokenList
 
-	if (tokenList.surge) {
+	if (surgeToken) {
 		await surgeDeploy({
-			tokenList,
+			token: surgeToken,
 			distFolder,
 			mountedUrl,
 		})
 	}
 
-	if (tokenList.vercel) {
+	if (vercelToken) {
 		await vercelDeploy({
-			tokenList,
+			token: vercelToken,
 			distFolder,
 			previewPath,
 		})

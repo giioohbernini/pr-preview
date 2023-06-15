@@ -13,35 +13,22 @@ const vercel = (): IVercelReturn => {
 	let deploymentUrlVercel = ''
 
 	const vercelDeploy = async ({
-		tokenList,
+		token,
 		distFolder,
 		previewPath,
 	}: IVercelDeployParams) => {
 		const outputPath = await execCommand({
-			command: [
-				vercelCli,
-				'--yes',
-				'--cwd',
-				`./${distFolder}`,
-				'-t',
-				tokenList.vercel,
-			],
+			command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
 		})
 
 		deploymentUrlVercel = outputPath.concat(previewPath)
 	}
 
 	const vercelRemoveProjectDeploy = async ({
-		tokenList,
+		token,
 	}: IVercelRemoveProjectDeploy) => {
 		await execCommand({
-			command: [
-				vercelCli,
-				'remove --yes',
-				deploymentUrlVercel,
-				'-t',
-				tokenList.vercel,
-			],
+			command: [vercelCli, 'remove --yes', deploymentUrlVercel, '-t', token],
 		})
 	}
 

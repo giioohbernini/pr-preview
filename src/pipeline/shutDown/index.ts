@@ -16,12 +16,13 @@ const shutDown = async ({
 	try {
 		const { surgeRemoveProjectDeploy } = surge()
 		const { vercelRemoveProjectDeploy } = vercel()
+		const { surge: surgeToken, vercel: vercelToken } = tokenList
 
 		core.info(`Teardown: ${mountedUrl}`)
 
-		if (tokenList.surge) surgeRemoveProjectDeploy({ tokenList, mountedUrl })
+		if (surgeToken) surgeRemoveProjectDeploy({ token: surgeToken, mountedUrl })
 
-		if (tokenList.vercel) vercelRemoveProjectDeploy({ tokenList })
+		if (vercelToken) vercelRemoveProjectDeploy({ token: vercelToken })
 
 		const image = formatImage({
 			buildingLogUrl,

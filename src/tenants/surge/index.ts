@@ -7,27 +7,21 @@ import {
 
 const surge = (): ISurgeReturn => {
 	const surgeDeploy = async ({
-		tokenList,
+		token,
 		distFolder,
 		mountedUrl,
 	}: ISurgeDeployParams) => {
 		await execCommand({
-			command: [
-				'surge',
-				`./${distFolder}`,
-				mountedUrl,
-				`--token`,
-				tokenList.surge,
-			],
+			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
 	}
 
 	const surgeRemoveProjectDeploy = async ({
-		tokenList,
+		token,
 		mountedUrl,
 	}: ISurgeRemoveProjectDeployParams) => {
 		await execCommand({
-			command: ['surge', 'teardown', mountedUrl, `--token`, tokenList.surge],
+			command: ['surge', 'teardown', mountedUrl, `--token`, token],
 		})
 	}
 

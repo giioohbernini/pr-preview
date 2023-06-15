@@ -719,16 +719,17 @@ const vercel_1 = __importDefault(__nccwpck_require__(9707));
 const deploy = ({ tokenList, previewPath, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy } = (0, surge_1.default)();
     const { vercelDeploy, returnVercelUrl } = (0, vercel_1.default)();
-    if (tokenList.surge) {
+    const { surge: surgeToken, vercel: vercelToken } = tokenList;
+    if (surgeToken) {
         yield surgeDeploy({
-            tokenList,
+            token: surgeToken,
             distFolder,
             mountedUrl,
         });
     }
-    if (tokenList.vercel) {
+    if (vercelToken) {
         yield vercelDeploy({
-            tokenList,
+            token: vercelToken,
             distFolder,
             previewPath,
         });
@@ -894,11 +895,12 @@ const shutDown = ({ tokenList, mountedUrl, buildingLogUrl, outputUrl, gitCommitS
     try {
         const { surgeRemoveProjectDeploy } = (0, surge_1.default)();
         const { vercelRemoveProjectDeploy } = (0, vercel_1.default)();
+        const { surge: surgeToken, vercel: vercelToken } = tokenList;
         core.info(`Teardown: ${mountedUrl}`);
-        if (tokenList.surge)
-            surgeRemoveProjectDeploy({ tokenList, mountedUrl });
-        if (tokenList.vercel)
-            vercelRemoveProjectDeploy({ tokenList });
+        if (surgeToken)
+            surgeRemoveProjectDeploy({ token: surgeToken, mountedUrl });
+        if (vercelToken)
+            vercelRemoveProjectDeploy({ token: vercelToken });
         const image = (0, formatImage_1.formatImage)({
             buildingLogUrl,
             imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
@@ -932,20 +934,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
-    const surgeDeploy = ({ tokenList, distFolder, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const surgeDeploy = ({ token, distFolder, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, execCommand_1.execCommand)({
-            command: [
-                'surge',
-                `./${distFolder}`,
-                mountedUrl,
-                `--token`,
-                tokenList.surge,
-            ],
+            command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
     });
-    const surgeRemoveProjectDeploy = ({ tokenList, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const surgeRemoveProjectDeploy = ({ token, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, execCommand_1.execCommand)({
-            command: ['surge', 'teardown', mountedUrl, `--token`, tokenList.surge],
+            command: ['surge', 'teardown', mountedUrl, `--token`, token],
         });
     });
     return {
@@ -998,28 +994,15 @@ const vercel = () => {
     const vercelCli = 'vercel';
     const { job } = github.context;
     let deploymentUrlVercel = '';
-    const vercelDeploy = ({ tokenList, distFolder, previewPath, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const vercelDeploy = ({ token, distFolder, previewPath, }) => __awaiter(void 0, void 0, void 0, function* () {
         const outputPath = yield (0, execCommand_1.execCommand)({
-            command: [
-                vercelCli,
-                '--yes',
-                '--cwd',
-                `./${distFolder}`,
-                '-t',
-                tokenList.vercel,
-            ],
+            command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         deploymentUrlVercel = outputPath.concat(previewPath);
     });
-    const vercelRemoveProjectDeploy = ({ tokenList, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const vercelRemoveProjectDeploy = ({ token, }) => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, execCommand_1.execCommand)({
-            command: [
-                vercelCli,
-                'remove --yes',
-                deploymentUrlVercel,
-                '-t',
-                tokenList.vercel,
-            ],
+            command: [vercelCli, 'remove --yes', deploymentUrlVercel, '-t', token],
         });
     });
     const vercelAssignAlias = ({ tokenList, aliasUrl, }) => __awaiter(void 0, void 0, void 0, function* () {

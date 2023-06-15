@@ -1,13 +1,13 @@
 import { TokenList } from '../../types'
 
 export interface IVercelDeployParams {
-	tokenList: TokenList
+	token: string
 	distFolder: string
 	previewPath: string
 }
 
 export interface IVercelRemoveProjectDeploy {
-	tokenList: TokenList
+	token: string
 }
 
 export interface IVercelAssignAlias {
@@ -17,11 +17,11 @@ export interface IVercelAssignAlias {
 
 export interface IVercelReturn {
 	vercelDeploy: ({
-		tokenList,
+		token,
 		distFolder,
 		previewPath,
 	}: IVercelDeployParams) => Promise<void>
-	vercelRemoveProjectDeploy: ({ tokenList }: IVercelRemoveProjectDeploy) => void
+	vercelRemoveProjectDeploy: ({ token }: IVercelRemoveProjectDeploy) => void
 	vercelAssignAlias: ({ tokenList, aliasUrl }: IVercelAssignAlias) => void
 	returnVercelUrl: () => string
 }
