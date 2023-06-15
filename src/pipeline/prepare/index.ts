@@ -1,20 +1,9 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { IReturnPrepare } from './types'
 import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
-
-interface IReturnPrepare {
-	surgeToken: string
-	previewPath: string
-	distFolder: string
-	gitCommitSha: string
-	mountedUrl: string
-	outputUrl: string
-	buildingLogUrl: string
-	configVercel: { vercelToken: string; deploymentUrlVercel: string }
-	shouldShutdown: boolean
-}
 
 const checkingPullRequestNumber = async () => {
 	const prNumber = await getPullRequestNumber()
@@ -28,7 +17,10 @@ const checkingPullRequestNumber = async () => {
 }
 
 const prepare = async (): Promise<IReturnPrepare> => {
-	const surgeToken = core.getInput('surge_token')
+	const tokenList = {
+		surge: core.getInput('surge_token'),
+		vercel: core.getInput('vercel_token'),
+	}
 	const previewUrl = core.getInput('preview_url')
 	const previewPath = core.getInput('preview_path')
 	const distFolder = core.getInput('dist')
@@ -48,10 +40,6 @@ const prepare = async (): Promise<IReturnPrepare> => {
 
 	const outputUrl = mountedUrl.concat(previewPath)
 	const buildingLogUrl = await generateLogUrl()
-	const configVercel = {
-		vercelToken: core.getInput('vercel_token'),
-		deploymentUrlVercel: '',
-	}
 
 	const shouldShutdown = teardown && payload.action === 'closed'
 
@@ -69,14 +57,13 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	core.info(`Find PR number: ${prNumber}`)
 
 	return {
-		surgeToken,
+		tokenList,
 		previewPath,
 		distFolder,
 		gitCommitSha,
 		mountedUrl,
 		outputUrl,
 		buildingLogUrl,
-		configVercel,
 		shouldShutdown,
 	}
 }

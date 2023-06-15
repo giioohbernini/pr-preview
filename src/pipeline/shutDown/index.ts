@@ -1,38 +1,28 @@
 import * as core from '@actions/core'
 import fail from '../../helpers/fail'
 import comment from '../../helpers/comment'
-import { vercelRemoveProjectDeploy } from '../../tenants/vercel'
-import { execCommand } from '../../helpers/execCommand'
+import surge from '../../tenants/surge'
+import vercel from '../../tenants/vercel'
 import { formatImage } from '../../helpers/formatImage'
-
-interface IShutDownPrams {
-	surgeToken: string
-	gitCommitSha: string
-	mountedUrl: string
-	outputUrl: string
-	buildingLogUrl: string
-	vercelToken: string
-	deploymentUrlVercel: string
-}
+import { IShutDownPrams } from './types'
 
 const shutDown = async ({
+	tokenList,
 	mountedUrl,
-	surgeToken,
 	buildingLogUrl,
-	vercelToken,
-	deploymentUrlVercel,
 	outputUrl,
 	gitCommitSha,
 }: IShutDownPrams): Promise<void> => {
 	try {
+		const { surgeRemoveProjectDeploy } = surge()
+		const { vercelRemoveProjectDeploy } = vercel()
+		const { surge: surgeToken, vercel: vercelToken } = tokenList
+
 		core.info(`Teardown: ${mountedUrl}`)
-		core.setSecret(surgeToken)
 
-		await execCommand({
-			command: ['surge', 'teardown', mountedUrl, `--token`, surgeToken],
-		})
+		if (surgeToken) surgeRemoveProjectDeploy({ token: surgeToken, mountedUrl })
 
-		if (vercelToken) await vercelRemoveProjectDeploy(deploymentUrlVercel)
+		if (vercelToken) vercelRemoveProjectDeploy({ token: vercelToken })
 
 		const image = formatImage({
 			buildingLogUrl,

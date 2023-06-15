@@ -8,3 +8,8 @@ export type Repo = {
 	owner: string
 	repo: string
 }
+
+export type TokenList = {
+	surge: string
+	vercel: string
+}
