@@ -579,7 +579,7 @@ const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 const deploy_1 = __importDefault(__nccwpck_require__(8425));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { tokenList, previewPath, distFolder, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, shouldShutdown, } = yield (0, prepare_1.default)();
+        const { tokenList, previewPath, distFolder, gitCommitSha, mountedUrl, outputUrl, buildingLogUrl, shouldShutdown, mountedUrlSurge, mountedUrlVercel, } = yield (0, prepare_1.default)();
         if (shouldShutdown) {
             return yield (0, shutDown_1.default)({
                 tokenList,
@@ -613,6 +613,8 @@ function main() {
                 outputUrl,
                 duration,
                 image,
+                mountedUrlSurge,
+                mountedUrlVercel,
             });
         }
         catch (err) {
@@ -716,7 +718,7 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(2764));
 const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const deploy = ({ tokenList, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ tokenList, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, mountedUrlSurge, mountedUrlVercel, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy } = (0, surge_1.default)();
     const { vercelDeploy, returnVercelUrl } = (0, vercel_1.default)();
     const { surge: surgeToken, vercel: vercelToken } = tokenList;
@@ -724,14 +726,14 @@ const deploy = ({ tokenList, distFolder, mountedUrl, gitCommitSha, outputUrl, du
         yield surgeDeploy({
             token: surgeToken,
             distFolder,
-            mountedUrl,
+            mountedUrl: mountedUrlSurge,
         });
     }
     if (vercelToken) {
         yield vercelDeploy({
             token: vercelToken,
             distFolder,
-            mountedUrl,
+            mountedUrl: mountedUrlVercel,
         });
     }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
@@ -798,28 +800,41 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
     }
     return prNumber;
 });
+const mountedUrlTenants = (domainTenant) => __awaiter(void 0, void 0, void 0, function* () {
+    const { job } = github.context;
+    const previewPath = core.getInput('preview_path');
+    const previewUrl = core.getInput('preview_url');
+    const repoOwner = github.context.repo.owner.replace(/\./g, '-');
+    const repoName = github.context.repo.repo.replace(/\./g, '-');
+    const prNumber = yield checkingPullRequestNumber();
+    core.info(`Find PR number: ${prNumber}`);
+    return previewUrl
+        .replace('{{repoOwner}}', repoOwner)
+        .replace('{{repoName}}', repoName)
+        .replace('{{job}}', job)
+        .replace('{{prNumber}}', `${prNumber}`)
+        .concat(domainTenant)
+        .concat(previewPath);
+});
 const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const tokenList = {
         surge: core.getInput('surge_token'),
         vercel: core.getInput('vercel_token'),
     };
-    const previewUrl = core.getInput('preview_url');
+    // const previewUrl = core.getInput('preview_url')
     const previewPath = core.getInput('preview_path');
     const distFolder = core.getInput('dist');
     const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
-    const prNumber = yield checkingPullRequestNumber();
-    const { job, payload } = github.context;
+    // const prNumber = await checkingPullRequestNumber()
+    const { payload } = github.context;
     const gitCommitSha = (0, getGitCommitSha_1.default)();
-    const repoOwner = github.context.repo.owner.replace(/\./g, '-');
-    const repoName = github.context.repo.repo.replace(/\./g, '-');
-    const mountedUrl = previewUrl
-        .replace('{{repoOwner}}', repoOwner)
-        .replace('{{repoName}}', repoName)
-        .replace('{{job}}', job)
-        .replace('{{prNumber}}', `${prNumber}`)
-        .concat('.surge.sh');
+    // const repoOwner = github.context.repo.owner.replace(/\./g, '-')
+    // const repoName = github.context.repo.repo.replace(/\./g, '-')
+    const mountedUrl = yield mountedUrlTenants('surge.sh');
     const outputUrl = mountedUrl.concat(previewPath);
+    const mountedUrlSurge = yield mountedUrlTenants('surge.sh');
+    const mountedUrlVercel = yield mountedUrlTenants('vercel.app');
     const buildingLogUrl = yield (0, generateLogUrl_1.default)();
     const shouldShutdown = teardown && payload.action === 'closed';
     core.setOutput('preview_url', outputUrl);
@@ -831,7 +846,6 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     core.debug(`event action?: ${payload.action}`);
     core.debug(`teardown enabled?: ${teardown}`);
     core.info('Finalizing the initialization of the variables.');
-    core.info(`Find PR number: ${prNumber}`);
     return {
         tokenList,
         previewPath,
@@ -841,6 +855,8 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         outputUrl,
         buildingLogUrl,
         shouldShutdown,
+        mountedUrlSurge,
+        mountedUrlVercel,
     };
 });
 exports["default"] = prepare;

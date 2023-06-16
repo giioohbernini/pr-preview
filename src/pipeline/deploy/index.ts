@@ -12,6 +12,8 @@ const deploy = async ({
 	outputUrl,
 	duration,
 	image,
+	mountedUrlSurge,
+	mountedUrlVercel,
 }: IDeployParams) => {
 	const { surgeDeploy } = surge()
 	const { vercelDeploy, returnVercelUrl } = vercel()
@@ -21,7 +23,7 @@ const deploy = async ({
 		await surgeDeploy({
 			token: surgeToken,
 			distFolder,
-			mountedUrl,
+			mountedUrl: mountedUrlSurge,
 		})
 	}
 
@@ -29,7 +31,7 @@ const deploy = async ({
 		await vercelDeploy({
 			token: vercelToken,
 			distFolder,
-			mountedUrl,
+			mountedUrl: mountedUrlVercel,
 		})
 	}
 

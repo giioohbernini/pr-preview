@@ -9,4 +9,6 @@ export interface IDeployParams {
 	outputUrl: string
 	duration: number
 	image: string
+	mountedUrlSurge: string
+	mountedUrlVercel: string
 }

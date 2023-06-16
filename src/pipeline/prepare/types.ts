@@ -9,4 +9,6 @@ export interface IReturnPrepare {
 	outputUrl: string
 	buildingLogUrl: string
 	shouldShutdown: boolean
+	mountedUrlSurge: string
+	mountedUrlVercel: string
 }

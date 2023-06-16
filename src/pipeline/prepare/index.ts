@@ -16,29 +16,46 @@ const checkingPullRequestNumber = async () => {
 	return prNumber
 }
 
+const mountedUrlTenants = async (domainTenant: string) => {
+	const { job } = github.context
+	const previewPath = core.getInput('preview_path')
+	const previewUrl = core.getInput('preview_url')
+	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
+	const repoName = github.context.repo.repo.replace(/\./g, '-')
+	const prNumber = await checkingPullRequestNumber()
+
+	core.info(`Find PR number: ${prNumber}`)
+
+	return previewUrl
+		.replace('{{repoOwner}}', repoOwner)
+		.replace('{{repoName}}', repoName)
+		.replace('{{job}}', job)
+		.replace('{{prNumber}}', `${prNumber}`)
+		.concat(domainTenant)
+		.concat(previewPath)
+}
+
 const prepare = async (): Promise<IReturnPrepare> => {
 	const tokenList = {
 		surge: core.getInput('surge_token'),
 		vercel: core.getInput('vercel_token'),
 	}
-	const previewUrl = core.getInput('preview_url')
+	// const previewUrl = core.getInput('preview_url')
 	const previewPath = core.getInput('preview_path')
 	const distFolder = core.getInput('dist')
 	const teardown =
 		core.getInput('teardown')?.toString().toLowerCase() === 'true'
-	const prNumber = await checkingPullRequestNumber()
-	const { job, payload } = github.context
+	// const prNumber = await checkingPullRequestNumber()
+	const { payload } = github.context
 	const gitCommitSha = getGitCommitSha()
-	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
-	const repoName = github.context.repo.repo.replace(/\./g, '-')
-	const mountedUrl = previewUrl
-		.replace('{{repoOwner}}', repoOwner)
-		.replace('{{repoName}}', repoName)
-		.replace('{{job}}', job)
-		.replace('{{prNumber}}', `${prNumber}`)
-		.concat('.surge.sh')
-
+	// const repoOwner = github.context.repo.owner.replace(/\./g, '-')
+	// const repoName = github.context.repo.repo.replace(/\./g, '-')
+	const mountedUrl = await mountedUrlTenants('surge.sh')
 	const outputUrl = mountedUrl.concat(previewPath)
+
+	const mountedUrlSurge = await mountedUrlTenants('surge.sh')
+	const mountedUrlVercel = await mountedUrlTenants('vercel.app')
+
 	const buildingLogUrl = await generateLogUrl()
 
 	const shouldShutdown = teardown && payload.action === 'closed'
@@ -54,7 +71,6 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	core.debug(`teardown enabled?: ${teardown}`)
 
 	core.info('Finalizing the initialization of the variables.')
-	core.info(`Find PR number: ${prNumber}`)
 
 	return {
 		tokenList,
@@ -65,6 +81,8 @@ const prepare = async (): Promise<IReturnPrepare> => {
 		outputUrl,
 		buildingLogUrl,
 		shouldShutdown,
+		mountedUrlSurge,
+		mountedUrlVercel,
 	}
 }
 

@@ -18,6 +18,8 @@ async function main() {
 		outputUrl,
 		buildingLogUrl,
 		shouldShutdown,
+		mountedUrlSurge,
+		mountedUrlVercel,
 	} = await prepare()
 
 	if (shouldShutdown) {
@@ -60,6 +62,8 @@ async function main() {
 			outputUrl,
 			duration,
 			image,
+			mountedUrlSurge,
+			mountedUrlVercel,
 		})
 	} catch (err) {
 		core.info(`run command error ${err}`)
