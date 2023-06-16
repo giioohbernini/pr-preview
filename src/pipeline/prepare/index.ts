@@ -50,11 +50,11 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const gitCommitSha = getGitCommitSha()
 	// const repoOwner = github.context.repo.owner.replace(/\./g, '-')
 	// const repoName = github.context.repo.repo.replace(/\./g, '-')
-	const mountedUrl = await mountedUrlTenants('surge.sh')
+	const mountedUrl = await mountedUrlTenants('.surge.sh')
 	const outputUrl = mountedUrl.concat(previewPath)
 
-	const mountedUrlSurge = await mountedUrlTenants('surge.sh')
-	const mountedUrlVercel = await mountedUrlTenants('vercel.app')
+	const mountedUrlSurge = await mountedUrlTenants('.surge.sh')
+	const mountedUrlVercel = await mountedUrlTenants('.vercel.app')
 
 	const buildingLogUrl = await generateLogUrl()
 

@@ -831,10 +831,10 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     const gitCommitSha = (0, getGitCommitSha_1.default)();
     // const repoOwner = github.context.repo.owner.replace(/\./g, '-')
     // const repoName = github.context.repo.repo.replace(/\./g, '-')
-    const mountedUrl = yield mountedUrlTenants('surge.sh');
+    const mountedUrl = yield mountedUrlTenants('.surge.sh');
     const outputUrl = mountedUrl.concat(previewPath);
-    const mountedUrlSurge = yield mountedUrlTenants('surge.sh');
-    const mountedUrlVercel = yield mountedUrlTenants('vercel.app');
+    const mountedUrlSurge = yield mountedUrlTenants('.surge.sh');
+    const mountedUrlVercel = yield mountedUrlTenants('.vercel.app');
     const buildingLogUrl = yield (0, generateLogUrl_1.default)();
     const shouldShutdown = teardown && payload.action === 'closed';
     core.setOutput('preview_url', outputUrl);
