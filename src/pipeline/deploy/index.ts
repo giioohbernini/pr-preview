@@ -6,7 +6,6 @@ import vercel from '../../tenants/vercel'
 
 const deploy = async ({
 	tokenList,
-	previewPath,
 	distFolder,
 	mountedUrl,
 	gitCommitSha,
@@ -30,7 +29,7 @@ const deploy = async ({
 		await vercelDeploy({
 			token: vercelToken,
 			distFolder,
-			previewPath,
+			mountedUrl,
 		})
 	}
 

@@ -716,7 +716,7 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(2764));
 const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const deploy = ({ tokenList, previewPath, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ tokenList, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy } = (0, surge_1.default)();
     const { vercelDeploy, returnVercelUrl } = (0, vercel_1.default)();
     const { surge: surgeToken, vercel: vercelToken } = tokenList;
@@ -731,7 +731,7 @@ const deploy = ({ tokenList, previewPath, distFolder, mountedUrl, gitCommitSha, 
         yield vercelDeploy({
             token: vercelToken,
             distFolder,
-            previewPath,
+            mountedUrl,
         });
     }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
@@ -959,25 +959,6 @@ exports["default"] = surge;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -988,44 +969,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const github = __importStar(__nccwpck_require__(5438));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel = () => {
     const vercelCli = 'vercel';
-    const { job } = github.context;
     let deploymentUrlVercel = '';
-    const vercelDeploy = ({ token, distFolder, previewPath, }) => __awaiter(void 0, void 0, void 0, function* () {
-        const outputPath = yield (0, execCommand_1.execCommand)({
+    const vercelAssignAlias = ({ token, deploymentUrl, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
+        const outputAliasUrl = yield (0, execCommand_1.execCommand)({
+            command: [
+                vercelCli,
+                'alias',
+                'set',
+                deploymentUrl,
+                `${mountedUrl}`,
+                `--token=${token}`,
+            ],
+        });
+        deploymentUrlVercel = outputAliasUrl;
+    });
+    const vercelDeploy = ({ token, distFolder, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
+        const deploymentUrl = yield (0, execCommand_1.execCommand)({
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
-        deploymentUrlVercel = outputPath.concat(previewPath);
+        vercelAssignAlias({ token, deploymentUrl, mountedUrl });
     });
     const vercelRemoveProjectDeploy = ({ token, }) => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, execCommand_1.execCommand)({
             command: [vercelCli, 'remove --yes', deploymentUrlVercel, '-t', token],
         });
-    });
-    const vercelAssignAlias = ({ tokenList, aliasUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, execCommand_1.execCommand)({
-            command: [
-                vercelCli,
-                'inspect',
-                deploymentUrlVercel,
-                '-t',
-                tokenList.vercel,
-            ],
-        });
-        const output = yield (0, execCommand_1.execCommand)({
-            command: [
-                vercelCli,
-                `--token=${tokenList.vercel}`,
-                'alias',
-                'set',
-                deploymentUrlVercel,
-                `${job}-${aliasUrl}`,
-            ],
-        });
-        return output;
     });
     const returnVercelUrl = () => {
         return deploymentUrlVercel;
@@ -1033,7 +1003,6 @@ const vercel = () => {
     return {
         vercelDeploy,
         vercelRemoveProjectDeploy,
-        vercelAssignAlias,
         returnVercelUrl,
     };
 };

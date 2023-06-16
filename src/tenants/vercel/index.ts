@@ -9,19 +9,37 @@ import {
 
 const vercel = (): IVercelReturn => {
 	const vercelCli = 'vercel'
-	const { job } = github.context
 	let deploymentUrlVercel = ''
+
+	const vercelAssignAlias = async ({
+		token,
+		deploymentUrl,
+		mountedUrl,
+	}: IVercelAssignAlias) => {
+		const outputAliasUrl = await execCommand({
+			command: [
+				vercelCli,
+				'alias',
+				'set',
+				deploymentUrl,
+				`${mountedUrl}`,
+				`--token=${token}`,
+			],
+		})
+
+		deploymentUrlVercel = outputAliasUrl
+	}
 
 	const vercelDeploy = async ({
 		token,
 		distFolder,
-		previewPath,
+		mountedUrl,
 	}: IVercelDeployParams) => {
-		const outputPath = await execCommand({
+		const deploymentUrl = await execCommand({
 			command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
 		})
 
-		deploymentUrlVercel = outputPath.concat(previewPath)
+		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
 	}
 
 	const vercelRemoveProjectDeploy = async ({
@@ -32,34 +50,6 @@ const vercel = (): IVercelReturn => {
 		})
 	}
 
-	const vercelAssignAlias = async ({
-		tokenList,
-		aliasUrl,
-	}: IVercelAssignAlias) => {
-		await execCommand({
-			command: [
-				vercelCli,
-				'inspect',
-				deploymentUrlVercel,
-				'-t',
-				tokenList.vercel,
-			],
-		})
-
-		const output = await execCommand({
-			command: [
-				vercelCli,
-				`--token=${tokenList.vercel}`,
-				'alias',
-				'set',
-				deploymentUrlVercel,
-				`${job}-${aliasUrl}`,
-			],
-		})
-
-		return output
-	}
-
 	const returnVercelUrl = () => {
 		return deploymentUrlVercel
 	}
@@ -67,7 +57,6 @@ const vercel = (): IVercelReturn => {
 	return {
 		vercelDeploy,
 		vercelRemoveProjectDeploy,
-		vercelAssignAlias,
 		returnVercelUrl,
 	}
 }
