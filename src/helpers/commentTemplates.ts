@@ -27,14 +27,14 @@ export const deployFinalizedTemplate = ({
     <table>
       <tr>
         <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${mountedUrlSurge}'>${mountedUrlSurge}</a></td>
+        <td><a href='https://${mountedUrlSurge}' target="_blank">${mountedUrlSurge}</a></td>
       </tr>
       ${
 				tokenList.vercel
 					? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='https://${mountedUrlVercel}'>${mountedUrlVercel}</a></td>
+              <td><a href='https://${mountedUrlVercel}' target="_blank">${mountedUrlVercel}</a></td>
             </tr>
           `
 					: ''
