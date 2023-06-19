@@ -1,4 +1,4 @@
 export interface IBuildParams {
-	mountedUrl: string
+	mountedUrlSurge: string
 	buildingLogUrl: string
 }

@@ -18,8 +18,10 @@ const checkingPullRequestNumber = async () => {
 
 const mountedUrlTenants = async (domainTenant: string) => {
 	const { job } = github.context
-	const previewPath = core.getInput('preview_path')
-	const previewUrl = core.getInput('preview_url')
+	const previewPath =
+		core.getInput('preview_path') ||
+		`{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}`
+	const previewUrl = core.getInput('preview_url') || ''
 	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
 	const repoName = github.context.repo.repo.replace(/\./g, '-')
 	const prNumber = await checkingPullRequestNumber()
@@ -40,17 +42,12 @@ const prepare = async (): Promise<IReturnPrepare> => {
 		surge: core.getInput('surge_token'),
 		vercel: core.getInput('vercel_token'),
 	}
-	// const previewUrl = core.getInput('preview_url')
 	const previewPath = core.getInput('preview_path')
 	const distFolder = core.getInput('dist')
 	const teardown =
 		core.getInput('teardown')?.toString().toLowerCase() === 'true'
-	// const prNumber = await checkingPullRequestNumber()
 	const { payload } = github.context
 	const gitCommitSha = getGitCommitSha()
-	// const repoOwner = github.context.repo.owner.replace(/\./g, '-')
-	// const repoName = github.context.repo.repo.replace(/\./g, '-')
-	const mountedUrl = await mountedUrlTenants('.surge.sh')
 
 	const mountedUrlSurge = await mountedUrlTenants('.surge.sh')
 	const mountedUrlVercel = await mountedUrlTenants('.vercel.app')
@@ -74,7 +71,6 @@ const prepare = async (): Promise<IReturnPrepare> => {
 		previewPath,
 		distFolder,
 		gitCommitSha,
-		mountedUrl,
 		buildingLogUrl,
 		shouldShutdown,
 		mountedUrlSurge,

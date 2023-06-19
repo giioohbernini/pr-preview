@@ -579,11 +579,10 @@ const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 const deploy_1 = __importDefault(__nccwpck_require__(8425));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { tokenList, previewPath, distFolder, gitCommitSha, mountedUrl, buildingLogUrl, shouldShutdown, mountedUrlSurge, mountedUrlVercel, } = yield (0, prepare_1.default)();
+        const { tokenList, previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, mountedUrlSurge, mountedUrlVercel, } = yield (0, prepare_1.default)();
         if (shouldShutdown) {
             return yield (0, shutDown_1.default)({
                 tokenList,
-                mountedUrl,
                 buildingLogUrl,
                 mountedUrlSurge,
                 mountedUrlVercel,
@@ -602,14 +601,13 @@ function main() {
         }));
         try {
             const { duration, image } = yield (0, build_1.default)({
-                mountedUrl,
+                mountedUrlSurge,
                 buildingLogUrl,
             });
             yield (0, deploy_1.default)({
                 tokenList,
                 previewPath,
                 distFolder,
-                mountedUrl,
                 gitCommitSha,
                 duration,
                 image,
@@ -669,7 +667,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const formatImage_1 = __nccwpck_require__(8781);
-const build = ({ mountedUrl, buildingLogUrl }) => __awaiter(void 0, void 0, void 0, function* () {
+const build = ({ mountedUrlSurge, buildingLogUrl }) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = Date.now();
     if (!core.getInput('build')) {
         yield (0, exec_1.exec)(`npm install`);
@@ -684,7 +682,7 @@ const build = ({ mountedUrl, buildingLogUrl }) => __awaiter(void 0, void 0, void
     }
     const duration = (Date.now() - startTime) / 1000;
     core.info(`Build time: ${duration} seconds`);
-    core.info(`Deploy to ${mountedUrl}`);
+    core.info(`Deploy to ${mountedUrlSurge}`);
     const image = (0, formatImage_1.formatImage)({
         buildingLogUrl,
         imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
@@ -802,8 +800,9 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
 });
 const mountedUrlTenants = (domainTenant) => __awaiter(void 0, void 0, void 0, function* () {
     const { job } = github.context;
-    const previewPath = core.getInput('preview_path');
-    const previewUrl = core.getInput('preview_url');
+    const previewPath = core.getInput('preview_path') ||
+        `{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}`;
+    const previewUrl = core.getInput('preview_url') || '';
     const repoOwner = github.context.repo.owner.replace(/\./g, '-');
     const repoName = github.context.repo.repo.replace(/\./g, '-');
     const prNumber = yield checkingPullRequestNumber();
@@ -822,16 +821,11 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         surge: core.getInput('surge_token'),
         vercel: core.getInput('vercel_token'),
     };
-    // const previewUrl = core.getInput('preview_url')
     const previewPath = core.getInput('preview_path');
     const distFolder = core.getInput('dist');
     const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
-    // const prNumber = await checkingPullRequestNumber()
     const { payload } = github.context;
     const gitCommitSha = (0, getGitCommitSha_1.default)();
-    // const repoOwner = github.context.repo.owner.replace(/\./g, '-')
-    // const repoName = github.context.repo.repo.replace(/\./g, '-')
-    const mountedUrl = yield mountedUrlTenants('.surge.sh');
     const mountedUrlSurge = yield mountedUrlTenants('.surge.sh');
     const mountedUrlVercel = yield mountedUrlTenants('.vercel.app');
     const buildingLogUrl = yield (0, generateLogUrl_1.default)();
@@ -849,7 +843,6 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         previewPath,
         distFolder,
         gitCommitSha,
-        mountedUrl,
         buildingLogUrl,
         shouldShutdown,
         mountedUrlSurge,
@@ -904,12 +897,12 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const surge_1 = __importDefault(__nccwpck_require__(2764));
 const vercel_1 = __importDefault(__nccwpck_require__(9707));
 const formatImage_1 = __nccwpck_require__(8781);
-const shutDown = ({ tokenList, mountedUrl, buildingLogUrl, mountedUrlSurge, mountedUrlVercel, gitCommitSha, }) => __awaiter(void 0, void 0, void 0, function* () {
+const shutDown = ({ tokenList, buildingLogUrl, mountedUrlSurge, mountedUrlVercel, gitCommitSha, }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { surgeRemoveProjectDeploy } = (0, surge_1.default)();
         const { vercelRemoveProjectDeploy } = (0, vercel_1.default)();
         const { surge: surgeToken, vercel: vercelToken } = tokenList;
-        core.info(`Teardown: ${mountedUrl}`);
+        core.info(`Teardown: ${mountedUrlSurge}`);
         if (surgeToken)
             yield surgeRemoveProjectDeploy({
                 token: surgeToken,

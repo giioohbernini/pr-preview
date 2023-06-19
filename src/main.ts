@@ -14,7 +14,6 @@ async function main() {
 		previewPath,
 		distFolder,
 		gitCommitSha,
-		mountedUrl,
 		buildingLogUrl,
 		shouldShutdown,
 		mountedUrlSurge,
@@ -24,7 +23,6 @@ async function main() {
 	if (shouldShutdown) {
 		return await shutDown({
 			tokenList,
-			mountedUrl,
 			buildingLogUrl,
 			mountedUrlSurge,
 			mountedUrlVercel,
@@ -49,7 +47,7 @@ async function main() {
 
 	try {
 		const { duration, image } = await build({
-			mountedUrl,
+			mountedUrlSurge,
 			buildingLogUrl,
 		})
 
@@ -57,7 +55,6 @@ async function main() {
 			tokenList,
 			previewPath,
 			distFolder,
-			mountedUrl,
 			gitCommitSha,
 			duration,
 			image,

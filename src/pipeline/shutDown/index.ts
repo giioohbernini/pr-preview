@@ -8,7 +8,6 @@ import { IShutDownPrams } from './types'
 
 const shutDown = async ({
 	tokenList,
-	mountedUrl,
 	buildingLogUrl,
 	mountedUrlSurge,
 	mountedUrlVercel,
@@ -19,7 +18,7 @@ const shutDown = async ({
 		const { vercelRemoveProjectDeploy } = vercel()
 		const { surge: surgeToken, vercel: vercelToken } = tokenList
 
-		core.info(`Teardown: ${mountedUrl}`)
+		core.info(`Teardown: ${mountedUrlSurge}`)
 
 		if (surgeToken)
 			await surgeRemoveProjectDeploy({

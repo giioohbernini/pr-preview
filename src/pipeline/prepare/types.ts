@@ -5,7 +5,6 @@ export interface IReturnPrepare {
 	previewPath: string
 	distFolder: string
 	gitCommitSha: string
-	mountedUrl: string
 	buildingLogUrl: string
 	shouldShutdown: boolean
 	mountedUrlSurge: string
