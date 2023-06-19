@@ -4,6 +4,7 @@ export interface IShutDownPrams {
 	tokenList: TokenList
 	gitCommitSha: string
 	mountedUrl: string
-	outputUrl: string
+	mountedUrlSurge: string
+	mountedUrlVercel: string
 	buildingLogUrl: string
 }

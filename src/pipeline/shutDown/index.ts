@@ -10,7 +10,8 @@ const shutDown = async ({
 	tokenList,
 	mountedUrl,
 	buildingLogUrl,
-	outputUrl,
+	mountedUrlSurge,
+	mountedUrlVercel,
 	gitCommitSha,
 }: IShutDownPrams): Promise<void> => {
 	try {
@@ -20,9 +21,17 @@ const shutDown = async ({
 
 		core.info(`Teardown: ${mountedUrl}`)
 
-		if (surgeToken) surgeRemoveProjectDeploy({ token: surgeToken, mountedUrl })
+		if (surgeToken)
+			await surgeRemoveProjectDeploy({
+				token: surgeToken,
+				mountedUrl: mountedUrlSurge,
+			})
 
-		if (vercelToken) vercelRemoveProjectDeploy({ token: vercelToken })
+		if (vercelToken)
+			await vercelRemoveProjectDeploy({
+				token: vercelToken,
+				mountedUrl: mountedUrlVercel,
+			})
 
 		const image = formatImage({
 			buildingLogUrl,
@@ -31,7 +40,7 @@ const shutDown = async ({
 		})
 
 		return await comment(
-			`:recycle: [PR Preview](https://${outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
+			`:recycle: [PR Preview](https://${mountedUrlSurge}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
 		)
 	} catch (err) {
 		core.info('teardown error')

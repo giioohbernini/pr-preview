@@ -2,7 +2,7 @@ import type { Repo, Octokit, TokenList } from '../types'
 
 interface IDeployInProgressPrams {
 	gitCommitSha: string
-	outputUrl: string
+	mountedUrlSurge: string
 	buildingLogUrl: string
 	deployingImage: string
 }

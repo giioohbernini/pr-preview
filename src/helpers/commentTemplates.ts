@@ -7,13 +7,13 @@ const removeSchema = (url: string) => {
 
 export const deployInProgressTemplate = ({
 	gitCommitSha,
-	outputUrl,
+	mountedUrlSurge,
 	buildingLogUrl,
 	deployingImage,
 }: IDeployInProgressPrams) => {
 	return `
     <p>
-      ⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+      ⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${mountedUrlSurge}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
     </p>
     <p>${deployingImage}</p>
   `

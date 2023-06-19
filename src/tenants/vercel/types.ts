@@ -12,6 +12,7 @@ export interface IVercelDeployParams {
 
 export interface IVercelRemoveProjectDeploy {
 	token: string
+	mountedUrl: string
 }
 
 export interface IVercelReturn {
@@ -20,6 +21,9 @@ export interface IVercelReturn {
 		distFolder,
 		mountedUrl,
 	}: IVercelDeployParams) => Promise<void>
-	vercelRemoveProjectDeploy: ({ token }: IVercelRemoveProjectDeploy) => void
+	vercelRemoveProjectDeploy: ({
+		token,
+		mountedUrl,
+	}: IVercelRemoveProjectDeploy) => Promise<void>
 	returnVercelUrl: () => string
 }

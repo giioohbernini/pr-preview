@@ -13,7 +13,7 @@ interface ISurgeReturn {
 	surgeDeploy: ({ distFolder, mountedUrl }: ISurgeDeployParams) => Promise<void>
 	surgeRemoveProjectDeploy: ({
 		mountedUrl,
-	}: ISurgeRemoveProjectDeployParams) => void
+	}: ISurgeRemoveProjectDeployParams) => Promise<void>
 }
 
 export { ISurgeDeployParams, ISurgeRemoveProjectDeployParams, ISurgeReturn }

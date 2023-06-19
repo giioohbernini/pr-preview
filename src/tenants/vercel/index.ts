@@ -41,9 +41,10 @@ const vercel = (): IVercelReturn => {
 
 	const vercelRemoveProjectDeploy = async ({
 		token,
+		mountedUrl,
 	}: IVercelRemoveProjectDeploy) => {
 		await execCommand({
-			command: [vercelCli, 'remove --yes', deploymentUrlVercel, '-t', token],
+			command: [vercelCli, 'remove --yes', mountedUrl, '-t', token],
 		})
 	}
 

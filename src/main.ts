@@ -15,7 +15,6 @@ async function main() {
 		distFolder,
 		gitCommitSha,
 		mountedUrl,
-		outputUrl,
 		buildingLogUrl,
 		shouldShutdown,
 		mountedUrlSurge,
@@ -27,7 +26,8 @@ async function main() {
 			tokenList,
 			mountedUrl,
 			buildingLogUrl,
-			outputUrl,
+			mountedUrlSurge,
+			mountedUrlVercel,
 			gitCommitSha,
 		})
 	}
@@ -41,7 +41,7 @@ async function main() {
 	await comment(
 		deployInProgressTemplate({
 			gitCommitSha,
-			outputUrl,
+			mountedUrlSurge,
 			buildingLogUrl,
 			deployingImage,
 		})
@@ -59,7 +59,6 @@ async function main() {
 			distFolder,
 			mountedUrl,
 			gitCommitSha,
-			outputUrl,
 			duration,
 			image,
 			mountedUrlSurge,

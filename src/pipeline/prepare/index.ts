@@ -51,7 +51,6 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	// const repoOwner = github.context.repo.owner.replace(/\./g, '-')
 	// const repoName = github.context.repo.repo.replace(/\./g, '-')
 	const mountedUrl = await mountedUrlTenants('.surge.sh')
-	const outputUrl = mountedUrl.concat(previewPath)
 
 	const mountedUrlSurge = await mountedUrlTenants('.surge.sh')
 	const mountedUrlVercel = await mountedUrlTenants('.vercel.app')
@@ -59,8 +58,6 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const buildingLogUrl = await generateLogUrl()
 
 	const shouldShutdown = teardown && payload.action === 'closed'
-
-	core.setOutput('preview_url', outputUrl)
 
 	core.debug('github.context')
 	core.debug(JSON.stringify(github.context, null, 2))
@@ -78,7 +75,6 @@ const prepare = async (): Promise<IReturnPrepare> => {
 		distFolder,
 		gitCommitSha,
 		mountedUrl,
-		outputUrl,
 		buildingLogUrl,
 		shouldShutdown,
 		mountedUrlSurge,
