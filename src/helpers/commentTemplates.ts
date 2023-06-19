@@ -16,6 +16,7 @@ export const deployInProgressTemplate = ({
 
 export const deployFinalizedTemplate = ({
 	tokenList,
+	previewPath,
 	gitCommitSha,
 	mountedUrlSurge,
 	mountedUrlVercel,
@@ -27,14 +28,20 @@ export const deployFinalizedTemplate = ({
     <table>
       <tr>
         <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${mountedUrlSurge}' target="_blank">${mountedUrlSurge}</a></td>
+        <td><a href='https://${mountedUrlSurge.concat(
+					previewPath
+				)}' target="_blank">${mountedUrlSurge.concat(previewPath)}</a></td>
       </tr>
       ${
 				tokenList.vercel
 					? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='https://${mountedUrlVercel}' target="_blank">${mountedUrlVercel}</a></td>
+              <td><a href='https://${mountedUrlVercel.concat(
+								previewPath
+							)}' target="_blank">${mountedUrlVercel.concat(
+							previewPath
+					  )}</a></td>
             </tr>
           `
 					: ''

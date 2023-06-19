@@ -9,6 +9,7 @@ interface IDeployInProgressPrams {
 
 interface IdeployFinalized {
 	tokenList: TokenList
+	previewPath: string
 	gitCommitSha: string
 	mountedUrlSurge: string
 	mountedUrlVercel: string

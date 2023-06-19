@@ -84,19 +84,19 @@ const deployInProgressTemplate = ({ gitCommitSha, mountedUrlSurge, buildingLogUr
   `;
 };
 exports.deployInProgressTemplate = deployInProgressTemplate;
-const deployFinalizedTemplate = ({ tokenList, gitCommitSha, mountedUrlSurge, mountedUrlVercel, duration, image, }) => {
+const deployFinalizedTemplate = ({ tokenList, previewPath, gitCommitSha, mountedUrlSurge, mountedUrlVercel, duration, image, }) => {
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
       <tr>
         <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${mountedUrlSurge}' target="_blank">${mountedUrlSurge}</a></td>
+        <td><a href='https://${mountedUrlSurge.concat(previewPath)}' target="_blank">${mountedUrlSurge.concat(previewPath)}</a></td>
       </tr>
       ${tokenList.vercel
         ? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='https://${mountedUrlVercel}' target="_blank">${mountedUrlVercel}</a></td>
+              <td><a href='https://${mountedUrlVercel.concat(previewPath)}' target="_blank">${mountedUrlVercel.concat(previewPath)}</a></td>
             </tr>
           `
         : ''}
@@ -712,7 +712,7 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(2764));
 const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, mountedUrlSurge, mountedUrlVercel, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ tokenList, previewPath, distFolder, gitCommitSha, duration, image, mountedUrlSurge, mountedUrlVercel, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy } = (0, surge_1.default)();
     const { vercelDeploy } = (0, vercel_1.default)();
     const { surge: surgeToken, vercel: vercelToken } = tokenList;
@@ -732,6 +732,7 @@ const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, mountedU
     }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         tokenList,
+        previewPath,
         gitCommitSha,
         mountedUrlSurge,
         mountedUrlVercel,
@@ -796,7 +797,6 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
 });
 const mountedUrlTenants = (domainTenant) => __awaiter(void 0, void 0, void 0, function* () {
     const { job } = github.context;
-    // const previewPath = core.getInput('preview_path')
     const previewUrl = core.getInput('preview_url') || '';
     const repoOwner = github.context.repo.owner.replace(/\./g, '-');
     const repoName = github.context.repo.repo.replace(/\./g, '-');

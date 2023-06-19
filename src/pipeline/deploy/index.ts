@@ -6,6 +6,7 @@ import vercel from '../../tenants/vercel'
 
 const deploy = async ({
 	tokenList,
+	previewPath,
 	distFolder,
 	gitCommitSha,
 	duration,
@@ -36,6 +37,7 @@ const deploy = async ({
 	await comment(
 		deployFinalizedTemplate({
 			tokenList,
+			previewPath,
 			gitCommitSha,
 			mountedUrlSurge,
 			mountedUrlVercel,
