@@ -10,8 +10,8 @@ interface IDeployInProgressPrams {
 interface IdeployFinalized {
 	tokenList: TokenList
 	gitCommitSha: string
-	outputUrl: string
-	returnVercelUrl: () => string
+	mountedUrlSurge: string
+	mountedUrlVercel: string
 	duration: number
 	image: string
 }

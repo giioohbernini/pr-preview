@@ -88,19 +88,19 @@ const deployInProgressTemplate = ({ gitCommitSha, outputUrl, buildingLogUrl, dep
   `;
 };
 exports.deployInProgressTemplate = deployInProgressTemplate;
-const deployFinalizedTemplate = ({ tokenList, gitCommitSha, outputUrl, returnVercelUrl, duration, image, }) => {
+const deployFinalizedTemplate = ({ tokenList, gitCommitSha, mountedUrlSurge, mountedUrlVercel, duration, image, }) => {
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
       <tr>
         <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+        <td><a href='https://${mountedUrlSurge}'>${mountedUrlSurge}</a></td>
       </tr>
       ${tokenList.vercel
         ? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${returnVercelUrl()}'>${removeSchema(returnVercelUrl())}</a></td>
+              <td><a href='${mountedUrlVercel}'>${removeSchema(mountedUrlVercel)}</a></td>
             </tr>
           `
         : ''}
@@ -718,9 +718,9 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(2764));
 const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const deploy = ({ tokenList, distFolder, mountedUrl, gitCommitSha, outputUrl, duration, image, mountedUrlSurge, mountedUrlVercel, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, mountedUrlSurge, mountedUrlVercel, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy } = (0, surge_1.default)();
-    const { vercelDeploy, returnVercelUrl } = (0, vercel_1.default)();
+    const { vercelDeploy } = (0, vercel_1.default)();
     const { surge: surgeToken, vercel: vercelToken } = tokenList;
     if (surgeToken) {
         yield surgeDeploy({
@@ -739,8 +739,8 @@ const deploy = ({ tokenList, distFolder, mountedUrl, gitCommitSha, outputUrl, du
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         tokenList,
         gitCommitSha,
-        outputUrl,
-        returnVercelUrl,
+        mountedUrlSurge,
+        mountedUrlVercel,
         duration,
         image,
     }));
@@ -990,7 +990,7 @@ const vercel = () => {
     const vercelCli = 'vercel';
     let deploymentUrlVercel = '';
     const vercelAssignAlias = ({ token, deploymentUrl, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
-        const outputAliasUrl = yield (0, execCommand_1.execCommand)({
+        yield (0, execCommand_1.execCommand)({
             command: [
                 vercelCli,
                 'alias',
@@ -1000,7 +1000,6 @@ const vercel = () => {
                 `--token=${token}`,
             ],
         });
-        deploymentUrlVercel = outputAliasUrl;
     });
     const vercelDeploy = ({ token, distFolder, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
         const deploymentUrl = yield (0, execCommand_1.execCommand)({

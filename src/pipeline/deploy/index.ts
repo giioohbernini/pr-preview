@@ -7,16 +7,14 @@ import vercel from '../../tenants/vercel'
 const deploy = async ({
 	tokenList,
 	distFolder,
-	mountedUrl,
 	gitCommitSha,
-	outputUrl,
 	duration,
 	image,
 	mountedUrlSurge,
 	mountedUrlVercel,
 }: IDeployParams) => {
 	const { surgeDeploy } = surge()
-	const { vercelDeploy, returnVercelUrl } = vercel()
+	const { vercelDeploy } = vercel()
 	const { surge: surgeToken, vercel: vercelToken } = tokenList
 
 	if (surgeToken) {
@@ -39,8 +37,8 @@ const deploy = async ({
 		deployFinalizedTemplate({
 			tokenList,
 			gitCommitSha,
-			outputUrl,
-			returnVercelUrl,
+			mountedUrlSurge,
+			mountedUrlVercel,
 			duration,
 			image,
 		})

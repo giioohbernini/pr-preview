@@ -1,4 +1,3 @@
-import * as github from '@actions/github'
 import { execCommand } from '../../helpers/execCommand'
 import {
 	IVercelDeployParams,
@@ -16,7 +15,7 @@ const vercel = (): IVercelReturn => {
 		deploymentUrl,
 		mountedUrl,
 	}: IVercelAssignAlias) => {
-		const outputAliasUrl = await execCommand({
+		await execCommand({
 			command: [
 				vercelCli,
 				'alias',
@@ -26,8 +25,6 @@ const vercel = (): IVercelReturn => {
 				`--token=${token}`,
 			],
 		})
-
-		deploymentUrlVercel = outputAliasUrl
 	}
 
 	const vercelDeploy = async ({

@@ -22,8 +22,8 @@ export const deployInProgressTemplate = ({
 export const deployFinalizedTemplate = ({
 	tokenList,
 	gitCommitSha,
-	outputUrl,
-	returnVercelUrl,
+	mountedUrlSurge,
+	mountedUrlVercel,
 	duration,
 	image,
 }: IdeployFinalized) => {
@@ -32,15 +32,15 @@ export const deployFinalizedTemplate = ({
     <table>
       <tr>
         <td><strong>✅ Preview: Surge</strong></td>
-        <td><a href='https://${outputUrl}'>${outputUrl}</a></td>
+        <td><a href='https://${mountedUrlSurge}'>${mountedUrlSurge}</a></td>
       </tr>
       ${
 				tokenList.vercel
 					? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${returnVercelUrl()}'>${removeSchema(
-							returnVercelUrl()
+              <td><a href='${mountedUrlVercel}'>${removeSchema(
+							mountedUrlVercel
 					  )}</a></td>
             </tr>
           `
