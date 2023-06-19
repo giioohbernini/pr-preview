@@ -1,10 +1,5 @@
 import { IDeployInProgressPrams, IdeployFinalized } from './types'
 
-const removeSchema = (url: string) => {
-	const regex = /^https?:\/\//
-	return url.replace(regex, '')
-}
-
 export const deployInProgressTemplate = ({
 	gitCommitSha,
 	mountedUrlSurge,
@@ -39,9 +34,7 @@ export const deployFinalizedTemplate = ({
 					? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${mountedUrlVercel}'>${removeSchema(
-							mountedUrlVercel
-					  )}</a></td>
+              <td><a href='${mountedUrlVercel}'>${mountedUrlVercel}</a></td>
             </tr>
           `
 					: ''

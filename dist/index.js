@@ -75,10 +75,6 @@ exports["default"] = comment;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
-const removeSchema = (url) => {
-    const regex = /^https?:\/\//;
-    return url.replace(regex, '');
-};
 const deployInProgressTemplate = ({ gitCommitSha, mountedUrlSurge, buildingLogUrl, deployingImage, }) => {
     return `
     <p>
@@ -100,7 +96,7 @@ const deployFinalizedTemplate = ({ tokenList, gitCommitSha, mountedUrlSurge, mou
         ? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${mountedUrlVercel}'>${removeSchema(mountedUrlVercel)}</a></td>
+              <td><a href='${mountedUrlVercel}'>${mountedUrlVercel}</a></td>
             </tr>
           `
         : ''}
