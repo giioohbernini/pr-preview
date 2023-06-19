@@ -96,7 +96,7 @@ const deployFinalizedTemplate = ({ tokenList, gitCommitSha, mountedUrlSurge, mou
         ? `
             <tr>
               <td><strong>✅ Preview: Vercel</strong></td>
-              <td><a href='${mountedUrlVercel}'>${mountedUrlVercel}</a></td>
+              <td><a href='https://${mountedUrlVercel}'>${mountedUrlVercel}</a></td>
             </tr>
           `
         : ''}
