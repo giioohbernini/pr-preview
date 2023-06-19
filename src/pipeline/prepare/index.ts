@@ -18,9 +18,7 @@ const checkingPullRequestNumber = async () => {
 
 const mountedUrlTenants = async (domainTenant: string) => {
 	const { job } = github.context
-	const previewPath =
-		core.getInput('preview_path') ||
-		`{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}`
+	const previewPath = core.getInput('preview_path')
 	const previewUrl = core.getInput('preview_url') || ''
 	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
 	const repoName = github.context.repo.repo.replace(/\./g, '-')

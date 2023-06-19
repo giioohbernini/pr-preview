@@ -800,8 +800,7 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
 });
 const mountedUrlTenants = (domainTenant) => __awaiter(void 0, void 0, void 0, function* () {
     const { job } = github.context;
-    const previewPath = core.getInput('preview_path') ||
-        `{{repoOwner}}-{{repoName}}-{{job}}-pr-{{prNumber}}`;
+    const previewPath = core.getInput('preview_path');
     const previewUrl = core.getInput('preview_url') || '';
     const repoOwner = github.context.repo.owner.replace(/\./g, '-');
     const repoName = github.context.repo.repo.replace(/\./g, '-');
