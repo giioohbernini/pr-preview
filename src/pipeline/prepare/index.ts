@@ -18,7 +18,7 @@ const checkingPullRequestNumber = async () => {
 
 const mountedUrlTenants = async (domainTenant: string) => {
 	const { job } = github.context
-	const previewPath = core.getInput('preview_path')
+	// const previewPath = core.getInput('preview_path')
 	const previewUrl = core.getInput('preview_url') || ''
 	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
 	const repoName = github.context.repo.repo.replace(/\./g, '-')
@@ -32,7 +32,6 @@ const mountedUrlTenants = async (domainTenant: string) => {
 		.replace('{{job}}', job)
 		.replace('{{prNumber}}', `${prNumber}`)
 		.concat(domainTenant)
-		.concat(previewPath)
 }
 
 const prepare = async (): Promise<IReturnPrepare> => {

@@ -796,7 +796,7 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
 });
 const mountedUrlTenants = (domainTenant) => __awaiter(void 0, void 0, void 0, function* () {
     const { job } = github.context;
-    const previewPath = core.getInput('preview_path');
+    // const previewPath = core.getInput('preview_path')
     const previewUrl = core.getInput('preview_url') || '';
     const repoOwner = github.context.repo.owner.replace(/\./g, '-');
     const repoName = github.context.repo.repo.replace(/\./g, '-');
@@ -807,8 +807,7 @@ const mountedUrlTenants = (domainTenant) => __awaiter(void 0, void 0, void 0, fu
         .replace('{{repoName}}', repoName)
         .replace('{{job}}', job)
         .replace('{{prNumber}}', `${prNumber}`)
-        .concat(domainTenant)
-        .concat(previewPath);
+        .concat(domainTenant);
 });
 const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
