@@ -1,6 +1,7 @@
 import { TokenList } from '../../types'
 
 interface Tenant {
+	token: string
 	tenantName: string
 	commandUrl: string
 	outputUrl: string
@@ -15,4 +16,5 @@ export interface IDeployParams {
 	image: string
 	tenantSurge: Tenant
 	tenantVercel: Tenant
+	tenantsList: Tenant[]
 }

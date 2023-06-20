@@ -84,17 +84,19 @@ const deployInProgressTemplate = ({ gitCommitSha, tenantSurge, buildingLogUrl, d
   `;
 };
 exports.deployInProgressTemplate = deployInProgressTemplate;
-const deployFinalizedTemplate = ({ gitCommitSha, tenantSurge, tenantVercel, duration, image, }) => {
-    const listTenants = [Object.assign({}, tenantSurge), Object.assign({}, tenantVercel)];
+const deployFinalizedTemplate = ({ gitCommitSha, tenantsList, duration, image, }) => {
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
-      ${listTenants.map((tenant) => `
+      ${tenantsList.map((tenant) => {
+        tenant.token &&
+            `
 					<tr>
-						<td><strong>✅ Preview: Surge</strong></td>
-						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant.outputUrl}</a></td>
+						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
+						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></td>
 					</tr>
-          `)}
+          `;
+    })}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>
     <p>${image}</p>
@@ -570,7 +572,7 @@ const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 const deploy_1 = __importDefault(__nccwpck_require__(8425));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { tokenList, previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, tenantSurge, tenantVercel, } = yield (0, prepare_1.default)();
+        const { tokenList, previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, tenantSurge, tenantVercel, tenantsList, } = yield (0, prepare_1.default)();
         if (shouldShutdown) {
             return yield (0, shutDown_1.default)({
                 tokenList,
@@ -604,6 +606,7 @@ function main() {
                 image,
                 tenantSurge,
                 tenantVercel,
+                tenantsList,
             });
         }
         catch (err) {
@@ -707,7 +710,7 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(2764));
 const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, tenantSurge, tenantVercel, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, tenantSurge, tenantVercel, tenantsList }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy } = (0, surge_1.default)();
     const { vercelDeploy } = (0, vercel_1.default)();
     const { surge: surgeToken, vercel: vercelToken } = tokenList;
@@ -727,8 +730,7 @@ const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, tenantSu
     }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
-        tenantSurge,
-        tenantVercel,
+        tenantsList,
         duration,
         image,
     }));
@@ -788,7 +790,11 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
     }
     return prNumber;
 });
+const captalize = (value) => {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+};
 const tenantsFactory = ({ tenantName, domainTenant, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = core.getInput(`${tenantName}_token`);
     const { job } = github.context;
     const previewUrl = core.getInput('preview_url');
     const previewPath = core.getInput('preview_path');
@@ -803,7 +809,8 @@ const tenantsFactory = ({ tenantName, domainTenant, }) => __awaiter(void 0, void
         .replace('{{prNumber}}', `${prNumber}`)
         .concat(domainTenant);
     return {
-        tenantName,
+        token,
+        tenantName: captalize(tenantName),
         commandUrl,
         outputUrl: commandUrl.concat(previewPath),
     };
@@ -824,9 +831,19 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         domainTenant: '.surge.sh',
     });
     const tenantVercel = yield tenantsFactory({
-        tenantName: 'Vercel',
+        tenantName: 'vercel',
         domainTenant: '.vercel.app',
     });
+    const tenantsList = [
+        Object.assign({}, (yield tenantsFactory({
+            tenantName: 'surge',
+            domainTenant: '.surge.sh',
+        }))),
+        Object.assign({}, (yield tenantsFactory({
+            tenantName: 'vercel',
+            domainTenant: '.vercel.app',
+        }))),
+    ];
     const buildingLogUrl = yield (0, generateLogUrl_1.default)();
     const shouldShutdown = teardown && payload.action === 'closed';
     core.debug('github.context');
@@ -846,6 +863,7 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         shouldShutdown,
         tenantSurge,
         tenantVercel,
+        tenantsList,
     };
 });
 exports["default"] = prepare;

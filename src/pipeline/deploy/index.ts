@@ -12,6 +12,7 @@ const deploy = async ({
 	image,
 	tenantSurge,
 	tenantVercel,
+	tenantsList
 }: IDeployParams) => {
 	const { surgeDeploy } = surge()
 	const { vercelDeploy } = vercel()
@@ -36,8 +37,7 @@ const deploy = async ({
 	await comment(
 		deployFinalizedTemplate({
 			gitCommitSha,
-			tenantSurge,
-			tenantVercel,
+			tenantsList,
 			duration,
 			image,
 		})

@@ -16,6 +16,10 @@ const checkingPullRequestNumber = async () => {
 	return prNumber
 }
 
+const captalize = (value: string) => {
+	return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
 const tenantsFactory = async ({
 	tenantName,
 	domainTenant,
@@ -23,6 +27,7 @@ const tenantsFactory = async ({
 	tenantName: string
 	domainTenant: string
 }) => {
+	const token = core.getInput(`${tenantName}_token`)
 	const { job } = github.context
 	const previewUrl = core.getInput('preview_url')
 	const previewPath = core.getInput('preview_path')
@@ -40,7 +45,8 @@ const tenantsFactory = async ({
 		.concat(domainTenant)
 
 	return {
-		tenantName,
+		token,
+		tenantName: captalize(tenantName),
 		commandUrl,
 		outputUrl: commandUrl.concat(previewPath),
 	}
@@ -64,9 +70,24 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	})
 
 	const tenantVercel = await tenantsFactory({
-		tenantName: 'Vercel',
+		tenantName: 'vercel',
 		domainTenant: '.vercel.app',
 	})
+
+	const tenantsList = [
+		{
+			...(await tenantsFactory({
+				tenantName: 'surge',
+				domainTenant: '.surge.sh',
+			})),
+		},
+		{
+			...(await tenantsFactory({
+				tenantName: 'vercel',
+				domainTenant: '.vercel.app',
+			})),
+		},
+	]
 
 	const buildingLogUrl = await generateLogUrl()
 
@@ -91,6 +112,7 @@ const prepare = async (): Promise<IReturnPrepare> => {
 		shouldShutdown,
 		tenantSurge,
 		tenantVercel,
+		tenantsList,
 	}
 }
 

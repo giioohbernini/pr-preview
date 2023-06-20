@@ -1,6 +1,7 @@
 import type { Repo, Octokit } from '../types'
 
 interface Tenant {
+	token: string
 	tenantName: string
 	commandUrl: string
 	outputUrl: string
@@ -15,8 +16,7 @@ interface IDeployInProgressPrams {
 
 interface IdeployFinalized {
 	gitCommitSha: string
-	tenantSurge: Tenant
-	tenantVercel: Tenant
+	tenantsList: Tenant[]
 	duration: number
 	image: string
 }

@@ -18,6 +18,7 @@ async function main() {
 		shouldShutdown,
 		tenantSurge,
 		tenantVercel,
+		tenantsList,
 	} = await prepare()
 
 	if (shouldShutdown) {
@@ -60,6 +61,7 @@ async function main() {
 			image,
 			tenantSurge,
 			tenantVercel,
+			tenantsList,
 		})
 	} catch (err) {
 		core.info(`run command error ${err}`)

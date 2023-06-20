@@ -16,25 +16,22 @@ export const deployInProgressTemplate = ({
 
 export const deployFinalizedTemplate = ({
 	gitCommitSha,
-	tenantSurge,
-	tenantVercel,
+	tenantsList,
 	duration,
 	image,
 }: IdeployFinalized) => {
-	const listTenants = [{ ...tenantSurge }, { ...tenantVercel }]
-
 	return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
-      ${listTenants.map(
-				(tenant) =>
+      ${tenantsList.map((tenant) => {
+				tenant.token &&
 					`
 					<tr>
-						<td><strong>✅ Preview: Surge</strong></td>
-						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant.outputUrl}</a></td>
+						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
+						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
 					</tr>
           `
-			)}
+			})}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>
     <p>${image}</p>
