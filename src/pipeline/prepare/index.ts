@@ -16,21 +16,34 @@ const checkingPullRequestNumber = async () => {
 	return prNumber
 }
 
-const mountedUrlTenants = async (domainTenant: string) => {
+const tenantsFactory = async ({
+	tenantName,
+	domainTenant,
+}: {
+	tenantName: string
+	domainTenant: string
+}) => {
 	const { job } = github.context
-	const previewUrl = core.getInput('preview_url') || ''
+	const previewUrl = core.getInput('preview_url')
+	const previewPath = core.getInput('preview_path')
 	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
 	const repoName = github.context.repo.repo.replace(/\./g, '-')
 	const prNumber = await checkingPullRequestNumber()
 
 	core.info(`Find PR number: ${prNumber}`)
 
-	return previewUrl
+	const commandUrl = previewUrl
 		.replace('{{repoOwner}}', repoOwner)
 		.replace('{{repoName}}', repoName)
 		.replace('{{job}}', job)
 		.replace('{{prNumber}}', `${prNumber}`)
 		.concat(domainTenant)
+
+	return {
+		tenantName,
+		commandUrl,
+		outputUrl: commandUrl.concat(previewPath),
+	}
 }
 
 const prepare = async (): Promise<IReturnPrepare> => {
@@ -45,8 +58,15 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const { payload } = github.context
 	const gitCommitSha = getGitCommitSha()
 
-	const mountedUrlSurge = await mountedUrlTenants('.surge.sh')
-	const mountedUrlVercel = await mountedUrlTenants('.vercel.app')
+	const tenantSurge = await tenantsFactory({
+		tenantName: 'surge',
+		domainTenant: '.surge.sh',
+	})
+
+	const tenantVercel = await tenantsFactory({
+		tenantName: 'Vercel',
+		domainTenant: '.vercel.app',
+	})
 
 	const buildingLogUrl = await generateLogUrl()
 
@@ -69,8 +89,8 @@ const prepare = async (): Promise<IReturnPrepare> => {
 		gitCommitSha,
 		buildingLogUrl,
 		shouldShutdown,
-		mountedUrlSurge,
-		mountedUrlVercel,
+		tenantSurge,
+		tenantVercel,
 	}
 }
 

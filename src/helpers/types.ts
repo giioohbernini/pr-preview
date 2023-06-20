@@ -1,18 +1,22 @@
-import type { Repo, Octokit, TokenList } from '../types'
+import type { Repo, Octokit } from '../types'
+
+interface Tenant {
+	tenantName: string
+	commandUrl: string
+	outputUrl: string
+}
 
 interface IDeployInProgressPrams {
 	gitCommitSha: string
-	mountedUrlSurge: string
+	tenantSurge: Tenant
 	buildingLogUrl: string
 	deployingImage: string
 }
 
 interface IdeployFinalized {
-	tokenList: TokenList
-	previewPath: string
 	gitCommitSha: string
-	mountedUrlSurge: string
-	mountedUrlVercel: string
+	tenantSurge: Tenant
+	tenantVercel: Tenant
 	duration: number
 	image: string
 }

@@ -9,8 +9,8 @@ import { IShutDownPrams } from './types'
 const shutDown = async ({
 	tokenList,
 	buildingLogUrl,
-	mountedUrlSurge,
-	mountedUrlVercel,
+	tenantSurge,
+	tenantVercel,
 	gitCommitSha,
 }: IShutDownPrams): Promise<void> => {
 	try {
@@ -18,18 +18,18 @@ const shutDown = async ({
 		const { vercelRemoveProjectDeploy } = vercel()
 		const { surge: surgeToken, vercel: vercelToken } = tokenList
 
-		core.info(`Teardown: ${mountedUrlSurge}`)
+		core.info(`Teardown: ${tenantSurge.outputUrl}`)
 
 		if (surgeToken)
 			await surgeRemoveProjectDeploy({
 				token: surgeToken,
-				mountedUrl: mountedUrlSurge,
+				mountedUrl: tenantSurge.commandUrl,
 			})
 
 		if (vercelToken)
 			await vercelRemoveProjectDeploy({
 				token: vercelToken,
-				mountedUrl: mountedUrlVercel,
+				mountedUrl: tenantVercel.commandUrl,
 			})
 
 		const image = formatImage({
@@ -39,7 +39,7 @@ const shutDown = async ({
 		})
 
 		return await comment(
-			`:recycle: [PR Preview](https://${mountedUrlSurge}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
+			`:recycle: [PR Preview](https://${tenantSurge.outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`
 		)
 	} catch (err) {
 		core.info('teardown error')

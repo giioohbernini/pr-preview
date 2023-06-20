@@ -6,13 +6,12 @@ import vercel from '../../tenants/vercel'
 
 const deploy = async ({
 	tokenList,
-	previewPath,
 	distFolder,
 	gitCommitSha,
 	duration,
 	image,
-	mountedUrlSurge,
-	mountedUrlVercel,
+	tenantSurge,
+	tenantVercel,
 }: IDeployParams) => {
 	const { surgeDeploy } = surge()
 	const { vercelDeploy } = vercel()
@@ -22,7 +21,7 @@ const deploy = async ({
 		await surgeDeploy({
 			token: surgeToken,
 			distFolder,
-			mountedUrl: mountedUrlSurge,
+			mountedUrl: tenantSurge.commandUrl,
 		})
 	}
 
@@ -30,17 +29,15 @@ const deploy = async ({
 		await vercelDeploy({
 			token: vercelToken,
 			distFolder,
-			mountedUrl: mountedUrlVercel,
+			mountedUrl: tenantVercel.commandUrl,
 		})
 	}
 
 	await comment(
 		deployFinalizedTemplate({
-			tokenList,
-			previewPath,
 			gitCommitSha,
-			mountedUrlSurge,
-			mountedUrlVercel,
+			tenantSurge,
+			tenantVercel,
 			duration,
 			image,
 		})

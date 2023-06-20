@@ -1,5 +1,11 @@
 import { TokenList } from '../../types'
 
+interface Tenant {
+	tenantName: string
+	commandUrl: string
+	outputUrl: string
+}
+
 export interface IDeployParams {
 	tokenList: TokenList
 	previewPath: string
@@ -7,6 +13,6 @@ export interface IDeployParams {
 	gitCommitSha: string
 	duration: number
 	image: string
-	mountedUrlSurge: string
-	mountedUrlVercel: string
+	tenantSurge: Tenant
+	tenantVercel: Tenant
 }

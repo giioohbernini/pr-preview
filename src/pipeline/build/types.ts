@@ -1,4 +1,10 @@
+interface Tenant {
+	tenantName: string
+	commandUrl: string
+	outputUrl: string
+}
+
 export interface IBuildParams {
-	mountedUrlSurge: string
+	tenantSurge: Tenant
 	buildingLogUrl: string
 }

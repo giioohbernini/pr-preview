@@ -16,16 +16,16 @@ async function main() {
 		gitCommitSha,
 		buildingLogUrl,
 		shouldShutdown,
-		mountedUrlSurge,
-		mountedUrlVercel,
+		tenantSurge,
+		tenantVercel,
 	} = await prepare()
 
 	if (shouldShutdown) {
 		return await shutDown({
 			tokenList,
 			buildingLogUrl,
-			mountedUrlSurge,
-			mountedUrlVercel,
+			tenantSurge,
+			tenantVercel,
 			gitCommitSha,
 		})
 	}
@@ -39,7 +39,7 @@ async function main() {
 	await comment(
 		deployInProgressTemplate({
 			gitCommitSha,
-			mountedUrlSurge,
+			tenantSurge,
 			buildingLogUrl,
 			deployingImage,
 		})
@@ -47,7 +47,7 @@ async function main() {
 
 	try {
 		const { duration, image } = await build({
-			mountedUrlSurge,
+			tenantSurge,
 			buildingLogUrl,
 		})
 
@@ -58,8 +58,8 @@ async function main() {
 			gitCommitSha,
 			duration,
 			image,
-			mountedUrlSurge,
-			mountedUrlVercel,
+			tenantSurge,
+			tenantVercel,
 		})
 	} catch (err) {
 		core.info(`run command error ${err}`)
