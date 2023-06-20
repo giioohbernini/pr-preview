@@ -89,13 +89,14 @@ const deployFinalizedTemplate = ({ gitCommitSha, tenantsList, duration, image, }
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
       ${tenantsList.map((tenant) => {
-        tenant.token &&
-            `
+        tenant.token
+            ? `
 					<tr>
 						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
 						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></td>
 					</tr>
-          `;
+          `
+            : '';
     })}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>
@@ -710,7 +711,7 @@ const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const surge_1 = __importDefault(__nccwpck_require__(2764));
 const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, tenantSurge, tenantVercel, tenantsList }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, tenantSurge, tenantVercel, tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { surgeDeploy } = (0, surge_1.default)();
     const { vercelDeploy } = (0, vercel_1.default)();
     const { surge: surgeToken, vercel: vercelToken } = tokenList;

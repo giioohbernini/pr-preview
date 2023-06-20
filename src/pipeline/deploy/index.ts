@@ -12,7 +12,7 @@ const deploy = async ({
 	image,
 	tenantSurge,
 	tenantVercel,
-	tenantsList
+	tenantsList,
 }: IDeployParams) => {
 	const { surgeDeploy } = surge()
 	const { vercelDeploy } = vercel()
