@@ -59,8 +59,8 @@ async function main() {
 			gitCommitSha,
 			duration,
 			image,
-			tenantSurge,
-			tenantVercel,
+			// tenantSurge,
+			// tenantVercel,
 			tenantsList,
 		})
 	} catch (err) {

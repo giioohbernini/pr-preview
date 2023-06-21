@@ -10,7 +10,11 @@ interface ISurgeRemoveProjectDeployParams {
 }
 
 interface ISurgeReturn {
-	surgeDeploy: ({ distFolder, mountedUrl }: ISurgeDeployParams) => Promise<void>
+	surgeDeploy: ({
+		token,
+		distFolder,
+		mountedUrl,
+	}: ISurgeDeployParams) => Promise<void>
 	surgeRemoveProjectDeploy: ({
 		mountedUrl,
 	}: ISurgeRemoveProjectDeployParams) => Promise<void>

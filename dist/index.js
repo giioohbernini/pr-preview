@@ -607,8 +607,8 @@ function main() {
                 gitCommitSha,
                 duration,
                 image,
-                tenantSurge,
-                tenantVercel,
+                // tenantSurge,
+                // tenantVercel,
                 tenantsList,
             });
         }
@@ -711,26 +711,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-const surge_1 = __importDefault(__nccwpck_require__(2764));
-const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const deploy = ({ tokenList, distFolder, gitCommitSha, duration, image, tenantSurge, tenantVercel, tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const { surgeDeploy } = (0, surge_1.default)();
-    const { vercelDeploy } = (0, vercel_1.default)();
-    const { surge: surgeToken, vercel: vercelToken } = tokenList;
-    if (surgeToken) {
-        yield surgeDeploy({
-            token: surgeToken,
-            distFolder,
-            mountedUrl: tenantSurge.commandUrl,
-        });
-    }
-    if (vercelToken) {
-        yield vercelDeploy({
-            token: vercelToken,
-            distFolder,
-            mountedUrl: tenantVercel.commandUrl,
-        });
-    }
+// import surge from '../../tenants/surge'
+// import vercel from '../../tenants/vercel'
+const deploy = ({ 
+// tokenList,
+distFolder, gitCommitSha, duration, image, 
+// tenantSurge,
+// tenantVercel,
+tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
+    // const { surgeDeploy } = surge()
+    // const { vercelDeploy } = vercel()
+    // const { surge: surgeToken, vercel: vercelToken } = tokenList
+    // eslint-disable-next-line github/array-foreach
+    tenantsList.forEach((tenant) => __awaiter(void 0, void 0, void 0, function* () {
+        if (tenant.token) {
+            yield tenant.deploy({
+                token: tenant.token,
+                distFolder,
+                mountedUrl: tenant.commandUrl,
+            });
+        }
+    }));
+    // if (surgeToken) {
+    // 	await surgeDeploy({
+    // 		token: surgeToken,
+    // 		distFolder,
+    // 		mountedUrl: tenantSurge.commandUrl,
+    // 	})
+    // }
+    // if (vercelToken) {
+    // 	await vercelDeploy({
+    // 		token: vercelToken,
+    // 		distFolder,
+    // 		mountedUrl: tenantVercel.commandUrl,
+    // 	})
+    // }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
         tenantsList,
@@ -785,6 +800,8 @@ const github = __importStar(__nccwpck_require__(5438));
 const generateLogUrl_1 = __importDefault(__nccwpck_require__(2586));
 const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
 const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(8350));
+const surge_1 = __importDefault(__nccwpck_require__(2764));
+const vercel_1 = __importDefault(__nccwpck_require__(9707));
 const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, function* () {
     const prNumber = yield (0, getPullRequestNumber_1.default)();
     if (!prNumber) {
@@ -796,7 +813,7 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
 const captalize = (value) => {
     return value.charAt(0).toUpperCase() + value.slice(1);
 };
-const tenantsFactory = ({ tenantName, domainTenant, }) => __awaiter(void 0, void 0, void 0, function* () {
+const tenantsFactory = ({ tenantName, domainTenant, deploy, }) => __awaiter(void 0, void 0, void 0, function* () {
     const token = core.getInput(`${tenantName}_token`);
     const { job } = github.context;
     const previewUrl = core.getInput('preview_url');
@@ -816,10 +833,13 @@ const tenantsFactory = ({ tenantName, domainTenant, }) => __awaiter(void 0, void
         tenantName: captalize(tenantName),
         commandUrl,
         outputUrl: commandUrl.concat(previewPath),
+        deploy,
     };
 });
 const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    const { surgeDeploy } = (0, surge_1.default)();
+    const { vercelDeploy } = (0, vercel_1.default)();
     const tokenList = {
         surge: core.getInput('surge_token'),
         vercel: core.getInput('vercel_token'),
@@ -832,19 +852,23 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     const tenantSurge = yield tenantsFactory({
         tenantName: 'surge',
         domainTenant: '.surge.sh',
+        deploy: surgeDeploy,
     });
     const tenantVercel = yield tenantsFactory({
         tenantName: 'vercel',
         domainTenant: '.vercel.app',
+        deploy: vercelDeploy,
     });
     const tenantsList = [
         Object.assign({}, (yield tenantsFactory({
             tenantName: 'surge',
             domainTenant: '.surge.sh',
+            deploy: surgeDeploy,
         }))),
         Object.assign({}, (yield tenantsFactory({
             tenantName: 'vercel',
             domainTenant: '.vercel.app',
+            deploy: vercelDeploy,
         }))),
     ];
     const buildingLogUrl = yield (0, generateLogUrl_1.default)();

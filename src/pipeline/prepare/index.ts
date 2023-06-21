@@ -4,6 +4,8 @@ import { IReturnPrepare } from './types'
 import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
+import surge from '../../tenants/surge'
+import vercel from '../../tenants/vercel'
 
 const checkingPullRequestNumber = async () => {
 	const prNumber = await getPullRequestNumber()
@@ -20,12 +22,20 @@ const captalize = (value: string) => {
 	return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
+interface IDeployParams {
+	token: string
+	distFolder: string
+	mountedUrl: string
+}
+
 const tenantsFactory = async ({
 	tenantName,
 	domainTenant,
+	deploy,
 }: {
 	tenantName: string
 	domainTenant: string
+	deploy: ({ token, distFolder, mountedUrl }: IDeployParams) => Promise<void>
 }) => {
 	const token = core.getInput(`${tenantName}_token`)
 	const { job } = github.context
@@ -49,10 +59,13 @@ const tenantsFactory = async ({
 		tenantName: captalize(tenantName),
 		commandUrl,
 		outputUrl: commandUrl.concat(previewPath),
+		deploy,
 	}
 }
 
 const prepare = async (): Promise<IReturnPrepare> => {
+	const { surgeDeploy } = surge()
+	const { vercelDeploy } = vercel()
 	const tokenList = {
 		surge: core.getInput('surge_token'),
 		vercel: core.getInput('vercel_token'),
@@ -67,11 +80,13 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const tenantSurge = await tenantsFactory({
 		tenantName: 'surge',
 		domainTenant: '.surge.sh',
+		deploy: surgeDeploy,
 	})
 
 	const tenantVercel = await tenantsFactory({
 		tenantName: 'vercel',
 		domainTenant: '.vercel.app',
+		deploy: vercelDeploy,
 	})
 
 	const tenantsList = [
@@ -79,12 +94,14 @@ const prepare = async (): Promise<IReturnPrepare> => {
 			...(await tenantsFactory({
 				tenantName: 'surge',
 				domainTenant: '.surge.sh',
+				deploy: surgeDeploy,
 			})),
 		},
 		{
 			...(await tenantsFactory({
 				tenantName: 'vercel',
 				domainTenant: '.vercel.app',
+				deploy: vercelDeploy,
 			})),
 		},
 	]
