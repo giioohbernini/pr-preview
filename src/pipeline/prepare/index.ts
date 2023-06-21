@@ -100,7 +100,7 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	core.debug(`payload.after: ${payload.pull_request}`)
 	core.debug(`event action?: ${payload.action}`)
 	core.debug(`teardown enabled?: ${teardown}`)
-
+	core.debug(`tenantsList: ${JSON.stringify(tenantsList)}`)
 	core.info('Finalizing the initialization of the variables.')
 
 	return {
