@@ -21,13 +21,14 @@ const captalize = (value: string) => {
 }
 
 const tenantsFactory = async ({
+	token,
 	tenantName,
 	domainTenant,
 }: {
+	token: string
 	tenantName: string
 	domainTenant: string
 }) => {
-	const token = core.getInput(`${tenantName}_token`)
 	const { job } = github.context
 	const previewUrl = core.getInput('preview_url')
 	const previewPath = core.getInput('preview_path')
@@ -65,11 +66,13 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const gitCommitSha = getGitCommitSha()
 
 	const tenantSurge = await tenantsFactory({
+		token: core.getInput('surge_token'),
 		tenantName: 'surge',
 		domainTenant: '.surge.sh',
 	})
 
 	const tenantVercel = await tenantsFactory({
+		token: core.getInput('vercel_token'),
 		tenantName: 'vercel',
 		domainTenant: '.vercel.app',
 	})
@@ -77,12 +80,14 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const tenantsList = [
 		{
 			...(await tenantsFactory({
+				token: core.getInput('surge_token'),
 				tenantName: 'surge',
 				domainTenant: '.surge.sh',
 			})),
 		},
 		{
 			...(await tenantsFactory({
+				token: core.getInput('vercel_token'),
 				tenantName: 'vercel',
 				domainTenant: '.vercel.app',
 			})),

@@ -794,8 +794,7 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
 const captalize = (value) => {
     return value.charAt(0).toUpperCase() + value.slice(1);
 };
-const tenantsFactory = ({ tenantName, domainTenant, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = core.getInput(`${tenantName}_token`);
+const tenantsFactory = ({ token, tenantName, domainTenant, }) => __awaiter(void 0, void 0, void 0, function* () {
     const { job } = github.context;
     const previewUrl = core.getInput('preview_url');
     const previewPath = core.getInput('preview_path');
@@ -828,19 +827,23 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     const { payload } = github.context;
     const gitCommitSha = (0, getGitCommitSha_1.default)();
     const tenantSurge = yield tenantsFactory({
+        token: core.getInput('surge_token'),
         tenantName: 'surge',
         domainTenant: '.surge.sh',
     });
     const tenantVercel = yield tenantsFactory({
+        token: core.getInput('vercel_token'),
         tenantName: 'vercel',
         domainTenant: '.vercel.app',
     });
     const tenantsList = [
         Object.assign({}, (yield tenantsFactory({
+            token: core.getInput('surge_token'),
             tenantName: 'surge',
             domainTenant: '.surge.sh',
         }))),
         Object.assign({}, (yield tenantsFactory({
+            token: core.getInput('vercel_token'),
             tenantName: 'vercel',
             domainTenant: '.vercel.app',
         }))),
