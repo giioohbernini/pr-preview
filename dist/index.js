@@ -77,13 +77,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
 const deployInProgressTemplate = ({ gitCommitSha, buildingLogUrl, deployingImage, tenantsList, }) => {
     return `
-		${tenantsList.map((tenant) => {
+		${tenantsList
+        .map((tenant) => {
         return `
-				<p>
-					⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
-				</p>
+					<p>
+						⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+					</p>
 				`;
-    })}
+    })
+        .join('')}
     <p>${deployingImage}</p>
   `;
 };

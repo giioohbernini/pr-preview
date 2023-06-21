@@ -1,25 +1,22 @@
-interface IDeployTenantParams {
+import { Tenant } from '../../types'
+
+interface IDeployParams {
 	token: string
 	distFolder: string
 	mountedUrl: string
 }
 
-interface IShutDown {
-	token: string
-	mountedUrl: string
-}
-
-interface Tenant {
-	token: string
+export interface ITenantsFactory {
 	tenantName: string
-	commandUrl: string
-	outputUrl: string
-	deploy: ({
+	domainTenant: string
+	deploy: ({ token, distFolder, mountedUrl }: IDeployParams) => Promise<void>
+	shutDown: ({
 		token,
-		distFolder,
 		mountedUrl,
-	}: IDeployTenantParams) => Promise<void>
-	shutDown: ({ token, mountedUrl }: IShutDown) => Promise<void>
+	}: {
+		token: string
+		mountedUrl: string
+	}) => Promise<void>
 }
 
 export interface IReturnPrepare {

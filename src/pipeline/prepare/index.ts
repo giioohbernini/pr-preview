@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { IReturnPrepare } from './types'
+import { IReturnPrepare, ITenantsFactory } from './types'
 import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
@@ -22,29 +22,12 @@ const captalize = (value: string) => {
 	return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
-interface IDeployParams {
-	token: string
-	distFolder: string
-	mountedUrl: string
-}
-
 const tenantsFactory = async ({
 	tenantName,
 	domainTenant,
 	deploy,
 	shutDown,
-}: {
-	tenantName: string
-	domainTenant: string
-	deploy: ({ token, distFolder, mountedUrl }: IDeployParams) => Promise<void>
-	shutDown: ({
-		token,
-		mountedUrl,
-	}: {
-		token: string
-		mountedUrl: string
-	}) => Promise<void>
-}) => {
+}: ITenantsFactory) => {
 	const token = core.getInput(`${tenantName}_token`)
 	const { job } = github.context
 	const previewUrl = core.getInput('preview_url')

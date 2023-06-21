@@ -1,11 +1,4 @@
-import type { Repo, Octokit } from '../types'
-
-interface Tenant {
-	token: string
-	tenantName: string
-	commandUrl: string
-	outputUrl: string
-}
+import type { Repo, Octokit, Tenant } from '../types'
 
 interface IDeployInProgressPrams {
 	gitCommitSha: string

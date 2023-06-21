@@ -7,13 +7,15 @@ export const deployInProgressTemplate = ({
 	tenantsList,
 }: IDeployInProgressPrams) => {
 	return `
-		${tenantsList.map((tenant) => {
-			return `
-				<p>
-					⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
-				</p>
+		${tenantsList
+			.map((tenant) => {
+				return `
+					<p>
+						⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+					</p>
 				`
-		})}
+			})
+			.join('')}
     <p>${deployingImage}</p>
   `
 }
