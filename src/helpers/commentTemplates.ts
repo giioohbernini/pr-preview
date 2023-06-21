@@ -24,7 +24,7 @@ export const deployFinalizedTemplate = ({
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
       ${tenantsList.map((tenant) => {
-				tenant.token
+				return tenant.token
 					? `
 					<tr>
 						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
