@@ -23,16 +23,18 @@ export const deployFinalizedTemplate = ({
 	return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
-      ${tenantsList.map((tenant) => {
-				return tenant.token
-					? `
-					<tr>
-						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
-						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
-					</tr>
-          `
-					: ''
-			})}
+      ${tenantsList
+				.map((tenant) => {
+					return tenant.token
+						? `
+							<tr>
+								<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
+								<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
+							</tr>
+		          `
+						: ''
+				})
+				.join('')}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>
     <p>${image}</p>
