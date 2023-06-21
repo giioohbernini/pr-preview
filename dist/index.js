@@ -81,7 +81,7 @@ const deployInProgressTemplate = ({ gitCommitSha, buildingLogUrl, deployingImage
         .map((tenant) => {
         return `
 					<p>
-						⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+						⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">${tenant.tenantName}</a> ... <a href="${buildingLogUrl}">Build logs</a>
 					</p>
 				`;
     })
