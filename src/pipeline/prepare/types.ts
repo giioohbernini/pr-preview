@@ -1,8 +1,11 @@
-import { TokenList } from '../../types'
-
 interface IDeployTenantParams {
 	token: string
 	distFolder: string
+	mountedUrl: string
+}
+
+interface IShutDown {
+	token: string
 	mountedUrl: string
 }
 
@@ -16,16 +19,14 @@ interface Tenant {
 		distFolder,
 		mountedUrl,
 	}: IDeployTenantParams) => Promise<void>
+	shutDown: ({ token, mountedUrl }: IShutDown) => Promise<void>
 }
 
 export interface IReturnPrepare {
-	tokenList: TokenList
 	previewPath: string
 	distFolder: string
 	gitCommitSha: string
 	buildingLogUrl: string
 	shouldShutdown: boolean
-	tenantSurge: Tenant
-	tenantVercel: Tenant
 	tenantsList: Tenant[]
 }

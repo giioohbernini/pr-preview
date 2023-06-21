@@ -75,11 +75,15 @@ exports["default"] = comment;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
-const deployInProgressTemplate = ({ gitCommitSha, tenantSurge, buildingLogUrl, deployingImage, }) => {
+const deployInProgressTemplate = ({ gitCommitSha, buildingLogUrl, deployingImage, tenantsList, }) => {
     return `
-    <p>
-      ⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenantSurge.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
-    </p>
+		${tenantsList.map((tenant) => {
+        return `
+				<p>
+					⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+				</p>
+				`;
+    })}
     <p>${deployingImage}</p>
   `;
 };
@@ -575,14 +579,12 @@ const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 const deploy_1 = __importDefault(__nccwpck_require__(8425));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { tokenList, previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, tenantSurge, tenantVercel, tenantsList, } = yield (0, prepare_1.default)();
+        const { previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, tenantsList, } = yield (0, prepare_1.default)();
         if (shouldShutdown) {
             return yield (0, shutDown_1.default)({
-                tokenList,
                 buildingLogUrl,
-                tenantSurge,
-                tenantVercel,
                 gitCommitSha,
+                tenantsList,
             });
         }
         const deployingImage = (0, formatImage_1.formatImage)({
@@ -591,24 +593,20 @@ function main() {
         });
         yield (0, comment_1.default)((0, commentTemplates_1.deployInProgressTemplate)({
             gitCommitSha,
-            tenantSurge,
             buildingLogUrl,
             deployingImage,
+            tenantsList,
         }));
         try {
             const { duration, image } = yield (0, build_1.default)({
-                tenantSurge,
                 buildingLogUrl,
             });
             yield (0, deploy_1.default)({
-                tokenList,
                 previewPath,
                 distFolder,
                 gitCommitSha,
                 duration,
                 image,
-                // tenantSurge,
-                // tenantVercel,
                 tenantsList,
             });
         }
@@ -664,7 +662,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const formatImage_1 = __nccwpck_require__(8781);
-const build = ({ tenantSurge, buildingLogUrl }) => __awaiter(void 0, void 0, void 0, function* () {
+const build = ({ buildingLogUrl }) => __awaiter(void 0, void 0, void 0, function* () {
     const startTime = Date.now();
     if (!core.getInput('build')) {
         yield (0, exec_1.exec)(`npm install`);
@@ -679,7 +677,6 @@ const build = ({ tenantSurge, buildingLogUrl }) => __awaiter(void 0, void 0, voi
     }
     const duration = (Date.now() - startTime) / 1000;
     core.info(`Build time: ${duration} seconds`);
-    core.info(`Deploy to ${tenantSurge.commandUrl}`);
     const image = (0, formatImage_1.formatImage)({
         buildingLogUrl,
         imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
@@ -711,17 +708,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-// import surge from '../../tenants/surge'
-// import vercel from '../../tenants/vercel'
-const deploy = ({ 
-// tokenList,
-distFolder, gitCommitSha, duration, image, 
-// tenantSurge,
-// tenantVercel,
-tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
-    // const { surgeDeploy } = surge()
-    // const { vercelDeploy } = vercel()
-    // const { surge: surgeToken, vercel: vercelToken } = tokenList
+const deploy = ({ distFolder, gitCommitSha, duration, image, tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
     // eslint-disable-next-line github/array-foreach
     tenantsList.forEach((tenant) => __awaiter(void 0, void 0, void 0, function* () {
         if (tenant.token) {
@@ -732,20 +719,6 @@ tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
     }));
-    // if (surgeToken) {
-    // 	await surgeDeploy({
-    // 		token: surgeToken,
-    // 		distFolder,
-    // 		mountedUrl: tenantSurge.commandUrl,
-    // 	})
-    // }
-    // if (vercelToken) {
-    // 	await vercelDeploy({
-    // 		token: vercelToken,
-    // 		distFolder,
-    // 		mountedUrl: tenantVercel.commandUrl,
-    // 	})
-    // }
     yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
         tenantsList,
@@ -813,7 +786,7 @@ const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, functi
 const captalize = (value) => {
     return value.charAt(0).toUpperCase() + value.slice(1);
 };
-const tenantsFactory = ({ tenantName, domainTenant, deploy, }) => __awaiter(void 0, void 0, void 0, function* () {
+const tenantsFactory = ({ tenantName, domainTenant, deploy, shutDown, }) => __awaiter(void 0, void 0, void 0, function* () {
     const token = core.getInput(`${tenantName}_token`);
     const { job } = github.context;
     const previewUrl = core.getInput('preview_url');
@@ -834,41 +807,30 @@ const tenantsFactory = ({ tenantName, domainTenant, deploy, }) => __awaiter(void
         commandUrl,
         outputUrl: commandUrl.concat(previewPath),
         deploy,
+        shutDown,
     };
 });
 const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const { surgeDeploy } = (0, surge_1.default)();
-    const { vercelDeploy } = (0, vercel_1.default)();
-    const tokenList = {
-        surge: core.getInput('surge_token'),
-        vercel: core.getInput('vercel_token'),
-    };
+    const { surgeDeploy, surgeRemoveProjectDeploy } = (0, surge_1.default)();
+    const { vercelDeploy, vercelRemoveProjectDeploy } = (0, vercel_1.default)();
     const previewPath = core.getInput('preview_path');
     const distFolder = core.getInput('dist');
     const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
     const { payload } = github.context;
     const gitCommitSha = (0, getGitCommitSha_1.default)();
-    const tenantSurge = yield tenantsFactory({
-        tenantName: 'surge',
-        domainTenant: '.surge.sh',
-        deploy: surgeDeploy,
-    });
-    const tenantVercel = yield tenantsFactory({
-        tenantName: 'vercel',
-        domainTenant: '.vercel.app',
-        deploy: vercelDeploy,
-    });
     const tenantsList = [
         Object.assign({}, (yield tenantsFactory({
             tenantName: 'surge',
             domainTenant: '.surge.sh',
             deploy: surgeDeploy,
+            shutDown: surgeRemoveProjectDeploy,
         }))),
         Object.assign({}, (yield tenantsFactory({
             tenantName: 'vercel',
             domainTenant: '.vercel.app',
             deploy: vercelDeploy,
+            shutDown: vercelRemoveProjectDeploy,
         }))),
     ];
     const buildingLogUrl = yield (0, generateLogUrl_1.default)();
@@ -883,14 +845,11 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
     core.debug(`tenantsList: ${JSON.stringify(tenantsList)}`);
     core.info('Finalizing the initialization of the variables.');
     return {
-        tokenList,
         previewPath,
         distFolder,
         gitCommitSha,
         buildingLogUrl,
         shouldShutdown,
-        tenantSurge,
-        tenantVercel,
         tenantsList,
     };
 });
@@ -939,30 +898,24 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
-const surge_1 = __importDefault(__nccwpck_require__(2764));
-const vercel_1 = __importDefault(__nccwpck_require__(9707));
 const formatImage_1 = __nccwpck_require__(8781);
-const shutDown = ({ tokenList, buildingLogUrl, tenantSurge, tenantVercel, gitCommitSha, }) => __awaiter(void 0, void 0, void 0, function* () {
+const shutDown = ({ buildingLogUrl, gitCommitSha, tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
+    const image = (0, formatImage_1.formatImage)({
+        buildingLogUrl,
+        imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
+    });
     try {
-        const { surgeRemoveProjectDeploy } = (0, surge_1.default)();
-        const { vercelRemoveProjectDeploy } = (0, vercel_1.default)();
-        const { surge: surgeToken, vercel: vercelToken } = tokenList;
-        core.info(`Teardown: ${tenantSurge.outputUrl}`);
-        if (surgeToken)
-            yield surgeRemoveProjectDeploy({
-                token: surgeToken,
-                mountedUrl: tenantSurge.commandUrl,
-            });
-        if (vercelToken)
-            yield vercelRemoveProjectDeploy({
-                token: vercelToken,
-                mountedUrl: tenantVercel.commandUrl,
-            });
-        const image = (0, formatImage_1.formatImage)({
-            buildingLogUrl,
-            imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
-        });
-        return yield (0, comment_1.default)(`:recycle: [PR Preview](https://${tenantSurge.outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
+        // eslint-disable-next-line github/array-foreach
+        return tenantsList.forEach((tenant) => __awaiter(void 0, void 0, void 0, function* () {
+            core.info(`Teardown: ${tenant.outputUrl}`);
+            if (tenant.token) {
+                yield tenant.shutDown({
+                    token: tenant.token,
+                    mountedUrl: tenant.commandUrl,
+                });
+            }
+            return yield (0, comment_1.default)(`:recycle: [PR Preview](https://${tenant.outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
+        }));
     }
     catch (err) {
         core.info('teardown error');

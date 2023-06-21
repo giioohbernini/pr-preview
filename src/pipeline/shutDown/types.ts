@@ -1,15 +1,28 @@
-import { TokenList } from '../../types'
+interface IDeployTenantParams {
+	token: string
+	distFolder: string
+	mountedUrl: string
+}
+
+interface IShutDown {
+	token: string
+	mountedUrl: string
+}
 
 interface Tenant {
+	token: string
 	tenantName: string
 	commandUrl: string
 	outputUrl: string
+	deploy: ({
+		token,
+		distFolder,
+		mountedUrl,
+	}: IDeployTenantParams) => Promise<void>
+	shutDown: ({ token, mountedUrl }: IShutDown) => Promise<void>
 }
-
 export interface IShutDownPrams {
-	tokenList: TokenList
 	gitCommitSha: string
-	tenantSurge: Tenant
-	tenantVercel: Tenant
 	buildingLogUrl: string
+	tenantsList: Tenant[]
 }

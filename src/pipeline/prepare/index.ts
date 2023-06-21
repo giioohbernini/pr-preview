@@ -32,10 +32,18 @@ const tenantsFactory = async ({
 	tenantName,
 	domainTenant,
 	deploy,
+	shutDown,
 }: {
 	tenantName: string
 	domainTenant: string
 	deploy: ({ token, distFolder, mountedUrl }: IDeployParams) => Promise<void>
+	shutDown: ({
+		token,
+		mountedUrl,
+	}: {
+		token: string
+		mountedUrl: string
+	}) => Promise<void>
 }) => {
 	const token = core.getInput(`${tenantName}_token`)
 	const { job } = github.context
@@ -60,16 +68,14 @@ const tenantsFactory = async ({
 		commandUrl,
 		outputUrl: commandUrl.concat(previewPath),
 		deploy,
+		shutDown,
 	}
 }
 
 const prepare = async (): Promise<IReturnPrepare> => {
-	const { surgeDeploy } = surge()
-	const { vercelDeploy } = vercel()
-	const tokenList = {
-		surge: core.getInput('surge_token'),
-		vercel: core.getInput('vercel_token'),
-	}
+	const { surgeDeploy, surgeRemoveProjectDeploy } = surge()
+	const { vercelDeploy, vercelRemoveProjectDeploy } = vercel()
+
 	const previewPath = core.getInput('preview_path')
 	const distFolder = core.getInput('dist')
 	const teardown =
@@ -77,24 +83,13 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const { payload } = github.context
 	const gitCommitSha = getGitCommitSha()
 
-	const tenantSurge = await tenantsFactory({
-		tenantName: 'surge',
-		domainTenant: '.surge.sh',
-		deploy: surgeDeploy,
-	})
-
-	const tenantVercel = await tenantsFactory({
-		tenantName: 'vercel',
-		domainTenant: '.vercel.app',
-		deploy: vercelDeploy,
-	})
-
 	const tenantsList = [
 		{
 			...(await tenantsFactory({
 				tenantName: 'surge',
 				domainTenant: '.surge.sh',
 				deploy: surgeDeploy,
+				shutDown: surgeRemoveProjectDeploy,
 			})),
 		},
 		{
@@ -102,6 +97,7 @@ const prepare = async (): Promise<IReturnPrepare> => {
 				tenantName: 'vercel',
 				domainTenant: '.vercel.app',
 				deploy: vercelDeploy,
+				shutDown: vercelRemoveProjectDeploy,
 			})),
 		},
 	]
@@ -121,14 +117,11 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	core.info('Finalizing the initialization of the variables.')
 
 	return {
-		tokenList,
 		previewPath,
 		distFolder,
 		gitCommitSha,
 		buildingLogUrl,
 		shouldShutdown,
-		tenantSurge,
-		tenantVercel,
 		tenantsList,
 	}
 }

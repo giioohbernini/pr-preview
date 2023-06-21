@@ -9,9 +9,9 @@ interface Tenant {
 
 interface IDeployInProgressPrams {
 	gitCommitSha: string
-	tenantSurge: Tenant
 	buildingLogUrl: string
 	deployingImage: string
+	tenantsList: Tenant[]
 }
 
 interface IdeployFinalized {

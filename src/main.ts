@@ -10,24 +10,19 @@ import deploy from './pipeline/deploy'
 
 async function main() {
 	const {
-		tokenList,
 		previewPath,
 		distFolder,
 		gitCommitSha,
 		buildingLogUrl,
 		shouldShutdown,
-		tenantSurge,
-		tenantVercel,
 		tenantsList,
 	} = await prepare()
 
 	if (shouldShutdown) {
 		return await shutDown({
-			tokenList,
 			buildingLogUrl,
-			tenantSurge,
-			tenantVercel,
 			gitCommitSha,
+			tenantsList,
 		})
 	}
 
@@ -40,27 +35,23 @@ async function main() {
 	await comment(
 		deployInProgressTemplate({
 			gitCommitSha,
-			tenantSurge,
 			buildingLogUrl,
 			deployingImage,
+			tenantsList,
 		})
 	)
 
 	try {
 		const { duration, image } = await build({
-			tenantSurge,
 			buildingLogUrl,
 		})
 
 		await deploy({
-			tokenList,
 			previewPath,
 			distFolder,
 			gitCommitSha,
 			duration,
 			image,
-			// tenantSurge,
-			// tenantVercel,
 			tenantsList,
 		})
 	} catch (err) {

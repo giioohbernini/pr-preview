@@ -2,14 +2,18 @@ import { IDeployInProgressPrams, IdeployFinalized } from './types'
 
 export const deployInProgressTemplate = ({
 	gitCommitSha,
-	tenantSurge,
 	buildingLogUrl,
 	deployingImage,
+	tenantsList,
 }: IDeployInProgressPrams) => {
 	return `
-    <p>
-      ⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenantSurge.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
-    </p>
+		${tenantsList.map((tenant) => {
+			return `
+				<p>
+					⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">surge.sh</a> ... <a href="${buildingLogUrl}">Build logs</a>
+				</p>
+				`
+		})}
     <p>${deployingImage}</p>
   `
 }
