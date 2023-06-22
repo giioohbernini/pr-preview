@@ -27,7 +27,7 @@ const vercel = (): IVercelReturn => {
 		})
 	}
 
-	const vercelDeploy = async ({
+	const deploy = async ({
 		token,
 		distFolder,
 		mountedUrl,
@@ -39,7 +39,7 @@ const vercel = (): IVercelReturn => {
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
 	}
 
-	const vercelRemoveProjectDeploy = async ({
+	const shutDown = async ({
 		token,
 		mountedUrl,
 	}: IVercelRemoveProjectDeploy) => {
@@ -53,8 +53,8 @@ const vercel = (): IVercelReturn => {
 	}
 
 	return {
-		vercelDeploy,
-		vercelRemoveProjectDeploy,
+		deploy,
+		shutDown,
 		returnVercelUrl,
 	}
 }

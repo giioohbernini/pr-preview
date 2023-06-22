@@ -1,11 +1,10 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { IReturnPrepare, ITenantsFactory } from './types'
+import { IReturnPrepare } from './types'
 import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
-import surge from '../../tenants/surge'
-import vercel from '../../tenants/vercel'
+import tenantsFactory from '../../tenants/utils/tenantsFactory'
 
 const checkingPullRequestNumber = async () => {
 	const prNumber = await getPullRequestNumber()
@@ -18,47 +17,8 @@ const checkingPullRequestNumber = async () => {
 	return prNumber
 }
 
-const captalize = (value: string) => {
-	return value.charAt(0).toUpperCase() + value.slice(1)
-}
-
-const tenantsFactory = async ({
-	tenantName,
-	domainTenant,
-	deploy,
-	shutDown,
-}: ITenantsFactory) => {
-	const token = core.getInput(`${tenantName}_token`)
-	const { job } = github.context
-	const previewUrl = core.getInput('preview_url')
-	const previewPath = core.getInput('preview_path')
-	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
-	const repoName = github.context.repo.repo.replace(/\./g, '-')
-	const prNumber = await checkingPullRequestNumber()
-
-	core.info(`Find PR number: ${prNumber}`)
-
-	const commandUrl = previewUrl
-		.replace('{{repoOwner}}', repoOwner)
-		.replace('{{repoName}}', repoName)
-		.replace('{{job}}', job)
-		.replace('{{prNumber}}', `${prNumber}`)
-		.concat(domainTenant)
-
-	return {
-		token,
-		tenantName: captalize(tenantName),
-		commandUrl,
-		outputUrl: commandUrl.concat(previewPath),
-		deploy,
-		shutDown,
-	}
-}
-
 const prepare = async (): Promise<IReturnPrepare> => {
-	const { surgeDeploy, surgeRemoveProjectDeploy } = surge()
-	const { vercelDeploy, vercelRemoveProjectDeploy } = vercel()
-
+	const { job } = github.context
 	const previewPath = core.getInput('preview_path')
 	const distFolder = core.getInput('dist')
 	const teardown =
@@ -66,21 +26,30 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const { payload } = github.context
 	const gitCommitSha = getGitCommitSha()
 
+	const tenantsConfig = {
+		job,
+		previewUrl: core.getInput('preview_url'),
+		previewPath: core.getInput('preview_path'),
+		repoOwner: github.context.repo.owner.replace(/\./g, '-'),
+		repoName: github.context.repo.repo.replace(/\./g, '-'),
+		prNumber: await checkingPullRequestNumber(),
+	}
+
 	const tenantsList = [
 		{
 			...(await tenantsFactory({
 				tenantName: 'surge',
 				domainTenant: '.surge.sh',
-				deploy: surgeDeploy,
-				shutDown: surgeRemoveProjectDeploy,
+				token: core.getInput('surge_token'),
+				...tenantsConfig,
 			})),
 		},
 		{
 			...(await tenantsFactory({
 				tenantName: 'vercel',
 				domainTenant: '.vercel.app',
-				deploy: vercelDeploy,
-				shutDown: vercelRemoveProjectDeploy,
+				token: core.getInput('vercel_token'),
+				...tenantsConfig,
 			})),
 		},
 	]

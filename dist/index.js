@@ -25,15 +25,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -42,25 +33,23 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(8350));
 const commentToPullRequest_1 = __nccwpck_require__(3847);
-function comment(message) {
+async function comment(message) {
     var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const { job, payload } = github.context;
-        const prOwner = (_a = payload.pull_request) === null || _a === void 0 ? void 0 : _a.owner;
-        const fromForkedRepo = prOwner === github.context.repo.owner;
-        const token = core.getInput('github_token', { required: true });
-        const octokit = github.getOctokit(token);
-        const prNumber = yield (0, getPullRequestNumber_1.default)();
-        if (fromForkedRepo) {
-            return;
-        }
-        (0, commentToPullRequest_1.commentToPullRequest)({
-            repo: github.context.repo,
-            number: Number(prNumber),
-            message,
-            octokit,
-            header: job,
-        });
+    const { job, payload } = github.context;
+    const prOwner = (_a = payload.pull_request) === null || _a === void 0 ? void 0 : _a.owner;
+    const fromForkedRepo = prOwner === github.context.repo.owner;
+    const token = core.getInput('github_token', { required: true });
+    const octokit = github.getOctokit(token);
+    const prNumber = await (0, getPullRequestNumber_1.default)();
+    if (fromForkedRepo) {
+        return;
+    }
+    (0, commentToPullRequest_1.commentToPullRequest)({
+        repo: github.context.repo,
+        number: Number(prNumber),
+        message,
+        octokit,
+        header: job,
     });
 }
 exports["default"] = comment;
@@ -140,63 +129,46 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.commentToPullRequest = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 function headerComment(header) {
     return `<!-- Sticky Pull Request Comment${header || ''} -->`;
 }
-function findPreviousComment(octokit, repo, issue_number, header) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { data: comments } = yield octokit.rest.issues.listComments(Object.assign(Object.assign({}, repo), { issue_number }));
-        const h = headerComment(header);
-        return comments.find((comment) => { var _a; return (_a = comment.body) === null || _a === void 0 ? void 0 : _a.includes(h); });
-    });
+async function findPreviousComment(octokit, repo, issue_number, header) {
+    const { data: comments } = await octokit.rest.issues.listComments(Object.assign(Object.assign({}, repo), { issue_number }));
+    const h = headerComment(header);
+    return comments.find((comment) => { var _a; return (_a = comment.body) === null || _a === void 0 ? void 0 : _a.includes(h); });
 }
-function updateComment(octokit, repo, comment_id, body, header, previousBody) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.rest.issues.updateComment(Object.assign(Object.assign({}, repo), { comment_id, body: previousBody
-                ? `${previousBody}\n${body}`
-                : `${body}\n${headerComment(header)}` }));
-    });
+async function updateComment(octokit, repo, comment_id, body, header, previousBody) {
+    await octokit.rest.issues.updateComment(Object.assign(Object.assign({}, repo), { comment_id, body: previousBody
+            ? `${previousBody}\n${body}`
+            : `${body}\n${headerComment(header)}` }));
 }
-function createComment(octokit, repo, issue_number, body, header, previousBody) {
-    return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.rest.issues.createComment(Object.assign(Object.assign({}, repo), { issue_number, body: previousBody
-                ? `${previousBody}\n${body}`
-                : `${body}\n${headerComment(header)}` }));
-    });
+async function createComment(octokit, repo, issue_number, body, header, previousBody) {
+    await octokit.rest.issues.createComment(Object.assign(Object.assign({}, repo), { issue_number, body: previousBody
+            ? `${previousBody}\n${body}`
+            : `${body}\n${headerComment(header)}` }));
 }
-function commentToPullRequest({ repo, number, message, octokit, header, }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (isNaN(number) || number < 1) {
-            core.info('no numbers given: skip step');
-            return;
+async function commentToPullRequest({ repo, number, message, octokit, header, }) {
+    if (isNaN(number) || number < 1) {
+        core.info('no numbers given: skip step');
+        return;
+    }
+    const prefixedHeader = `: Surge Preview ${header}'`;
+    const body = message.replace(/\s+/g, ' ');
+    try {
+        const previous = await findPreviousComment(octokit, repo, number, prefixedHeader);
+        if (previous) {
+            await updateComment(octokit, repo, previous.id, body, prefixedHeader, false);
         }
-        const prefixedHeader = `: Surge Preview ${header}'`;
-        const body = message.replace(/\s+/g, ' ');
-        try {
-            const previous = yield findPreviousComment(octokit, repo, number, prefixedHeader);
-            if (previous) {
-                yield updateComment(octokit, repo, previous.id, body, prefixedHeader, false);
-            }
-            else {
-                yield createComment(octokit, repo, number, body, prefixedHeader);
-            }
+        else {
+            await createComment(octokit, repo, number, body, prefixedHeader);
         }
-        catch (err) {
-            core.setFailed(err.body);
-        }
-    });
+    }
+    catch (err) {
+        core.setFailed(err.body);
+    }
 }
 exports.commentToPullRequest = commentToPullRequest;
 
@@ -227,20 +199,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.execCommand = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
-const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function* () {
+const execCommand = async ({ command, }) => {
     let myOutput = '';
     const options = {
         listeners: {
@@ -254,9 +217,9 @@ const execCommand = ({ command, }) => __awaiter(void 0, void 0, void 0, function
             },
         },
     };
-    yield (0, exec_1.exec)(`npx`, [...command], options);
+    await (0, exec_1.exec)(`npx`, [...command], options);
     return myOutput;
-});
+};
 exports.execCommand = execCommand;
 
 
@@ -286,15 +249,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -305,26 +259,24 @@ const generateLogUrl_1 = __importDefault(__nccwpck_require__(2586));
 const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const formatImage_1 = __nccwpck_require__(8781);
-function fail(err) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.info('error message:');
-        core.info(JSON.stringify(err, null, 2));
-        const repoOwner = github.context.repo.owner;
-        const repoName = github.context.repo.repo;
-        const repoId = github.context.runId;
-        const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`;
-        const buildingLogUrl = yield (0, generateLogUrl_1.default)();
-        const gitCommitSha = (0, getGitCommitSha_1.default)();
-        const image = (0, formatImage_1.formatImage)({
-            buildingLogUrl,
-            imageUrl: 'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
-        });
-        yield (0, comment_1.default)(`😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl}) \n ${image}`);
-        const failOnError = !!(core.getInput('failOnError') || process.env.FAIL_ON__ERROR);
-        if (failOnError) {
-            core.setFailed(err.message);
-        }
+async function fail(err) {
+    core.info('error message:');
+    core.info(JSON.stringify(err, null, 2));
+    const repoOwner = github.context.repo.owner;
+    const repoName = github.context.repo.repo;
+    const repoId = github.context.runId;
+    const buildLogsUrl = `https://github.com/${repoOwner}/${repoName}/actions/runs/${repoId}`;
+    const buildingLogUrl = await (0, generateLogUrl_1.default)();
+    const gitCommitSha = (0, getGitCommitSha_1.default)();
+    const image = (0, formatImage_1.formatImage)({
+        buildingLogUrl,
+        imageUrl: 'https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png',
     });
+    await (0, comment_1.default)(`😭 Deploy PR Preview ${gitCommitSha} failed. [Build logs](${buildLogsUrl}) \n ${image}`);
+    const failOnError = !!(core.getInput('failOnError') || process.env.FAIL_ON__ERROR);
+    if (failOnError) {
+        core.setFailed(err.message);
+    }
 }
 exports["default"] = fail;
 
@@ -370,15 +322,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -387,38 +330,36 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
-function generateLogUrl() {
+async function generateLogUrl() {
     var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const token = core.getInput('github_token', { required: true });
-        const octokit = github.getOctokit(token);
-        const { job } = github.context;
-        const gitCommitSha = (0, getGitCommitSha_1.default)();
-        let data;
-        try {
-            const result = yield octokit.rest.checks.listForRef({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                ref: gitCommitSha,
-            });
-            data = result.data;
-        }
-        catch (err) {
-            core.info('generateLogUrl error');
-            yield (0, fail_1.default)(err);
-            return '';
-        }
-        core.debug(JSON.stringify(data === null || data === void 0 ? void 0 : data.check_runs, null, 2));
-        let checkRunId;
-        if (((_a = data === null || data === void 0 ? void 0 : data.check_runs) === null || _a === void 0 ? void 0 : _a.length) >= 0) {
-            const checkRun = (_b = data === null || data === void 0 ? void 0 : data.check_runs) === null || _b === void 0 ? void 0 : _b.find((item) => item.name === job);
-            checkRunId = checkRun === null || checkRun === void 0 ? void 0 : checkRun.id;
-        }
-        const buildingLogUrl = checkRunId
-            ? `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/runs/${checkRunId}`
-            : `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${github.context.runId}`;
-        return buildingLogUrl;
-    });
+    const token = core.getInput('github_token', { required: true });
+    const octokit = github.getOctokit(token);
+    const { job } = github.context;
+    const gitCommitSha = (0, getGitCommitSha_1.default)();
+    let data;
+    try {
+        const result = await octokit.rest.checks.listForRef({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            ref: gitCommitSha,
+        });
+        data = result.data;
+    }
+    catch (err) {
+        core.info('generateLogUrl error');
+        await (0, fail_1.default)(err);
+        return '';
+    }
+    core.debug(JSON.stringify(data === null || data === void 0 ? void 0 : data.check_runs, null, 2));
+    let checkRunId;
+    if (((_a = data === null || data === void 0 ? void 0 : data.check_runs) === null || _a === void 0 ? void 0 : _a.length) >= 0) {
+        const checkRun = (_b = data === null || data === void 0 ? void 0 : data.check_runs) === null || _b === void 0 ? void 0 : _b.find((item) => item.name === job);
+        checkRunId = checkRun === null || checkRun === void 0 ? void 0 : checkRun.id;
+    }
+    const buildingLogUrl = checkRunId
+        ? `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/runs/${checkRunId}`
+        : `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${github.context.runId}`;
+    return buildingLogUrl;
 }
 exports["default"] = generateLogUrl;
 
@@ -488,15 +429,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -504,29 +436,27 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
-function getPullRequestNumber() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const token = core.getInput('github_token', { required: true });
-        const octokit = github.getOctokit(token);
-        const { payload } = github.context;
-        const gitCommitSha = (0, getGitCommitSha_1.default)();
-        const prNumberExists = payload.number && payload.pull_request;
-        if (prNumberExists) {
-            return Number(payload.number);
-        }
-        if (!prNumberExists) {
-            const result = yield octokit.rest.repos.listPullRequestsAssociatedWithCommit({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                commit_sha: gitCommitSha,
-            });
-            const pr = result.data.length > 0 && result.data[0];
-            core.debug('listPullRequestsAssociatedWithCommit');
-            core.debug(JSON.stringify(pr, null, 2));
-            const prNumber = pr ? Number(pr.number) : undefined;
-            return prNumber;
-        }
-    });
+async function getPullRequestNumber() {
+    const token = core.getInput('github_token', { required: true });
+    const octokit = github.getOctokit(token);
+    const { payload } = github.context;
+    const gitCommitSha = (0, getGitCommitSha_1.default)();
+    const prNumberExists = payload.number && payload.pull_request;
+    if (prNumberExists) {
+        return Number(payload.number);
+    }
+    if (!prNumberExists) {
+        const result = await octokit.rest.repos.listPullRequestsAssociatedWithCommit({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            commit_sha: gitCommitSha,
+        });
+        const pr = result.data.length > 0 && result.data[0];
+        core.debug('listPullRequestsAssociatedWithCommit');
+        core.debug(JSON.stringify(pr, null, 2));
+        const prNumber = pr ? Number(pr.number) : undefined;
+        return prNumber;
+    }
 }
 exports["default"] = getPullRequestNumber;
 
@@ -557,15 +487,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -579,50 +500,48 @@ const prepare_1 = __importDefault(__nccwpck_require__(3233));
 const build_1 = __importDefault(__nccwpck_require__(644));
 const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 const deploy_1 = __importDefault(__nccwpck_require__(8425));
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, tenantsList, } = yield (0, prepare_1.default)();
-        if (shouldShutdown) {
-            return yield (0, shutDown_1.default)({
-                buildingLogUrl,
-                gitCommitSha,
-                tenantsList,
-            });
-        }
-        const deployingImage = (0, formatImage_1.formatImage)({
+async function main() {
+    const { previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, tenantsList, } = await (0, prepare_1.default)();
+    if (shouldShutdown) {
+        return await (0, shutDown_1.default)({
             buildingLogUrl,
-            imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
-        });
-        yield (0, comment_1.default)((0, commentTemplates_1.deployInProgressTemplate)({
             gitCommitSha,
-            buildingLogUrl,
-            deployingImage,
             tenantsList,
-        }));
-        try {
-            const { duration, image } = yield (0, build_1.default)({
-                buildingLogUrl,
-            });
-            yield (0, deploy_1.default)({
-                previewPath,
-                distFolder,
-                gitCommitSha,
-                duration,
-                image,
-                tenantsList,
-            });
-        }
-        catch (err) {
-            core.info(`run command error ${err}`);
-            yield (0, fail_1.default)(err);
-        }
+        });
+    }
+    const deployingImage = (0, formatImage_1.formatImage)({
+        buildingLogUrl,
+        imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
     });
+    await (0, comment_1.default)((0, commentTemplates_1.deployInProgressTemplate)({
+        gitCommitSha,
+        buildingLogUrl,
+        deployingImage,
+        tenantsList,
+    }));
+    try {
+        const { duration, image } = await (0, build_1.default)({
+            buildingLogUrl,
+        });
+        await (0, deploy_1.default)({
+            previewPath,
+            distFolder,
+            gitCommitSha,
+            duration,
+            image,
+            tenantsList,
+        });
+    }
+    catch (err) {
+        core.info(`run command error ${err}`);
+        await (0, fail_1.default)(err);
+    }
 }
 // eslint-disable-next-line github/no-then
-main().catch((err) => __awaiter(void 0, void 0, void 0, function* () {
+main().catch(async (err) => {
     core.info('main error');
-    yield (0, fail_1.default)(err);
-}));
+    await (0, fail_1.default)(err);
+});
 
 
 /***/ }),
@@ -651,30 +570,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const formatImage_1 = __nccwpck_require__(8781);
-const build = ({ buildingLogUrl }) => __awaiter(void 0, void 0, void 0, function* () {
+const build = async ({ buildingLogUrl }) => {
     const startTime = Date.now();
     if (!core.getInput('build')) {
-        yield (0, exec_1.exec)(`npm install`);
-        yield (0, exec_1.exec)(`npm run build`);
+        await (0, exec_1.exec)(`npm install`);
+        await (0, exec_1.exec)(`npm run build`);
     }
     else {
         const buildCommands = core.getInput('build').split('\n');
         for (const command of buildCommands) {
             core.info(`RUN: ${command}`);
-            yield (0, exec_1.exec)(command);
+            await (0, exec_1.exec)(command);
         }
     }
     const duration = (Date.now() - startTime) / 1000;
@@ -684,7 +594,7 @@ const build = ({ buildingLogUrl }) => __awaiter(void 0, void 0, void 0, function
         imageUrl: 'https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png',
     });
     return { duration, image };
-});
+};
 exports["default"] = build;
 
 
@@ -695,39 +605,30 @@ exports["default"] = build;
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-const deploy = ({ distFolder, gitCommitSha, duration, image, tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
+const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, }) => {
     // eslint-disable-next-line github/array-foreach
-    tenantsList.forEach((tenant) => __awaiter(void 0, void 0, void 0, function* () {
+    tenantsList.forEach(async (tenant) => {
         if (tenant.token) {
-            yield tenant.deploy({
+            await tenant.deploy({
                 token: tenant.token,
                 distFolder,
                 mountedUrl: tenant.commandUrl,
             });
         }
-    }));
-    yield (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
+    });
+    await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
         tenantsList,
         duration,
         image,
     }));
-});
+};
 exports["default"] = deploy;
 
 
@@ -757,15 +658,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -775,67 +667,36 @@ const github = __importStar(__nccwpck_require__(5438));
 const generateLogUrl_1 = __importDefault(__nccwpck_require__(2586));
 const getGitCommitSha_1 = __importDefault(__nccwpck_require__(2557));
 const getPullRequestNumber_1 = __importDefault(__nccwpck_require__(8350));
-const surge_1 = __importDefault(__nccwpck_require__(2764));
-const vercel_1 = __importDefault(__nccwpck_require__(9707));
-const checkingPullRequestNumber = () => __awaiter(void 0, void 0, void 0, function* () {
-    const prNumber = yield (0, getPullRequestNumber_1.default)();
+const tenantsFactory_1 = __importDefault(__nccwpck_require__(7536));
+const checkingPullRequestNumber = async () => {
+    const prNumber = await (0, getPullRequestNumber_1.default)();
     if (!prNumber) {
         core.info(`😢 No related PR found, skip it.`);
         return;
     }
     return prNumber;
-});
-const captalize = (value) => {
-    return value.charAt(0).toUpperCase() + value.slice(1);
 };
-const tenantsFactory = ({ tenantName, domainTenant, deploy, shutDown, }) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = core.getInput(`${tenantName}_token`);
-    const { job } = github.context;
-    const previewUrl = core.getInput('preview_url');
-    const previewPath = core.getInput('preview_path');
-    const repoOwner = github.context.repo.owner.replace(/\./g, '-');
-    const repoName = github.context.repo.repo.replace(/\./g, '-');
-    const prNumber = yield checkingPullRequestNumber();
-    core.info(`Find PR number: ${prNumber}`);
-    const commandUrl = previewUrl
-        .replace('{{repoOwner}}', repoOwner)
-        .replace('{{repoName}}', repoName)
-        .replace('{{job}}', job)
-        .replace('{{prNumber}}', `${prNumber}`)
-        .concat(domainTenant);
-    return {
-        token,
-        tenantName: captalize(tenantName),
-        commandUrl,
-        outputUrl: commandUrl.concat(previewPath),
-        deploy,
-        shutDown,
-    };
-});
-const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
+const prepare = async () => {
     var _a;
-    const { surgeDeploy, surgeRemoveProjectDeploy } = (0, surge_1.default)();
-    const { vercelDeploy, vercelRemoveProjectDeploy } = (0, vercel_1.default)();
+    const { job } = github.context;
     const previewPath = core.getInput('preview_path');
     const distFolder = core.getInput('dist');
     const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
     const { payload } = github.context;
     const gitCommitSha = (0, getGitCommitSha_1.default)();
+    const tenantsConfig = {
+        job,
+        previewUrl: core.getInput('preview_url'),
+        previewPath: core.getInput('preview_path'),
+        repoOwner: github.context.repo.owner.replace(/\./g, '-'),
+        repoName: github.context.repo.repo.replace(/\./g, '-'),
+        prNumber: await checkingPullRequestNumber(),
+    };
     const tenantsList = [
-        Object.assign({}, (yield tenantsFactory({
-            tenantName: 'surge',
-            domainTenant: '.surge.sh',
-            deploy: surgeDeploy,
-            shutDown: surgeRemoveProjectDeploy,
-        }))),
-        Object.assign({}, (yield tenantsFactory({
-            tenantName: 'vercel',
-            domainTenant: '.vercel.app',
-            deploy: vercelDeploy,
-            shutDown: vercelRemoveProjectDeploy,
-        }))),
+        Object.assign({}, (await (0, tenantsFactory_1.default)(Object.assign({ tenantName: 'surge', domainTenant: '.surge.sh', token: core.getInput('surge_token') }, tenantsConfig)))),
+        Object.assign({}, (await (0, tenantsFactory_1.default)(Object.assign({ tenantName: 'vercel', domainTenant: '.vercel.app', token: core.getInput('vercel_token') }, tenantsConfig)))),
     ];
-    const buildingLogUrl = yield (0, generateLogUrl_1.default)();
+    const buildingLogUrl = await (0, generateLogUrl_1.default)();
     const shouldShutdown = teardown && payload.action === 'closed';
     core.debug('github.context');
     core.debug(JSON.stringify(github.context, null, 2));
@@ -854,7 +715,7 @@ const prepare = () => __awaiter(void 0, void 0, void 0, function* () {
         shouldShutdown,
         tenantsList,
     };
-});
+};
 exports["default"] = prepare;
 
 
@@ -884,15 +745,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -901,64 +753,73 @@ const core = __importStar(__nccwpck_require__(2186));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const formatImage_1 = __nccwpck_require__(8781);
-const shutDown = ({ buildingLogUrl, gitCommitSha, tenantsList, }) => __awaiter(void 0, void 0, void 0, function* () {
+const shutDown = async ({ buildingLogUrl, gitCommitSha, tenantsList, }) => {
     const image = (0, formatImage_1.formatImage)({
         buildingLogUrl,
         imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
     });
     try {
         // eslint-disable-next-line github/array-foreach
-        return tenantsList.forEach((tenant) => __awaiter(void 0, void 0, void 0, function* () {
+        return tenantsList.forEach(async (tenant) => {
             core.info(`Teardown: ${tenant.outputUrl}`);
             if (tenant.token) {
-                yield tenant.shutDown({
+                await tenant.shutDown({
                     token: tenant.token,
                     mountedUrl: tenant.commandUrl,
                 });
             }
-            return yield (0, comment_1.default)(`:recycle: [PR Preview](https://${tenant.outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
-        }));
+            return await (0, comment_1.default)(`:recycle: [PR Preview](https://${tenant.outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
+        });
     }
     catch (err) {
         core.info('teardown error');
-        return yield (0, fail_1.default)(err);
+        return await (0, fail_1.default)(err);
     }
-});
+};
 exports["default"] = shutDown;
 
 
 /***/ }),
 
-/***/ 2764:
+/***/ 3699:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.vercel = exports.surge = void 0;
+var surge_1 = __nccwpck_require__(2764);
+Object.defineProperty(exports, "surge", ({ enumerable: true, get: function () { return __importDefault(surge_1).default; } }));
+var vercel_1 = __nccwpck_require__(9707);
+Object.defineProperty(exports, "vercel", ({ enumerable: true, get: function () { return __importDefault(vercel_1).default; } }));
+
+
+/***/ }),
+
+/***/ 2764:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
-    const surgeDeploy = ({ token, distFolder, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, execCommand_1.execCommand)({
+    const deploy = async ({ token, distFolder, mountedUrl, }) => {
+        await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
-    });
-    const surgeRemoveProjectDeploy = ({ token, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, execCommand_1.execCommand)({
+    };
+    const shutDown = async ({ token, mountedUrl, }) => {
+        await (0, execCommand_1.execCommand)({
             command: ['surge', 'teardown', mountedUrl, `--token`, token],
         });
-    });
+    };
     return {
-        surgeDeploy,
-        surgeRemoveProjectDeploy,
+        deploy,
+        shutDown,
     };
 };
 exports["default"] = surge;
@@ -966,27 +827,69 @@ exports["default"] = surge;
 
 /***/ }),
 
-/***/ 9707:
+/***/ 7536:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const Tenant = __importStar(__nccwpck_require__(3699));
+const captalize = (value) => {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+};
+const tenantsFactory = async ({ tenantName, domainTenant, token, job, previewUrl, previewPath, repoOwner, repoName, prNumber, }) => {
+    const { deploy, shutDown } = Tenant[tenantName];
+    const commandUrl = previewUrl
+        .replace('{{repoOwner}}', repoOwner)
+        .replace('{{repoName}}', repoName)
+        .replace('{{job}}', job)
+        .replace('{{prNumber}}', `${prNumber}`)
+        .concat(domainTenant);
+    return {
+        token,
+        tenantName: captalize(tenantName),
+        commandUrl,
+        outputUrl: commandUrl.concat(previewPath),
+        deploy,
+        shutDown,
+    };
+};
+exports["default"] = tenantsFactory;
+
+
+/***/ }),
+
+/***/ 9707:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel = () => {
     const vercelCli = 'vercel';
     let deploymentUrlVercel = '';
-    const vercelAssignAlias = ({ token, deploymentUrl, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, execCommand_1.execCommand)({
+    const vercelAssignAlias = async ({ token, deploymentUrl, mountedUrl, }) => {
+        await (0, execCommand_1.execCommand)({
             command: [
                 vercelCli,
                 'alias',
@@ -996,24 +899,24 @@ const vercel = () => {
                 `--token=${token}`,
             ],
         });
-    });
-    const vercelDeploy = ({ token, distFolder, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
-        const deploymentUrl = yield (0, execCommand_1.execCommand)({
+    };
+    const deploy = async ({ token, distFolder, mountedUrl, }) => {
+        const deploymentUrl = await (0, execCommand_1.execCommand)({
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-    });
-    const vercelRemoveProjectDeploy = ({ token, mountedUrl, }) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, execCommand_1.execCommand)({
+    };
+    const shutDown = async ({ token, mountedUrl, }) => {
+        await (0, execCommand_1.execCommand)({
             command: [vercelCli, 'remove --yes', mountedUrl, '-t', token],
         });
-    });
+    };
     const returnVercelUrl = () => {
         return deploymentUrlVercel;
     };
     return {
-        vercelDeploy,
-        vercelRemoveProjectDeploy,
+        deploy,
+        shutDown,
         returnVercelUrl,
     };
 };

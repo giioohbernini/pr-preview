@@ -16,14 +16,11 @@ export interface IVercelRemoveProjectDeploy {
 }
 
 export interface IVercelReturn {
-	vercelDeploy: ({
+	deploy: ({
 		token,
 		distFolder,
 		mountedUrl,
 	}: IVercelDeployParams) => Promise<void>
-	vercelRemoveProjectDeploy: ({
-		token,
-		mountedUrl,
-	}: IVercelRemoveProjectDeploy) => Promise<void>
+	shutDown: ({ token, mountedUrl }: IVercelRemoveProjectDeploy) => Promise<void>
 	returnVercelUrl: () => string
 }

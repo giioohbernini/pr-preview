@@ -6,7 +6,7 @@ import {
 } from './types'
 
 const surge = (): ISurgeReturn => {
-	const surgeDeploy = async ({
+	const deploy = async ({
 		token,
 		distFolder,
 		mountedUrl,
@@ -16,7 +16,7 @@ const surge = (): ISurgeReturn => {
 		})
 	}
 
-	const surgeRemoveProjectDeploy = async ({
+	const shutDown = async ({
 		token,
 		mountedUrl,
 	}: ISurgeRemoveProjectDeployParams) => {
@@ -26,8 +26,8 @@ const surge = (): ISurgeReturn => {
 	}
 
 	return {
-		surgeDeploy,
-		surgeRemoveProjectDeploy,
+		deploy,
+		shutDown,
 	}
 }
 
