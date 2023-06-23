@@ -64,6 +64,20 @@ exports["default"] = comment;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
+const commentTenantDeployURL = ({ tenantsList }) => {
+    return tenantsList
+        .map((tenant) => {
+        return tenant.token
+            ? `
+					<tr>
+						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
+						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></td>
+					</tr>
+					`
+            : '';
+    })
+        .join('');
+};
 const deployInProgressTemplate = ({ gitCommitSha, buildingLogUrl, deployingImage, tenantsList, }) => {
     return `
 		${tenantsList
@@ -83,18 +97,7 @@ const deployFinalizedTemplate = ({ gitCommitSha, tenantsList, duration, image, }
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
-      ${tenantsList
-        .map((tenant) => {
-        return tenant.token
-            ? `
-							<tr>
-								<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
-								<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></td>
-							</tr>
-		          `
-            : '';
-    })
-        .join('')}
+			${commentTenantDeployURL({ tenantsList })}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>
     <p>${image}</p>

@@ -14,7 +14,7 @@ interface IdeployFinalized {
 	image: string
 }
 
-interface CommentConfig {
+interface ICommentConfig {
 	repo: Repo
 	number: number
 	message: string
@@ -22,7 +22,7 @@ interface CommentConfig {
 	header: string
 }
 
-interface Comment {
+interface IComment {
 	id: number
 	node_id: string
 	url: string
@@ -46,11 +46,16 @@ interface IFormatImage {
 	imageUrl: string
 }
 
+interface ICommentTenantDeployURL {
+	tenantsList: ITenant[]
+}
+
 export {
 	IDeployInProgressPrams,
 	IdeployFinalized,
-	CommentConfig,
-	Comment,
+	ICommentConfig,
+	IComment,
 	IExecCommandOptions,
 	IFormatImage,
+	ICommentTenantDeployURL,
 }

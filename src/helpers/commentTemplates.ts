@@ -1,4 +1,23 @@
-import { IDeployInProgressPrams, IdeployFinalized } from './types'
+import {
+	IDeployInProgressPrams,
+	IdeployFinalized,
+	ICommentTenantDeployURL,
+} from './types'
+
+const commentTenantDeployURL = ({ tenantsList }: ICommentTenantDeployURL) => {
+	return tenantsList
+		.map((tenant) => {
+			return tenant.token
+				? `
+					<tr>
+						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
+						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
+					</tr>
+					`
+				: ''
+		})
+		.join('')
+}
 
 export const deployInProgressTemplate = ({
 	gitCommitSha,
@@ -29,18 +48,7 @@ export const deployFinalizedTemplate = ({
 	return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
-      ${tenantsList
-				.map((tenant) => {
-					return tenant.token
-						? `
-							<tr>
-								<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
-								<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
-							</tr>
-		          `
-						: ''
-				})
-				.join('')}
+			${commentTenantDeployURL({ tenantsList })}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>
     <p>${image}</p>
