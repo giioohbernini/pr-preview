@@ -15,7 +15,10 @@ interface ISurgeReturn {
 		distFolder,
 		mountedUrl,
 	}: ISurgeDeployParams) => Promise<void>
-	shutDown: ({ mountedUrl }: ISurgeRemoveProjectDeployParams) => Promise<void>
+	shutDown: ({
+		token,
+		mountedUrl,
+	}: ISurgeRemoveProjectDeployParams) => Promise<void>
 }
 
 export { ISurgeDeployParams, ISurgeRemoveProjectDeployParams, ISurgeReturn }

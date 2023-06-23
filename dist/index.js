@@ -790,11 +790,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.vercel = exports.surge = void 0;
-var surge_1 = __nccwpck_require__(2764);
-Object.defineProperty(exports, "surge", ({ enumerable: true, get: function () { return __importDefault(surge_1).default; } }));
-var vercel_1 = __nccwpck_require__(9707);
-Object.defineProperty(exports, "vercel", ({ enumerable: true, get: function () { return __importDefault(vercel_1).default; } }));
+exports.Tenants = void 0;
+const surge_1 = __importDefault(__nccwpck_require__(2764));
+const vercel_1 = __importDefault(__nccwpck_require__(9707));
+exports.Tenants = {
+    surge: surge_1.default,
+    vercel: vercel_1.default,
+};
 
 
 /***/ }),
@@ -828,36 +830,17 @@ exports["default"] = surge;
 /***/ }),
 
 /***/ 7536:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const Tenant = __importStar(__nccwpck_require__(3699));
+const index_1 = __nccwpck_require__(3699);
 const captalize = (value) => {
     return value.charAt(0).toUpperCase() + value.slice(1);
 };
 const tenantsFactory = async ({ tenantName, domainTenant, token, job, previewUrl, previewPath, repoOwner, repoName, prNumber, }) => {
-    const { deploy, shutDown } = Tenant[tenantName];
+    const { deploy, shutDown } = index_1.Tenants[tenantName]();
     const commandUrl = previewUrl
         .replace('{{repoOwner}}', repoOwner)
         .replace('{{repoName}}', repoName)

@@ -1,6 +1,5 @@
-import * as Tenant from '../index'
-import { Record, ITenantsFactory } from './types'
-import { ISurgeReturn } from '../surge/types'
+import { Tenants } from '../index'
+import { ITenantsFactory } from './types'
 
 const captalize = (value: string) => {
 	return value.charAt(0).toUpperCase() + value.slice(1)
@@ -17,9 +16,7 @@ const tenantsFactory = async ({
 	repoName,
 	prNumber,
 }: ITenantsFactory) => {
-	const { deploy, shutDown } = (
-		Tenant as unknown as Record<string, ISurgeReturn>
-	)[tenantName]
+	const { deploy, shutDown } = Tenants[tenantName]()
 
 	const commandUrl = previewUrl
 		.replace('{{repoOwner}}', repoOwner)

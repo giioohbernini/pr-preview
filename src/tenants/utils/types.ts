@@ -1,5 +1,3 @@
-export type Record<K extends string | number | symbol, T> = { [P in K]: T }
-
 export interface ITenantsFactory {
 	tenantName: string
 	domainTenant: string

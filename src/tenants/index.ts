@@ -1,2 +1,8 @@
-export { default as surge } from './surge'
-export { default as vercel } from './vercel'
+import surge from './surge'
+import vercel from './vercel'
+import { ISurgeReturn } from './surge/types'
+
+export const Tenants: { [key: string]: () => ISurgeReturn } = {
+	surge,
+	vercel,
+}
