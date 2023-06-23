@@ -3,14 +3,14 @@ import { exec } from '@actions/exec'
 import { formatImage } from '../../helpers/formatImage'
 import { IBuildParams } from './types'
 
-const build = async ({ buildingLogUrl }: IBuildParams) => {
+const build = async ({ buildingLogUrl, buildCommand }: IBuildParams) => {
 	const startTime = Date.now()
 
-	if (!core.getInput('build')) {
+	if (!buildCommand) {
 		await exec(`npm install`)
 		await exec(`npm run build`)
 	} else {
-		const buildCommands = core.getInput('build').split('\n')
+		const buildCommands = buildCommand.split('\n')
 		for (const command of buildCommands) {
 			core.info(`RUN: ${command}`)
 			await exec(command)

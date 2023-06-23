@@ -22,6 +22,7 @@ export interface ITenantsFactory {
 export interface IReturnPrepare {
 	previewPath: string
 	distFolder: string
+	buildCommand: string
 	gitCommitSha: string
 	buildingLogUrl: string
 	shouldShutdown: boolean

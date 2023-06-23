@@ -501,7 +501,7 @@ const build_1 = __importDefault(__nccwpck_require__(644));
 const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 const deploy_1 = __importDefault(__nccwpck_require__(8425));
 async function main() {
-    const { previewPath, distFolder, gitCommitSha, buildingLogUrl, shouldShutdown, tenantsList, } = await (0, prepare_1.default)();
+    const { previewPath, distFolder, buildCommand, gitCommitSha, buildingLogUrl, shouldShutdown, tenantsList, } = await (0, prepare_1.default)();
     if (shouldShutdown) {
         return await (0, shutDown_1.default)({
             buildingLogUrl,
@@ -522,6 +522,7 @@ async function main() {
     try {
         const { duration, image } = await (0, build_1.default)({
             buildingLogUrl,
+            buildCommand,
         });
         await (0, deploy_1.default)({
             previewPath,
@@ -574,14 +575,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const exec_1 = __nccwpck_require__(1514);
 const formatImage_1 = __nccwpck_require__(8781);
-const build = async ({ buildingLogUrl }) => {
+const build = async ({ buildingLogUrl, buildCommand }) => {
     const startTime = Date.now();
-    if (!core.getInput('build')) {
+    if (!buildCommand) {
         await (0, exec_1.exec)(`npm install`);
         await (0, exec_1.exec)(`npm run build`);
     }
     else {
-        const buildCommands = core.getInput('build').split('\n');
+        const buildCommands = buildCommand.split('\n');
         for (const command of buildCommands) {
             core.info(`RUN: ${command}`);
             await (0, exec_1.exec)(command);
@@ -681,6 +682,7 @@ const prepare = async () => {
     const { job } = github.context;
     const previewPath = core.getInput('preview_path');
     const distFolder = core.getInput('dist');
+    const buildCommand = core.getInput('build');
     const teardown = ((_a = core.getInput('teardown')) === null || _a === void 0 ? void 0 : _a.toString().toLowerCase()) === 'true';
     const { payload } = github.context;
     const gitCommitSha = (0, getGitCommitSha_1.default)();
@@ -710,6 +712,7 @@ const prepare = async () => {
     return {
         previewPath,
         distFolder,
+        buildCommand,
         gitCommitSha,
         buildingLogUrl,
         shouldShutdown,

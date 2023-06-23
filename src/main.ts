@@ -12,6 +12,7 @@ async function main() {
 	const {
 		previewPath,
 		distFolder,
+		buildCommand,
 		gitCommitSha,
 		buildingLogUrl,
 		shouldShutdown,
@@ -44,6 +45,7 @@ async function main() {
 	try {
 		const { duration, image } = await build({
 			buildingLogUrl,
+			buildCommand,
 		})
 
 		await deploy({

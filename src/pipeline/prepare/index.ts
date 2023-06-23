@@ -21,6 +21,7 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	const { job } = github.context
 	const previewPath = core.getInput('preview_path')
 	const distFolder = core.getInput('dist')
+	const buildCommand = core.getInput('build')
 	const teardown =
 		core.getInput('teardown')?.toString().toLowerCase() === 'true'
 	const { payload } = github.context
@@ -71,6 +72,7 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	return {
 		previewPath,
 		distFolder,
+		buildCommand,
 		gitCommitSha,
 		buildingLogUrl,
 		shouldShutdown,
