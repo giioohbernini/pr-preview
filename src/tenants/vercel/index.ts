@@ -1,10 +1,6 @@
 import { execCommand } from '../../helpers/execCommand'
-import {
-	IVercelDeployParams,
-	IVercelRemoveProjectDeploy,
-	IVercelAssignAlias,
-	IVercelReturn,
-} from './types'
+import { IDeployParams, IShutDownParams } from '../types'
+import { IVercelAssignAlias, IVercelReturn } from './types'
 
 const vercel = (): IVercelReturn => {
 	const vercelCli = 'vercel'
@@ -27,11 +23,7 @@ const vercel = (): IVercelReturn => {
 		})
 	}
 
-	const deploy = async ({
-		token,
-		distFolder,
-		mountedUrl,
-	}: IVercelDeployParams) => {
+	const deploy = async ({ token, distFolder, mountedUrl }: IDeployParams) => {
 		const deploymentUrl = await execCommand({
 			command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
 		})
@@ -39,10 +31,7 @@ const vercel = (): IVercelReturn => {
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
 	}
 
-	const shutDown = async ({
-		token,
-		mountedUrl,
-	}: IVercelRemoveProjectDeploy) => {
+	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
 		await execCommand({
 			command: [vercelCli, 'remove --yes', mountedUrl, '-t', token],
 		})

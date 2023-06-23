@@ -9,11 +9,6 @@ export type Repo = {
 	repo: string
 }
 
-export type TokenList = {
-	surge: string
-	vercel: string
-}
-
 interface IDeployTenantParams {
 	token: string
 	distFolder: string
@@ -25,7 +20,7 @@ interface IShutDown {
 	mountedUrl: string
 }
 
-export interface Tenant {
+export interface ITenant {
 	token: string
 	tenantName: string
 	commandUrl: string

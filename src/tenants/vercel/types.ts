@@ -1,26 +1,11 @@
+import { ITenantReturn } from '../types'
+
 export interface IVercelAssignAlias {
 	token: string
 	deploymentUrl: string
 	mountedUrl: string
 }
 
-export interface IVercelDeployParams {
-	token: string
-	distFolder: string
-	mountedUrl: string
-}
-
-export interface IVercelRemoveProjectDeploy {
-	token: string
-	mountedUrl: string
-}
-
-export interface IVercelReturn {
-	deploy: ({
-		token,
-		distFolder,
-		mountedUrl,
-	}: IVercelDeployParams) => Promise<void>
-	shutDown: ({ token, mountedUrl }: IVercelRemoveProjectDeploy) => Promise<void>
+export interface IVercelReturn extends ITenantReturn {
 	returnVercelUrl: () => string
 }

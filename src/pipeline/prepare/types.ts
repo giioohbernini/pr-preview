@@ -1,4 +1,4 @@
-import { Tenant } from '../../types'
+import { ITenant } from '../../types'
 
 interface IDeployParams {
 	token: string
@@ -25,5 +25,5 @@ export interface IReturnPrepare {
 	gitCommitSha: string
 	buildingLogUrl: string
 	shouldShutdown: boolean
-	tenantsList: Tenant[]
+	tenantsList: ITenant[]
 }

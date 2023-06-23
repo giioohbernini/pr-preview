@@ -1,15 +1,15 @@
-import type { Repo, Octokit, Tenant } from '../types'
+import type { Repo, Octokit, ITenant } from '../types'
 
 interface IDeployInProgressPrams {
 	gitCommitSha: string
 	buildingLogUrl: string
 	deployingImage: string
-	tenantsList: Tenant[]
+	tenantsList: ITenant[]
 }
 
 interface IdeployFinalized {
 	gitCommitSha: string
-	tenantsList: Tenant[]
+	tenantsList: ITenant[]
 	duration: number
 	image: string
 }

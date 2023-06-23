@@ -1,4 +1,4 @@
-import { Tenant } from '../../types'
+import { ITenant } from '../../types'
 
 export interface IDeployParams {
 	previewPath: string
@@ -6,5 +6,5 @@ export interface IDeployParams {
 	gitCommitSha: string
 	duration: number
 	image: string
-	tenantsList: Tenant[]
+	tenantsList: ITenant[]
 }

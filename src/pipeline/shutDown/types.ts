@@ -1,7 +1,7 @@
-import { Tenant } from '../../types'
+import { ITenant } from '../../types'
 
 export interface IShutDownPrams {
 	gitCommitSha: string
 	buildingLogUrl: string
-	tenantsList: Tenant[]
+	tenantsList: ITenant[]
 }

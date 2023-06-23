@@ -809,12 +809,12 @@ exports.Tenants = {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
-    const deploy = async ({ token, distFolder, mountedUrl, }) => {
+    const deploy = async ({ token, distFolder, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
     };
-    const shutDown = async ({ token, mountedUrl, }) => {
+    const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', 'teardown', mountedUrl, `--token`, token],
         });
@@ -883,13 +883,13 @@ const vercel = () => {
             ],
         });
     };
-    const deploy = async ({ token, distFolder, mountedUrl, }) => {
+    const deploy = async ({ token, distFolder, mountedUrl }) => {
         const deploymentUrl = await (0, execCommand_1.execCommand)({
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
     };
-    const shutDown = async ({ token, mountedUrl, }) => {
+    const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
             command: [vercelCli, 'remove --yes', mountedUrl, '-t', token],
         });
