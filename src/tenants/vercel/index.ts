@@ -1,63 +1,40 @@
-import * as github from '@actions/github'
 import { execCommand } from '../../helpers/execCommand'
-import {
-	IVercelDeployParams,
-	IVercelRemoveProjectDeploy,
-	IVercelAssignAlias,
-	IVercelReturn,
-} from './types'
+import { IDeployParams, IShutDownParams } from '../types'
+import { IVercelAssignAlias, IVercelReturn } from './types'
 
 const vercel = (): IVercelReturn => {
 	const vercelCli = 'vercel'
-	const { job } = github.context
 	let deploymentUrlVercel = ''
 
-	const vercelDeploy = async ({
-		token,
-		distFolder,
-		previewPath,
-	}: IVercelDeployParams) => {
-		const outputPath = await execCommand({
-			command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
-		})
-
-		deploymentUrlVercel = outputPath.concat(previewPath)
-	}
-
-	const vercelRemoveProjectDeploy = async ({
-		token,
-	}: IVercelRemoveProjectDeploy) => {
-		await execCommand({
-			command: [vercelCli, 'remove --yes', deploymentUrlVercel, '-t', token],
-		})
-	}
-
 	const vercelAssignAlias = async ({
-		tokenList,
-		aliasUrl,
+		token,
+		deploymentUrl,
+		mountedUrl,
 	}: IVercelAssignAlias) => {
 		await execCommand({
 			command: [
 				vercelCli,
-				'inspect',
-				deploymentUrlVercel,
-				'-t',
-				tokenList.vercel,
-			],
-		})
-
-		const output = await execCommand({
-			command: [
-				vercelCli,
-				`--token=${tokenList.vercel}`,
 				'alias',
 				'set',
-				deploymentUrlVercel,
-				`${job}-${aliasUrl}`,
+				deploymentUrl,
+				`${mountedUrl}`,
+				`--token=${token}`,
 			],
 		})
+	}
 
-		return output
+	const deploy = async ({ token, distFolder, mountedUrl }: IDeployParams) => {
+		const deploymentUrl = await execCommand({
+			command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
+		})
+
+		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
+	}
+
+	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
+		await execCommand({
+			command: [vercelCli, 'remove --yes', mountedUrl, '-t', token],
+		})
 	}
 
 	const returnVercelUrl = () => {
@@ -65,9 +42,8 @@ const vercel = (): IVercelReturn => {
 	}
 
 	return {
-		vercelDeploy,
-		vercelRemoveProjectDeploy,
-		vercelAssignAlias,
+		deploy,
+		shutDown,
 		returnVercelUrl,
 	}
 }

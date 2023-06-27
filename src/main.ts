@@ -10,23 +10,20 @@ import deploy from './pipeline/deploy'
 
 async function main() {
 	const {
-		tokenList,
 		previewPath,
 		distFolder,
+		buildCommand,
 		gitCommitSha,
-		mountedUrl,
-		outputUrl,
 		buildingLogUrl,
 		shouldShutdown,
+		tenantsList,
 	} = await prepare()
 
 	if (shouldShutdown) {
 		return await shutDown({
-			tokenList,
-			mountedUrl,
 			buildingLogUrl,
-			outputUrl,
 			gitCommitSha,
+			tenantsList,
 		})
 	}
 
@@ -39,27 +36,25 @@ async function main() {
 	await comment(
 		deployInProgressTemplate({
 			gitCommitSha,
-			outputUrl,
 			buildingLogUrl,
 			deployingImage,
+			tenantsList,
 		})
 	)
 
 	try {
 		const { duration, image } = await build({
-			mountedUrl,
 			buildingLogUrl,
+			buildCommand,
 		})
 
 		await deploy({
-			tokenList,
 			previewPath,
 			distFolder,
-			mountedUrl,
 			gitCommitSha,
-			outputUrl,
 			duration,
 			image,
+			tenantsList,
 		})
 	} catch (err) {
 		core.info(`run command error ${err}`)

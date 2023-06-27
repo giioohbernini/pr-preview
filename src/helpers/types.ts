@@ -1,22 +1,20 @@
-import type { Repo, Octokit, TokenList } from '../types'
+import type { Repo, Octokit, ITenant } from '../types'
 
 interface IDeployInProgressPrams {
 	gitCommitSha: string
-	outputUrl: string
 	buildingLogUrl: string
 	deployingImage: string
+	tenantsList: ITenant[]
 }
 
 interface IdeployFinalized {
-	tokenList: TokenList
 	gitCommitSha: string
-	outputUrl: string
-	returnVercelUrl: () => string
+	tenantsList: ITenant[]
 	duration: number
 	image: string
 }
 
-interface CommentConfig {
+interface ICommentConfig {
 	repo: Repo
 	number: number
 	message: string
@@ -24,7 +22,7 @@ interface CommentConfig {
 	header: string
 }
 
-interface Comment {
+interface IComment {
 	id: number
 	node_id: string
 	url: string
@@ -48,11 +46,16 @@ interface IFormatImage {
 	imageUrl: string
 }
 
+interface ICommentTenantDeployURL {
+	tenantsList: ITenant[]
+}
+
 export {
 	IDeployInProgressPrams,
 	IdeployFinalized,
-	CommentConfig,
-	Comment,
+	ICommentConfig,
+	IComment,
 	IExecCommandOptions,
 	IFormatImage,
+	ICommentTenantDeployURL,
 }

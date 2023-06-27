@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import type { Repo, Octokit } from '../types'
-import { CommentConfig, Comment } from './types'
+import { ICommentConfig, IComment } from './types'
 
 function headerComment(header?: string) {
 	return `<!-- Sticky Pull Request Comment${header || ''} -->`
@@ -17,7 +17,7 @@ async function findPreviousComment(
 		issue_number,
 	})
 	const h = headerComment(header)
-	return comments.find((comment: Comment) => comment.body?.includes(h))
+	return comments.find((comment: IComment) => comment.body?.includes(h))
 }
 
 async function updateComment(
@@ -60,7 +60,7 @@ export async function commentToPullRequest({
 	message,
 	octokit,
 	header,
-}: CommentConfig) {
+}: ICommentConfig) {
 	if (isNaN(number) || number < 1) {
 		core.info('no numbers given: skip step')
 		return

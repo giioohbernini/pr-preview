@@ -1,33 +1,22 @@
 import { execCommand } from '../../helpers/execCommand'
-import {
-	ISurgeDeployParams,
-	ISurgeRemoveProjectDeployParams,
-	ISurgeReturn,
-} from './types'
+import { IDeployParams, IShutDownParams, ITenantReturn } from '../types'
 
-const surge = (): ISurgeReturn => {
-	const surgeDeploy = async ({
-		token,
-		distFolder,
-		mountedUrl,
-	}: ISurgeDeployParams) => {
+const surge = (): ITenantReturn => {
+	const deploy = async ({ token, distFolder, mountedUrl }: IDeployParams) => {
 		await execCommand({
 			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
 	}
 
-	const surgeRemoveProjectDeploy = async ({
-		token,
-		mountedUrl,
-	}: ISurgeRemoveProjectDeployParams) => {
+	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
 		await execCommand({
 			command: ['surge', 'teardown', mountedUrl, `--token`, token],
 		})
 	}
 
 	return {
-		surgeDeploy,
-		surgeRemoveProjectDeploy,
+		deploy,
+		shutDown,
 	}
 }
 

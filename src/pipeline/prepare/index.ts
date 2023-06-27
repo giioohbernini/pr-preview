@@ -4,6 +4,7 @@ import { IReturnPrepare } from './types'
 import generateLogUrl from '../../helpers/generateLogUrl'
 import getGitCommitSha from '../../helpers/getGitCommitSha'
 import getPullRequestNumber from '../../helpers/getPullRequestNumber'
+import tenantsFactory from '../../tenants/utils/tenantsFactory'
 
 const checkingPullRequestNumber = async () => {
 	const prNumber = await getPullRequestNumber()
@@ -17,33 +18,46 @@ const checkingPullRequestNumber = async () => {
 }
 
 const prepare = async (): Promise<IReturnPrepare> => {
-	const tokenList = {
-		surge: core.getInput('surge_token'),
-		vercel: core.getInput('vercel_token'),
-	}
-	const previewUrl = core.getInput('preview_url')
+	const { job } = github.context
 	const previewPath = core.getInput('preview_path')
 	const distFolder = core.getInput('dist')
+	const buildCommand = core.getInput('build')
 	const teardown =
 		core.getInput('teardown')?.toString().toLowerCase() === 'true'
-	const prNumber = await checkingPullRequestNumber()
-	const { job, payload } = github.context
+	const { payload } = github.context
 	const gitCommitSha = getGitCommitSha()
-	const repoOwner = github.context.repo.owner.replace(/\./g, '-')
-	const repoName = github.context.repo.repo.replace(/\./g, '-')
-	const mountedUrl = previewUrl
-		.replace('{{repoOwner}}', repoOwner)
-		.replace('{{repoName}}', repoName)
-		.replace('{{job}}', job)
-		.replace('{{prNumber}}', `${prNumber}`)
-		.concat('.surge.sh')
 
-	const outputUrl = mountedUrl.concat(previewPath)
+	const tenantsConfig = {
+		job,
+		previewUrl: core.getInput('preview_url'),
+		previewPath: core.getInput('preview_path'),
+		repoOwner: github.context.repo.owner.replace(/\./g, '-'),
+		repoName: github.context.repo.repo.replace(/\./g, '-'),
+		prNumber: await checkingPullRequestNumber(),
+	}
+
+	const tenantsList = [
+		{
+			...(await tenantsFactory({
+				tenantName: 'surge',
+				domainTenant: '.surge.sh',
+				token: core.getInput('surge_token'),
+				...tenantsConfig,
+			})),
+		},
+		{
+			...(await tenantsFactory({
+				tenantName: 'vercel',
+				domainTenant: '.vercel.app',
+				token: core.getInput('vercel_token'),
+				...tenantsConfig,
+			})),
+		},
+	]
+
 	const buildingLogUrl = await generateLogUrl()
 
 	const shouldShutdown = teardown && payload.action === 'closed'
-
-	core.setOutput('preview_url', outputUrl)
 
 	core.debug('github.context')
 	core.debug(JSON.stringify(github.context, null, 2))
@@ -52,19 +66,17 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	core.debug(`payload.after: ${payload.pull_request}`)
 	core.debug(`event action?: ${payload.action}`)
 	core.debug(`teardown enabled?: ${teardown}`)
-
+	core.debug(`tenantsList: ${JSON.stringify(tenantsList)}`)
 	core.info('Finalizing the initialization of the variables.')
-	core.info(`Find PR number: ${prNumber}`)
 
 	return {
-		tokenList,
 		previewPath,
 		distFolder,
+		buildCommand,
 		gitCommitSha,
-		mountedUrl,
-		outputUrl,
 		buildingLogUrl,
 		shouldShutdown,
+		tenantsList,
 	}
 }
 

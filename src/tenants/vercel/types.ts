@@ -1,27 +1,11 @@
-import { TokenList } from '../../types'
-
-export interface IVercelDeployParams {
-	token: string
-	distFolder: string
-	previewPath: string
-}
-
-export interface IVercelRemoveProjectDeploy {
-	token: string
-}
+import { ITenantReturn } from '../types'
 
 export interface IVercelAssignAlias {
-	tokenList: TokenList
-	aliasUrl: string
+	token: string
+	deploymentUrl: string
+	mountedUrl: string
 }
 
-export interface IVercelReturn {
-	vercelDeploy: ({
-		token,
-		distFolder,
-		previewPath,
-	}: IVercelDeployParams) => Promise<void>
-	vercelRemoveProjectDeploy: ({ token }: IVercelRemoveProjectDeploy) => void
-	vercelAssignAlias: ({ tokenList, aliasUrl }: IVercelAssignAlias) => void
+export interface IVercelReturn extends ITenantReturn {
 	returnVercelUrl: () => string
 }
