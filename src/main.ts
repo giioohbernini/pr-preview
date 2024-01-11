@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import Traceroute from 'nodejs-traceroute-ts'
 import comment from './helpers/comment'
 import fail from './helpers/fail'
 import { formatImage } from './helpers/formatImage'
@@ -8,8 +7,6 @@ import prepare from './pipeline/prepare'
 import build from './pipeline/build'
 import shutDown from './pipeline/shutDown'
 import deploy from './pipeline/deploy'
-
-const tracer = new Traceroute()
 
 async function main() {
 	const {
@@ -59,22 +56,6 @@ async function main() {
 			image,
 			tenantsList,
 		})
-
-		tracer
-			.on('pid', (pid) => {
-				core.info(`pid: ${pid}`)
-			})
-			.on('destination', (destination) => {
-				core.info(`destination: ${destination}`)
-			})
-			.on('hop', (hop) => {
-				core.info(`hop: ${JSON.stringify(hop)}`)
-			})
-			.on('close', (code) => {
-				core.info(`close: code ${code}`)
-			})
-
-		tracer.trace(previewPath)
 	} catch (err) {
 		core.info(`run command error ${err}`)
 		await fail(err)
