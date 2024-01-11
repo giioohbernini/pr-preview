@@ -3831,6 +3831,13 @@ node-releases@^2.0.1:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.2.tgz#7139fe71e2f4f11b47d4d2986aaf8c48699e0c01"
   integrity sha512-XxYDdcQ6eKqp/YjI+tb2C5WM2LgjnZrfYg4vgQt49EK268b6gYCHsBLrK2qvJo4FmCtqmKezb0WZFK4fkrZNsg==
 
+nodejs-traceroute-ts@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/nodejs-traceroute-ts/-/nodejs-traceroute-ts-1.2.1.tgz#87be36471157a0be71b7ec41022c03414f4fc4d7"
+  integrity sha512-L9dqUbyubsPtTt8+FDY0P4v8zU735Fo7ZrTg/r+ZyokivhGc91M72ETrWaw5bzIJsDZylIEwzLKkKwfvWoyscQ==
+  dependencies:
+    validator "^13.7.0"
+
 nopt@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-5.0.0.tgz#530942bb58a512fccafe53fe210f13a25355dc88"
@@ -4848,6 +4855,11 @@ v8-to-istanbul@^8.1.0:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^1.6.0"
     source-map "^0.7.3"
+
+validator@^13.7.0:
+  version "13.11.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.11.0.tgz#23ab3fd59290c61248364eabf4067f04955fbb1b"
+  integrity sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==
 
 vercel@28.2.2:
   version "28.2.2"
