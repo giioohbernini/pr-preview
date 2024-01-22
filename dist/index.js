@@ -895,7 +895,10 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        (0, exec_1.exec)(`ping ping -c 10 ${mountedUrl}`);
+        (0, execCommand_1.execCommand)({
+            command: ['install -g wait-on'],
+        });
+        (0, exec_1.exec)(`wait-on https-get://${mountedUrl}`);
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
