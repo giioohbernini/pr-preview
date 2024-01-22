@@ -30,12 +30,7 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-
-		execCommand({
-			command: ['install -g wait-on'],
-		})
-
-		exec(`wait-on https-get://${mountedUrl}`)
+		exec(`ping -c 10 ${mountedUrl}`)
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
