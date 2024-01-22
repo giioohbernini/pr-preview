@@ -873,6 +873,7 @@ exports["default"] = tenantsFactory;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const exec_1 = __nccwpck_require__(1514);
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel = () => {
     const vercelCli = 'vercel';
@@ -894,6 +895,7 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
+        (0, exec_1.exec)(`ping ping -c 10 ${mountedUrl}`);
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({

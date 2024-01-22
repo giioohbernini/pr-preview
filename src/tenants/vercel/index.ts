@@ -1,3 +1,4 @@
+import { exec } from '@actions/exec'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams } from '../types'
 import { IVercelAssignAlias, IVercelReturn } from './types'
@@ -29,6 +30,7 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
+		exec(`ping ping -c 10 ${mountedUrl}`)
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {

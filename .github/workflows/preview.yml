@@ -7,8 +7,6 @@ on: # rebuild any PRs and main branch changes
 jobs:
   preview: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
-    outputs:
-      preview_url: ${{ steps.preview_step.outputs.preview_url }}
     steps:
       - uses: actions/checkout@v2
       - uses: ./
