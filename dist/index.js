@@ -895,7 +895,8 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        (0, exec_1.exec)('ping -c 10', [mountedUrl]);
+        (0, exec_1.exec)('sudo', ['apt get install traceroute -y']);
+        (0, exec_1.exec)('traceroute', [mountedUrl]);
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
