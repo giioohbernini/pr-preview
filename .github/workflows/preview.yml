@@ -27,7 +27,7 @@ jobs:
         run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
       - name: Test Connectivity
         run: |
-          ping -c 10 steps.preview_action.outputs.preview_url
+          ping -c 10 ${{ steps.preview_action.outputs.preview_url }}
   preview2:
     runs-on: ubuntu-latest
     steps:
@@ -50,7 +50,7 @@ jobs:
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
       - name: Test Connectivity
         run: |
-          ping -c 10 steps.preview_action.outputs.preview_url
+          ping -c 10 ${{ steps.preview_action.outputs.preview_url }}
   preview3:
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +76,7 @@ jobs:
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
       - name: Test Connectivity
         run: |
-          ping -c 10 steps.preview_action.outputs.preview_url
+          ping -c 10 ${{ steps.preview_action.outputs.preview_url }}
   preview4:
     runs-on: ubuntu-latest
     steps:
@@ -101,4 +101,4 @@ jobs:
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
       - name: Test Connectivity
         run: |
-          ping -c 10 steps.preview_action.outputs.preview_url
+          ping -c 10 ${{ steps.preview_action.outputs.preview_url }}
