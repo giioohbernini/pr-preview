@@ -30,8 +30,7 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-		exec('sudo', ['apt get install traceroute -y'])
-		exec('traceroute', [mountedUrl])
+		exec('net-tools', [mountedUrl])
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
