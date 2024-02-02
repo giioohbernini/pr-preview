@@ -8,7 +8,7 @@ const surge = (): ITenantReturn => {
 			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
 
-		ping(mountedUrl)
+		ping(mountedUrl, 'Surge')
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {

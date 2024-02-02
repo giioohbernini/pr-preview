@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { XMLHttpRequest } from 'xmlhttprequest-ts'
 
-const ping = (host: string) => {
+const ping = (host: string, tenantName: string) => {
 	const started = new Date().getTime()
 	const http = new XMLHttpRequest()
 
@@ -10,7 +10,7 @@ const ping = (host: string) => {
 		if (http.readyState === 4) {
 			const ended = new Date().getTime()
 			const milliseconds = ended - started
-			core.debug(`${milliseconds} milliseconds`)
+			core.debug(`${tenantName} - ${milliseconds} milliseconds`)
 		}
 	}
 	try {

@@ -823,7 +823,7 @@ const surge = () => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
-        (0, ping_1.default)(mountedUrl);
+        (0, ping_1.default)(mountedUrl, 'Surge');
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
@@ -867,7 +867,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const xmlhttprequest_ts_1 = __nccwpck_require__(3300);
-const ping = (host) => {
+const ping = (host, tenantName) => {
     const started = new Date().getTime();
     const http = new xmlhttprequest_ts_1.XMLHttpRequest();
     http.open('GET', host, /*async*/ true);
@@ -875,7 +875,7 @@ const ping = (host) => {
         if (http.readyState === 4) {
             const ended = new Date().getTime();
             const milliseconds = ended - started;
-            core.debug(`${milliseconds} milliseconds`);
+            core.debug(`${tenantName} - ${milliseconds} milliseconds`);
         }
     };
     try {
@@ -953,7 +953,7 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        (0, ping_1.default)(mountedUrl);
+        (0, ping_1.default)(mountedUrl, 'Vercel');
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({

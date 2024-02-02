@@ -30,7 +30,7 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-		ping(mountedUrl)
+		ping(mountedUrl, 'Vercel')
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
