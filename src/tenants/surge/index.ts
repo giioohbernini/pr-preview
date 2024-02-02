@@ -1,3 +1,4 @@
+import ping from '../utils/ping'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams, ITenantReturn } from '../types'
 
@@ -6,6 +7,8 @@ const surge = (): ITenantReturn => {
 		await execCommand({
 			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
+
+		ping(mountedUrl)
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {

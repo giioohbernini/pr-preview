@@ -808,17 +808,22 @@ exports.Tenants = {
 /***/ }),
 
 /***/ 2764:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const ping_1 = __importDefault(__nccwpck_require__(2827));
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
     const deploy = async ({ token, distFolder, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
+        (0, ping_1.default)(mountedUrl);
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
