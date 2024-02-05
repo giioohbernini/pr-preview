@@ -874,7 +874,8 @@ const ping_1 = __importDefault(__nccwpck_require__(4323));
 const pingStatus = (host, tenantName) => {
     // eslint-disable-next-line github/no-then
     ping_1.default.promise.probe(host).then((res) => {
-        return core.debug(`${res} = tenantName`);
+        const responseString = JSON.stringify(res);
+        return core.info(`${responseString} = ${tenantName}`);
     });
     // ping.sys.probe(host, (isAlive) => {
     // 	let msg = isAlive
