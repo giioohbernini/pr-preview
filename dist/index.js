@@ -871,12 +871,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const ping_1 = __importDefault(__nccwpck_require__(4323));
 const pingStatus = (host, tenantName) => {
-    const replaceHost = host.replace('31', '333');
-    // eslint-disable-next-line github/no-then
-    ping_1.default.promise.probe(replaceHost).then((res) => {
-        const responseString = JSON.stringify(res);
-        return core.info(`${responseString} = ${tenantName}`);
-    });
+    setTimeout(() => {
+        // eslint-disable-next-line github/no-then
+        ping_1.default.promise.probe(`${host}`).then((res) => {
+            const responseString = JSON.stringify(res);
+            return core.info(`${responseString} = ${tenantName}`);
+        });
+    }, 9000);
 };
 exports["default"] = pingStatus;
 
