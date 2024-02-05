@@ -872,12 +872,16 @@ const core = __importStar(__nccwpck_require__(2186));
 const ping_1 = __importDefault(__nccwpck_require__(4323));
 // import { XMLHttpRequest } from 'xmlhttprequest-ts'
 const pingStatus = (host, tenantName) => {
-    ping_1.default.sys.probe(host, (isAlive) => {
-        let msg = isAlive
-            ? `host ${host} - ${tenantName} is alive`
-            : `host ${host} - ${tenantName} is dead`;
-        core.debug(msg);
+    // eslint-disable-next-line github/no-then
+    ping_1.default.promise.probe(host).then((res) => {
+        return core.debug(`${res} = tenantName`);
     });
+    // ping.sys.probe(host, (isAlive) => {
+    // 	let msg = isAlive
+    // 		? `host ${host} - ${tenantName} is alive`
+    // 		: `host ${host} - ${tenantName} is dead`
+    // 	core.debug(msg)
+    // })
     // const started = new Date().getTime()
     // const http = new XMLHttpRequest()
     // http.open('GET', host, /*async*/ true)

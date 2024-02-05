@@ -3,13 +3,18 @@ import ping from 'ping'
 // import { XMLHttpRequest } from 'xmlhttprequest-ts'
 
 const pingStatus = (host: string, tenantName: string) => {
-	ping.sys.probe(host, (isAlive) => {
-		let msg = isAlive
-			? `host ${host} - ${tenantName} is alive`
-			: `host ${host} - ${tenantName} is dead`
-
-		core.debug(msg)
+	// eslint-disable-next-line github/no-then
+	ping.promise.probe(host).then((res) => {
+		return core.debug(`${res} = tenantName`)
 	})
+
+	// ping.sys.probe(host, (isAlive) => {
+	// 	let msg = isAlive
+	// 		? `host ${host} - ${tenantName} is alive`
+	// 		: `host ${host} - ${tenantName} is dead`
+
+	// 	core.debug(msg)
+	// })
 
 	// const started = new Date().getTime()
 	// const http = new XMLHttpRequest()
