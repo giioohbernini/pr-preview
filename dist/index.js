@@ -870,23 +870,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const ping_1 = __importDefault(__nccwpck_require__(4323));
-// interface Cfg {
-// 	timeout: number
-// }
-const pingStatus = async (host, tenantName) => {
-    // const cfg: Cfg = { timeout: 1000 }
-    const res = await ping_1.default.promise.probe(host, {
-        timeout: 10,
-        extra: ['-i', '2'],
-    });
-    const responseString = JSON.stringify(res);
-    core.info(`${responseString} = ${tenantName}`);
-    // const returnResponse = (res: unknown) => {
-    // 	const responseString = JSON.stringify(res)
-    // 	return core.info(`${responseString} = ${tenantName}`)
-    // }
+const pingStatus = (host, tenantName) => {
+    const replaceHost = host.replace('31', '333');
     // eslint-disable-next-line github/no-then
-    // ping.promise.probe(host).then(returnResponse, cfg)
+    ping_1.default.promise.probe(replaceHost).then((res) => {
+        const responseString = JSON.stringify(res);
+        return core.info(`${responseString} = ${tenantName}`);
+    });
 };
 exports["default"] = pingStatus;
 
