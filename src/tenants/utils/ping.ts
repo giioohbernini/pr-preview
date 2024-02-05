@@ -5,7 +5,7 @@ import ping from 'ping'
 const pingStatus = (host: string, tenantName: string) => {
 	// eslint-disable-next-line github/no-then
 	ping.promise.probe(host).then((res) => {
-		return core.debug(`${res} = tenantName`)
+		return core.debug(JSON.parse(`${res} = ${tenantName}`))
 	})
 
 	// ping.sys.probe(host, (isAlive) => {
