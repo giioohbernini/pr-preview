@@ -870,34 +870,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const ping_1 = __importDefault(__nccwpck_require__(4323));
-// import { XMLHttpRequest } from 'xmlhttprequest-ts'
-const pingStatus = (host, tenantName) => {
-    // eslint-disable-next-line github/no-then
-    ping_1.default.promise.probe(host).then((res) => {
-        const responseString = JSON.stringify(res);
-        return core.info(`${responseString} = ${tenantName}`);
+// interface Cfg {
+// 	timeout: number
+// }
+const pingStatus = async (host, tenantName) => {
+    // const cfg: Cfg = { timeout: 1000 }
+    const res = await ping_1.default.promise.probe(host, {
+        timeout: 10,
+        extra: ['-i', '2'],
     });
-    // ping.sys.probe(host, (isAlive) => {
-    // 	let msg = isAlive
-    // 		? `host ${host} - ${tenantName} is alive`
-    // 		: `host ${host} - ${tenantName} is dead`
-    // 	core.debug(msg)
-    // })
-    // const started = new Date().getTime()
-    // const http = new XMLHttpRequest()
-    // http.open('GET', host, /*async*/ true)
-    // http.onreadystatechange = function () {
-    // 	if (http.readyState === 4) {
-    // 		const ended = new Date().getTime()
-    // 		const milliseconds = ended - started
-    // 		core.debug(`${tenantName} - ${milliseconds} milliseconds`)
-    // 	}
+    const responseString = JSON.stringify(res);
+    core.info(`${responseString} = ${tenantName}`);
+    // const returnResponse = (res: unknown) => {
+    // 	const responseString = JSON.stringify(res)
+    // 	return core.info(`${responseString} = ${tenantName}`)
     // }
-    // try {
-    // 	http.send(null)
-    // } catch (exception) {
-    // 	core.debug(exception)
-    // }
+    // eslint-disable-next-line github/no-then
+    // ping.promise.probe(host).then(returnResponse, cfg)
 };
 exports["default"] = pingStatus;
 
