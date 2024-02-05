@@ -864,28 +864,37 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
-const xmlhttprequest_ts_1 = __nccwpck_require__(3300);
-const ping = (host, tenantName) => {
-    const started = new Date().getTime();
-    const http = new xmlhttprequest_ts_1.XMLHttpRequest();
-    http.open('GET', host, /*async*/ true);
-    http.onreadystatechange = function () {
-        if (http.readyState === 4) {
-            const ended = new Date().getTime();
-            const milliseconds = ended - started;
-            core.debug(`${tenantName} - ${milliseconds} milliseconds`);
-        }
-    };
-    try {
-        http.send(null);
-    }
-    catch (exception) {
-        core.debug(exception);
-    }
+const ping_1 = __importDefault(__nccwpck_require__(4323));
+// import { XMLHttpRequest } from 'xmlhttprequest-ts'
+const pingStatus = (host, tenantName) => {
+    ping_1.default.sys.probe(host, (isAlive) => {
+        let msg = isAlive
+            ? `host ${host} - ${tenantName} is alive`
+            : `host ${host} - ${tenantName} is dead`;
+        core.debug(msg);
+    });
+    // const started = new Date().getTime()
+    // const http = new XMLHttpRequest()
+    // http.open('GET', host, /*async*/ true)
+    // http.onreadystatechange = function () {
+    // 	if (http.readyState === 4) {
+    // 		const ended = new Date().getTime()
+    // 		const milliseconds = ended - started
+    // 		core.debug(`${tenantName} - ${milliseconds} milliseconds`)
+    // 	}
+    // }
+    // try {
+    // 	http.send(null)
+    // } catch (exception) {
+    // 	core.debug(exception)
+    // }
 };
-exports["default"] = ping;
+exports["default"] = pingStatus;
 
 
 /***/ }),
@@ -10193,6 +10202,1299 @@ function onceStrict (fn) {
 
 /***/ }),
 
+/***/ 4323:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+var ping = {};
+
+ping.sys = __nccwpck_require__(2659);
+//ping.pcap = require('./lib/ping-pcap');
+ping.promise = __nccwpck_require__(3664);
+
+module.exports = ping;
+
+
+/***/ }),
+
+/***/ 5538:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var util = __nccwpck_require__(3837);
+
+// Our library
+var linuxBuilder = __nccwpck_require__(8928);
+var macBuilder = __nccwpck_require__(167);
+var winBuilder = __nccwpck_require__(9932);
+
+/**
+ * A factory creates argument builders for different platform
+ * @constructor
+ */
+function factory() {}
+
+/**
+ * Check out linux platform
+ */
+factory.isLinux = function (p) {
+    var platforms = [
+        'aix',
+        'android',
+        'linux',
+    ];
+
+    return platforms.indexOf(p) >= 0;
+};
+
+/**
+ * Check out macos platform
+ */
+factory.isMacOS = function (p) {
+    var platforms = [
+        'darwin',
+        'freebsd',
+    ];
+
+    return platforms.indexOf(p) >= 0;
+};
+
+/**
+ * Check out window platform
+ */
+factory.isWindow = function (p) {
+    return p && p.match(/^win/) !== null;
+};
+
+/**
+ * Check whether given platform is supported
+ * @param {string} p - Name of the platform
+ * @return {bool} - True or False
+ */
+factory.isPlatformSupport = function (p) {
+    return this.isWindow(p) || this.isLinux(p) || this.isMacOS(p);
+};
+
+/**
+ * Return a path to the ping executable in the system
+ * @param {string} platform - Name of the platform
+ * @param {bool} v6 - Ping via ipv6 or not
+ * @return {string} - Executable path for system command ping
+ * @throw if given platform is not supported
+ */
+factory.getExecutablePath = function (platform, v6) {
+    if (!this.isPlatformSupport(platform)) {
+        throw new Error(util.format('Platform |%s| is not support', platform));
+    }
+
+    var ret = null;
+
+    if (platform === 'aix') {
+        ret = '/usr/sbin/ping';
+    } else if (factory.isLinux(platform)) {
+        ret = v6 ? 'ping6' : 'ping';
+    } else if (factory.isWindow(platform)) {
+        ret = process.env.SystemRoot + '/system32/ping.exe';
+    } else if (factory.isMacOS(platform)) {
+        ret = v6 ? '/sbin/ping6' : '/sbin/ping';
+    }
+
+    return ret;
+};
+
+/**
+ * Create a builder
+ * @param {string} platform - Name of the platform
+ * @return {object} - Argument builder
+ * @throw if given platform is not supported
+ */
+factory.createBuilder = function (platform) {
+    if (!this.isPlatformSupport(platform)) {
+        throw new Error(util.format('Platform |%s| is not support', platform));
+    }
+
+    var ret = null;
+
+    if (factory.isLinux(platform)) {
+        ret = linuxBuilder;
+    } else if (factory.isWindow(platform)) {
+        ret = winBuilder;
+    } else if (factory.isMacOS(platform)) {
+        ret = macBuilder;
+    }
+
+    return ret;
+};
+
+module.exports = factory;
+
+
+/***/ }),
+
+/***/ 8928:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+/**
+ * A builder builds command line arguments for ping in linux environment
+ * @module lib/builder/linux
+ */
+var util = __nccwpck_require__(3837);
+
+var builder = {};
+
+/**
+ * Cross platform config representation
+ * @typedef {Object} PingConfig
+ * @property {boolean} numeric - Map IP address to hostname or not
+ * @property {number} timeout - Time to wait for a response, in seconds.
+ * The option affects only timeout  in  absence  of any responses,
+ * otherwise ping waits for two RTTs.
+ * @property {number} deadline - Specify a timeout, in seconds,
+ * before ping exits regardless of how many packets have been sent or received.
+ * In this case ping does not stop after count packet are sent,
+ * it waits either for deadline expire or until count probes are answered
+ * or for some error notification from network.
+ * This option is only available on linux and mac.
+ * @property {number} min_reply - Exit after sending number of ECHO_REQUEST
+ * @property {boolean} v6 - Use IPv4 (default) or IPv6
+ * @property {string} sourceAddr - source address for sending the ping
+ * @property {number} packetSize - Specifies the number of data bytes to be sent
+ *                                 Default: Linux / MAC: 56 Bytes,
+ *                                          Window: 32 Bytes
+ * @property {string[]} extra - Optional options does not provided
+ */
+
+var defaultConfig = {
+    numeric: true,
+    timeout: 2,
+    deadline: false,
+    min_reply: 1,
+    v6: false,
+    sourceAddr: '',
+    packetSize: 56,
+    extra: [],
+};
+
+/**
+ * Get the finalized array of command line arguments
+ * @param {string} target - hostname or ip address
+ * @param {PingConfig} [config] - Configuration object for cmd line argument
+ * @return {string[]} - Command line argument according to the configuration
+ */
+builder.getCommandArguments = function (target, config) {
+    var _config = config || {};
+
+    // Empty argument
+    var ret = [];
+
+    // Make every key in config has been setup properly
+    var keys = ['numeric', 'timeout', 'deadline', 'min_reply', 'v6',
+        'sourceAddr', 'extra', 'packetSize'];
+    keys.forEach(function (k) {
+        // Falsy value will be overridden without below checking
+        if (typeof(_config[k]) !== 'boolean') {
+            _config[k] = _config[k] || defaultConfig[k];
+        }
+    });
+
+    if (_config.numeric) {
+        ret.push('-n');
+    }
+
+    if (_config.timeout) {
+        ret = ret.concat([
+            '-W',
+            util.format('%d', _config.timeout),
+        ]);
+    }
+
+    if (_config.deadline) {
+        ret = ret.concat([
+            '-w',
+            util.format('%d', _config.deadline),
+        ]);
+    }
+
+    if (_config.min_reply) {
+        ret = ret.concat([
+            '-c',
+            util.format('%d', _config.min_reply),
+        ]);
+    }
+
+    if (_config.sourceAddr) {
+        ret = ret.concat([
+            '-I',
+            util.format('%s', _config.sourceAddr),
+        ]);
+    }
+
+    if (_config.packetSize) {
+        ret = ret.concat([
+            '-s',
+            util.format('%d', _config.packetSize),
+        ]);
+    }
+
+    if (_config.extra) {
+        ret = ret.concat(_config.extra);
+    }
+
+    ret.push(target);
+
+    return ret;
+};
+
+/**
+ * Compute an option object for child_process.spawn
+ * @return {object} - Refer to document of child_process.spawn
+ */
+builder.getSpawnOptions = function () {
+    return {
+        shell: false,
+        env: Object.assign(process.env, {LANG: 'C'}),
+    };
+};
+
+module.exports = builder;
+
+
+/***/ }),
+
+/***/ 167:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+/**
+ * A builder builds command line arguments for ping in mac environment
+ * @module lib/builder/mac
+ */
+var util = __nccwpck_require__(3837);
+
+var builder = {};
+
+/**
+ * Cross platform config representation
+ * @typedef {Object} PingConfig
+ * @property {boolean} numeric - Map IP address to hostname or not
+ * @property {number} timeout - Time to wait for a response, in seconds.
+ * The option affects only timeout  in  absence  of any responses,
+ * otherwise ping waits for two RTTs.
+ * @property {number} deadline - Specify a timeout, in seconds,
+ * before ping exits regardless of how many packets have been sent or received.
+ * In this case ping does not stop after count packet are sent,
+ * it waits either for deadline expire or until count probes are answered
+ * or for some error notification from network.
+ * This option is only available on linux and mac.
+ * @property {number} min_reply - Exit after sending number of ECHO_REQUEST
+ * @property {boolean} v6 - Use IPv4 (default) or IPv6
+ * @property {string} sourceAddr - source address for sending the ping
+ * @property {number} packetSize - Specifies the number of data bytes to be sent
+ *                                 Default: Linux / MAC: 56 Bytes,
+ *                                          Window: 32 Bytes
+ * @property {string[]} extra - Optional options does not provided
+ */
+
+var defaultConfig = {
+    numeric: true,
+    timeout: 2,
+    deadline: false,
+    min_reply: 1,
+    v6: false,
+    sourceAddr: '',
+    packetSize: 56,
+    extra: [],
+};
+
+/**
+ * Get the finalized array of command line arguments
+ * @param {string} target - hostname or ip address
+ * @param {PingConfig} [config] - Configuration object for cmd line argument
+ * @return {string[]} - Command line argument according to the configuration
+ * @throws If there are errors on building arguments with given inputs
+ */
+builder.getCommandArguments = function (target, config) {
+    var _config = config || {};
+
+    // Empty argument
+    var ret = [];
+
+    // Make every key in config has been setup properly
+    var keys = ['numeric', 'timeout', 'deadline', 'min_reply', 'v6',
+        'sourceAddr', 'extra', 'packetSize'];
+    keys.forEach(function (k) {
+        // Falsy value will be overridden without below checking
+        if (typeof(_config[k]) !== 'boolean') {
+            _config[k] = _config[k] || defaultConfig[k];
+        }
+    });
+
+    if (_config.numeric) {
+        ret.push('-n');
+    }
+
+    if (_config.timeout) {
+        // XXX: There is no timeout option on mac's ping6
+        if (config.v6) {
+            throw new Error('There is no timeout option on ping6');
+        }
+
+        ret = ret.concat([
+            '-W',
+            util.format('%d', _config.timeout * 1000),
+        ]);
+    }
+
+    if (_config.deadline) {
+        ret = ret.concat([
+            '-t',
+            util.format('%d', _config.deadline),
+        ]);
+    }
+
+    if (_config.min_reply) {
+        ret = ret.concat([
+            '-c',
+            util.format('%d', _config.min_reply),
+        ]);
+    }
+
+    if (_config.sourceAddr) {
+        ret = ret.concat([
+            '-S',
+            util.format('%s', _config.sourceAddr),
+        ]);
+    }
+
+    if (_config.packetSize) {
+        ret = ret.concat([
+            '-s',
+            util.format('%d', _config.packetSize),
+        ]);
+    }
+
+    if (_config.extra) {
+        ret = ret.concat(_config.extra);
+    }
+
+    ret.push(target);
+
+    return ret;
+};
+
+/**
+ * Compute an option object for child_process.spawn
+ * @return {object} - Refer to document of child_process.spawn
+ */
+builder.getSpawnOptions = function () {
+    return {};
+};
+
+
+module.exports = builder;
+
+
+/***/ }),
+
+/***/ 9932:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+/**
+ * A builder builds command line arguments for ping in window environment
+ * @module lib/builder/win
+ */
+var util = __nccwpck_require__(3837);
+
+var builder = {};
+
+/**
+ * Cross platform config representation
+ * @typedef {Object} PingConfig
+ * @property {boolean} numeric - Map IP address to hostname or not
+ * @property {number} timeout - Timeout in seconds for each ping request
+ * @property {number} min_reply - Exit after sending number of ECHO_REQUEST
+ * @property {boolean} v6 - Use IPv4 (default) or IPv6
+ * @property {string} sourceAddr - source address for sending the ping
+ * @property {number} packetSize - Specifies the number of data bytes to be sent
+ *                                 Default: Linux / MAC: 56 Bytes,
+ *                                          Window: 32 Bytes
+ * @property {string[]} extra - Optional options does not provided
+ */
+
+var defaultConfig = {
+    numeric: true,
+    timeout: 5,
+    min_reply: 1,
+    v6: false,
+    sourceAddr: '',
+    packetSize: 32,
+    extra: [],
+};
+
+/**
+ * Get the finalized array of command line arguments
+ * @param {string} target - hostname or ip address
+ * @param {PingConfig} [config] - Configuration object for cmd line argument
+ * @return {string[]} - Command line argument according to the configuration
+ */
+builder.getCommandArguments = function (target, config) {
+    var _config = config || {};
+
+    // Empty argument
+    var ret = [];
+
+    // Make every key in config has been setup properly
+    var keys = [
+        'numeric', 'timeout', 'min_reply', 'v6', 'sourceAddr', 'extra',
+        'packetSize',
+    ];
+    keys.forEach(function (k) {
+        // Falsy value will be overrided without below checking
+        if (typeof(_config[k]) !== 'boolean') {
+            _config[k] = _config[k] || defaultConfig[k];
+        }
+    });
+
+    ret.push(_config.v6 ? '-6' : '-4');
+
+    if (!_config.numeric) {
+        ret.push('-a');
+    }
+
+    if (_config.timeout) {
+        // refs #56: Unit problem
+        // Our timeout is in second while timeout in window is in milliseconds
+        // so we need to convert our units accordingly
+        ret = ret.concat([
+            '-w',
+            util.format('%d', _config.timeout * 1000),
+        ]);
+    }
+
+    if (_config.deadline) {
+        throw new Error('There is no deadline option on windows');
+    }
+
+    if (_config.min_reply) {
+        ret = ret.concat([
+            '-n',
+            util.format('%d', _config.min_reply),
+        ]);
+    }
+
+    if (_config.sourceAddr) {
+        ret = ret.concat([
+            '-S',
+            util.format('%s', _config.sourceAddr),
+        ]);
+    }
+
+    if (_config.packetSize) {
+        ret = ret.concat([
+            '-l',
+            util.format('%d', _config.packetSize),
+        ]);
+    }
+
+    if (_config.extra) {
+        ret = ret.concat(_config.extra);
+    }
+
+    ret.push(target);
+
+    return ret;
+};
+
+/**
+ * Compute an option object for child_process.spawn
+ * @return {object} - Refer to document of child_process.spawn
+ */
+builder.getSpawnOptions = function () {
+    return {
+        windowsHide: true,
+    };
+};
+
+module.exports = builder;
+
+
+/***/ }),
+
+/***/ 6600:
+/***/ ((module) => {
+
+"use strict";
+
+
+/* eslint no-unused-vars: 0 */
+
+/**
+ * Parsed response
+ * @typedef {object} PingResponse
+ * @param {string} inputHost - The input IP address or HOST
+ * @param {string} host - The input IP address or HOST
+ * @param {string} numeric_host - Target IP address
+ * @param {boolean} alive - True for existed host
+ * @param {string} output - Raw stdout from system ping
+ * @param {number} time - Time (float) in ms for first successful ping response
+ * @param {string} min - Minimum time for collection records
+ * @param {string} max - Maximum time for collection records
+ * @param {string} avg - Average time for collection records
+ * @param {number} packetLoss - Packet Losses in percent (number)
+ * @param {string} stddev - Standard deviation time for collected records
+ */
+
+/**
+ * @constructor
+ * @param {string} addr - Hostname or ip addres
+ * @param {PingConfig} config - Config object in probe()
+ */
+function parser(addr, config) {
+    // Initial state is 0
+    this._state = 0;
+
+    // Initial cache value
+    this._response = {
+        inputHost: addr,
+        host: 'unknown',
+        alive: false,
+        output: 'unknown',
+        time: 'unknown',
+        times: [],
+        min: 'unknown',
+        max: 'unknown',
+        avg: 'unknown',
+        stddev: 'unknown',
+        packetLoss: 'unknown',
+    };
+
+    // Initial times storage for ping time
+    this._times = [];
+
+    // Initial lines storage for ping output
+    this._lines = [];
+
+    // strip string regexp
+    this._stripRegex = /[ ]*\r?\n?$/g;
+
+    // Ping Config
+    this._pingConfig = config || {};
+}
+
+/**
+ * Enum for parser states
+ * @readonly
+ * @enum {number}
+ */
+parser.prototype.STATES = {
+    INIT: 0,
+    HEADER: 1,
+    BODY: 2,
+    FOOTER: 3,
+    END: 4,
+};
+
+/**
+ * Change state of this parser
+ * @param {number} state - parser.STATES
+ * @return {this} - This instance
+ */
+parser.prototype._changeState = function (state) {
+    // var states = Object.values(this.STATES); // If minimum engine version can be raised to >=7.0.0 in package.json
+    var states = Object.keys(this.STATES).map(function (key) { return this.STATES[key]; }, this);
+    if (states.indexOf(state) < 0) {
+        throw new Error('Unknown state');
+    }
+
+    this._state = state;
+
+    return this;
+};
+
+/**
+ * Process output's header
+ * @param {string} line - A line from system ping
+ */
+parser.prototype._processHeader = function (line) {
+    throw new Error('Subclass should implement this method');
+};
+
+/**
+ * Process output's body
+ * @param {string} line - A line from system ping
+ */
+parser.prototype._processBody = function (line) {
+    throw new Error('Subclass should implement this method');
+};
+
+/**
+ * Process output's footer
+ * @param {string} line - A line from system ping
+ */
+parser.prototype._processFooter = function (line) {
+    throw new Error('Subclass should implement this method');
+};
+
+/**
+ * Process a line from system ping
+ * @param {string} line - A line from system ping
+ * @return {this} - This instance
+ */
+parser.prototype.eat = function (line) {
+    var headerStates = [this.STATES.INIT, this.STATES.HEADER];
+
+    // Store lines
+    this._lines.push(line);
+
+    // Strip all space \r\n at the end
+    var _line = line.replace(this._stripRegex, '');
+
+    if (_line.length === 0) {
+        // Do nothing if this is an empty line
+    } else if (headerStates.indexOf(this._state) >= 0) {
+        this._processHeader(_line);
+    } else if (this._state === this.STATES.BODY) {
+        this._processBody(_line);
+    } else if (this._state === this.STATES.FOOTER) {
+        this._processFooter(_line);
+    } else if (this._state === this.STATES.END) {
+        // Do nothing
+    } else {
+        throw new Error('Unknown state');
+    }
+
+    return this;
+};
+
+/**
+ * Get results after parsing certain lines from system ping
+ * @return {PingResponse} - Response from parsing ping output
+ */
+parser.prototype.getResult = function () {
+    var ret = Object.assign({}, this._response);
+
+    // Concat output
+    ret.output = this._lines.join('\n');
+
+    // Determine alive
+    ret.alive = this._times.length > 0;
+
+    // Update time at first successful line
+    if (ret.alive) {
+        this._response.time = this._times[0];
+        ret.time = this._response.time;
+        this._response.times = this._times;
+        ret.times = this._response.times;
+    }
+
+    // Get stddev
+    if (ret.stddev === 'unknown' && ret.alive) {
+        var numberOfSamples = this._times.length;
+
+        var sumOfAllSquareDifferences = this._times.reduce(
+            function (memory, time) {
+                var differenceFromMean = time - ret.avg;
+                var squaredDifference = differenceFromMean * differenceFromMean;
+                return memory + squaredDifference;
+            },
+            0
+        );
+        var variances = sumOfAllSquareDifferences / numberOfSamples;
+
+        ret.stddev = Math.round(Math.sqrt(variances) * 1000) / 1000;
+    }
+
+    // Fix min, avg, max, stddev up to 3 decimal points
+    ['min', 'avg', 'max', 'stddev', 'packetLoss'].forEach(function (key) {
+        var v = ret[key];
+        if (typeof v === 'number') {
+            ret[key] = v.toFixed(3);
+        }
+    });
+
+    return ret;
+};
+
+module.exports = parser;
+
+
+/***/ }),
+
+/***/ 6328:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var util = __nccwpck_require__(3837);
+
+var builderFactory = __nccwpck_require__(5538);
+var WinParser = __nccwpck_require__(2737);
+var MacParser = __nccwpck_require__(3643);
+var LinuxParser = __nccwpck_require__(9013);
+
+/**
+ * A factory creates a parser for parsing output from system ping
+ * @constructor
+ */
+function factory() {}
+
+/**
+ * Create a parser for a given platform
+ * @param {string} addr - Hostname or ip addres
+ * @param {string} platform - Name of the platform
+ * @param {PingConfig} [config] - Config object in probe()
+ * @return {object} - Parser
+ * @throw if given platform is not supported
+ */
+factory.createParser = function (addr, platform, config) {
+    // Avoid function reassignment
+    var _config = config || {};
+
+    if (!builderFactory.isPlatformSupport(platform)) {
+        throw new Error(util.format('Platform |%s| is not support', platform));
+    }
+
+    var ret = null;
+    if (builderFactory.isWindow(platform)) {
+        ret = new WinParser(addr, _config);
+    } else if (builderFactory.isMacOS(platform)) {
+        ret = new MacParser(addr, _config);
+    } else if (builderFactory.isLinux(platform)) {
+        ret = new LinuxParser(addr, _config);
+    }
+
+    return ret;
+};
+
+module.exports = factory;
+
+
+/***/ }),
+
+/***/ 9013:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var util = __nccwpck_require__(3837);
+var base = __nccwpck_require__(6600);
+var MacParser = __nccwpck_require__(3643);
+
+/**
+ * @constructor
+ * @param {string} addr - Hostname or ip addres
+ * @param {PingConfig} config - Config object in probe()
+ */
+function LinuxParser(addr, config) {
+    base.call(this, addr, config);
+}
+
+util.inherits(LinuxParser, base);
+
+/**
+ * Process output's body
+ * @param {string} line - A line from system ping
+ */
+LinuxParser.prototype._processHeader = function (line) {
+    // Get host and numeric_host
+    var tokens = line.split(' ');
+    var isProbablyIPv4 = tokens[1].indexOf('(') === -1;
+
+    if (isProbablyIPv4) {
+        this._response.host = tokens[1];
+        this._response.numeric_host = tokens[2].slice(1, -1);
+    } else {
+        // Normalise into either a 2 or 3 element array
+        var foundAddresses = tokens
+            .slice(1, -3)
+            .join('')
+            .match(/([^\s()]+)/g);
+        this._response.host = foundAddresses.shift();
+        this._response.numeric_host = foundAddresses.pop();
+    }
+
+    this._changeState(this.STATES.BODY);
+};
+
+/**
+ * Process output's body
+ * @param {string} line - A line from system ping
+ */
+LinuxParser.prototype._processBody = function (line) {
+    // Reuse mac parser implementation
+    MacParser.prototype._processBody.call(this, line);
+};
+
+/**
+ * Process output's footer
+ * @param {string} line - A line from system ping
+ */
+LinuxParser.prototype._processFooter = function (line) {
+    // Reuse mac parser implementation
+    MacParser.prototype._processFooter.call(this, line);
+};
+
+module.exports = LinuxParser;
+
+
+/***/ }),
+
+/***/ 3643:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var util = __nccwpck_require__(3837);
+var base = __nccwpck_require__(6600);
+
+/**
+ * @constructor
+ * @param {string} addr - Hostname or ip addres
+ * @param {PingConfig} config - Config object in probe()
+ */
+function MacParser(addr, config) {
+    base.call(this, addr, config);
+}
+
+util.inherits(MacParser, base);
+
+/**
+ * Process output's header
+ * @param {string} line - A line from system ping
+ */
+MacParser.prototype._processHeader = function (line) {
+    // Get host and numeric_host
+    var tokens = line.split(' ');
+
+    this._response.host = tokens[1];
+    this._response.numeric_host = tokens[2].slice(1, -2);
+
+    this._changeState(this.STATES.BODY);
+};
+
+/**
+ * Process output's body
+ * @param {string} line - A line from system ping
+ */
+MacParser.prototype._processBody = function (line) {
+    // XXX: Assume there is at least 3 '=' can be found
+    var count = (line.match(/=/g) || []).length;
+    if (count >= 3) {
+        var regExp = /([0-9.]+)[ ]*ms/;
+        var match = regExp.exec(line);
+        this._times.push(parseFloat(match[1], 10));
+    }
+
+    // Change state if it see a '---'
+    if (line.indexOf('---') >= 0) {
+        this._changeState(this.STATES.FOOTER);
+    }
+};
+
+/**
+ * Process output's footer
+ * @param {string} line - A line from system ping
+ */
+MacParser.prototype._processFooter = function (line) {
+    var packetLoss = line.match(/ ([\d.]+)%/);
+    if (packetLoss) {
+        this._response.packetLoss = parseFloat(packetLoss[1], 10);
+    }
+
+    // XXX: Assume number of keywords '/' more than 3
+    var count = (line.match(/[/]/g) || []).length;
+    if (count >= 3) {
+        var regExp = /([0-9.]+)/g;
+        // XXX: Assume min avg max stddev
+        var m1 = regExp.exec(line);
+        var m2 = regExp.exec(line);
+        var m3 = regExp.exec(line);
+        var m4 = regExp.exec(line);
+
+        if (m1 && m2 && m3 && m4) {
+            this._response.min = parseFloat(m1[1], 10);
+            this._response.avg = parseFloat(m2[1], 10);
+            this._response.max = parseFloat(m3[1], 10);
+            this._response.stddev = parseFloat(m4[1], 10);
+            this._changeState(this.STATES.END);
+        }
+
+        this._changeState(this.STATES.END);
+    }
+};
+
+module.exports = MacParser;
+
+
+/***/ }),
+
+/***/ 2737:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var util = __nccwpck_require__(3837);
+var base = __nccwpck_require__(6600);
+
+/**
+ * @constructor
+ * @param {string} addr - Hostname or ip addres
+ * @param {PingConfig} config - Config object in probe()
+ */
+function WinParser(addr, config) {
+    base.call(this, addr, config);
+    this._ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}$/;
+}
+
+util.inherits(WinParser, base);
+
+/**
+ * Process output's header
+ * @param {string} line - A line from system ping
+ */
+WinParser.prototype._processHeader = function (line) {
+    // XXX: Expect to find [****] when pinging domain like google.com
+    //      Read fixture/win/**/* for the detail
+    var isPingNumeric = line.indexOf('[') === -1;
+
+    // Get host and numeric_host
+    var tokens = line.split(' ');
+
+    if (isPingNumeric) {
+        // For those missing [***], get the first token which match IPV4 regex
+        this._response.host = tokens.find(
+            function (t) {
+                return this._ipv4Regex.test(t);
+            },
+            this
+        );
+        this._response.numeric_host = this._response.host;
+    } else {
+        // For those has [***], anchor with such token
+        var numericHost = tokens.find(
+            function (t) {
+                return t.indexOf('[') !== -1;
+            },
+            this
+        );
+        var numericHostIndex = tokens.indexOf(numericHost);
+        var match = /\[(.*)\]/.exec(numericHost);
+
+        if (match) {
+            // Capture IP inside [] only. refs #71
+            this._response.numeric_host = match[1];
+        } else {
+            // Otherwise, just mark as NA to indicate an error
+            this._response.numeric_host = 'NA';
+        }
+        this._response.host = tokens[numericHostIndex - 1];
+    }
+
+    this._changeState(this.STATES.BODY);
+};
+
+/**
+ * Process ipv6 output's body
+ * @param {string} line - A line from system ping
+ */
+WinParser.prototype._processIPV6Body = function (line) {
+    var tokens = line.split(' ');
+    var dataFields = tokens.filter(function (token) {
+        var isDataField = token.indexOf('=') >= 0 || token.indexOf('<') >= 0;
+        return isDataField;
+    });
+
+    // refs #65: Support system like french which has an extra space
+    dataFields = dataFields.map(function (dataField) {
+        var ret = dataField;
+        var dataFieldIndex = tokens.indexOf(dataField);
+        var nextIndex = dataFieldIndex + 1;
+
+        // Append the missing *ms*
+        if (nextIndex < tokens.length) {
+            if (tokens[nextIndex] === 'ms') {
+                ret += 'ms';
+            }
+        }
+
+        return ret;
+    });
+
+    var expectDataFieldInReplyLine = 1;
+    if (dataFields.length >= expectDataFieldInReplyLine) {
+        // XXX: Assume time will alaways get keyword ms for all language
+        var timeKVP = dataFields.find(function (dataField) {
+            return dataField.search(/(ms|мс)/i) >= 0;
+        });
+        var regExp = /([0-9.]+)/;
+        var match = regExp.exec(timeKVP);
+
+        this._times.push(parseFloat(match[1], 10));
+    }
+};
+
+/**
+ * Process ipv4 output's body
+ * @param {string} line - A line from system ping
+ */
+WinParser.prototype._processIPV4Body = function (line) {
+    var tokens = line.split(' ');
+    var byteTimeTTLFields = tokens.filter(function (token) {
+        var isDataField = token.indexOf('=') >= 0 || token.indexOf('<') >= 0;
+        return isDataField;
+    });
+
+    var expectDataFieldInReplyLine = 3;
+    var isReplyLine = byteTimeTTLFields.length >= expectDataFieldInReplyLine;
+    if (isReplyLine) {
+        var packetSize = this._pingConfig.packetSize;
+        var byteField = byteTimeTTLFields.find(function (dataField) {
+            var packetSizeToken = util.format('=%d', packetSize);
+            var isByteField = dataField.indexOf(packetSizeToken) >= 0;
+            return isByteField;
+        });
+
+        // XXX: Assume time field will always be next of byte field
+        var byteFieldIndex = byteTimeTTLFields.indexOf(byteField);
+        var timeFieldIndex = byteFieldIndex + 1;
+        var timeKVP = byteTimeTTLFields[timeFieldIndex];
+
+        var regExp = /([0-9.]+)/;
+        var match = regExp.exec(timeKVP);
+
+        this._times.push(parseFloat(match[1], 10));
+    }
+};
+
+/**
+ * Process output's body
+ * @param {string} line - A line from system ping
+ */
+WinParser.prototype._processBody = function (line) {
+    var isPingSummaryLineShown = line.slice(-1) === ':';
+    if (isPingSummaryLineShown) {
+        this._changeState(this.STATES.FOOTER);
+        return;
+    }
+
+    var isIPV6 = this._pingConfig.v6;
+    if (isIPV6) {
+        this._processIPV6Body(line);
+    } else {
+        this._processIPV4Body(line);
+    }
+};
+
+/**
+ * Process output's footer
+ * @param {string} line - A line from system ping
+ */
+WinParser.prototype._processFooter = function (line) {
+    var packetLoss = line.match(/([\d.]+)%/);
+    if (packetLoss) {
+        this._response.packetLoss = parseFloat(packetLoss[1], 10);
+    }
+
+    // XXX: Assume there is a keyword ms
+    if (line.search(/(ms|мсек)/i) >= 0) {
+        // XXX: Assume the ordering is Min Max Avg
+        var regExp = /([0-9.]+)/g;
+        var m1 = regExp.exec(line);
+        var m2 = regExp.exec(line);
+        var m3 = regExp.exec(line);
+
+        if (m1 && m2 && m3) {
+            this._response.min = parseFloat(m1[1], 10);
+            this._response.max = parseFloat(m2[1], 10);
+            this._response.avg = parseFloat(m3[1], 10);
+            this._changeState(this.STATES.END);
+        }
+    }
+};
+
+module.exports = WinParser;
+
+
+/***/ }),
+
+/***/ 3664:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+/**
+ * LICENSE MIT
+ * (C) Daniel Zelisko
+ * http://github.com/danielzzz/node-ping
+ *
+ * a simple wrapper for ping
+ * Now with support of not only english Windows.
+ *
+ */
+
+// System library
+var util = __nccwpck_require__(3837);
+var net = __nccwpck_require__(1808);
+var cp = __nccwpck_require__(2081);
+var os = __nccwpck_require__(2037);
+
+// Our library
+var builderFactory = __nccwpck_require__(5538);
+var parserFactory = __nccwpck_require__(6328);
+
+/**
+ * Refer to probe()
+ */
+function _probe(addr, config) {
+    // Do not reassign function argument
+    var _config = config || {};
+    if (_config.v6 === undefined) {
+        _config.v6 = net.isIPv6(addr);
+    }
+
+    // Convert callback base system command to promise base
+    return new Promise(function (resolve, reject) {
+        // Spawn a ping process
+        var ping = null;
+        var platform = os.platform();
+        try {
+            var argumentBuilder = builderFactory.createBuilder(platform);
+            var pingExecutablePath = builderFactory.getExecutablePath(platform, _config.v6);
+            var pingArgs = argumentBuilder.getCommandArguments(addr, _config);
+            var spawnOptions = argumentBuilder.getSpawnOptions();
+            ping = cp.spawn(pingExecutablePath, pingArgs, spawnOptions);
+        } catch (err) {
+            reject(err);
+            return;
+        }
+
+        // Initial parser
+        var parser = parserFactory.createParser(addr, platform, _config);
+
+        // Register events from system ping
+        ping.once('error', function () {
+            var err = new Error(
+                util.format(
+                    'ping.probe: %s. %s',
+                    'there was an error while executing the ping program. ',
+                    'Check the path or permissions...'
+                )
+            );
+            reject(err);
+        });
+
+        // Cache all lines from the system ping
+        var outstring = [];
+        ping.stdout.on('data', function (data) {
+            outstring.push(String(data));
+        });
+        ping.stderr.on('data', function (data) {
+            outstring.push(String(data));
+        });
+
+        // Parse lines we have on closing system ping
+        ping.once('close', function () {
+            // Merge lines we have and split it by \n
+            var lines = outstring.join('').split('\n');
+
+            // Parse line one by one
+            lines.forEach(parser.eat, parser);
+
+            // Get result
+            var ret = parser.getResult();
+
+            resolve(ret);
+        });
+    });
+}
+
+/**
+ * Class::PromisePing
+ * @param {string} addr - Hostname or ip addres
+ * @param {PingConfig} config - Configuration for command ping
+ * @return {Promise}
+ */
+function probe(addr, config) {
+    try {
+        var probePromise = _probe(addr, config);
+        return probePromise;
+    } catch (error) {
+        var errorPromise = Promise.reject(error);
+        return errorPromise;
+    }
+}
+
+exports.probe = probe;
+
+
+/***/ }),
+
+/***/ 2659:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+/**
+* LICENSE MIT
+* (C) Daniel Zelisko
+* http://github.com/danielzzz/node-ping
+*
+* a simple wrapper for ping
+* Now with support of not only english Windows.
+*
+*/
+
+// Promise implementation
+var ping = __nccwpck_require__(3664);
+
+// TODO:
+// 1. Port round trip time to this callback
+// 2. However, it may breaks backward compatability
+// 3. Need discussion
+/**
+ * Callback after probing given host
+ * @callback probeCallback
+ * @param {boolean} isAlive - Whether target is alive or not
+ * @param {Object} error - Null if no error occurs
+ */
+
+/**
+ * Class::Ping construtor
+ * @param {string} addr - Hostname or ip addres
+ * @param {probeCallback} cb - Callback
+ * @param {PingConfig} config - Configuration for command ping
+ */
+function probe(addr, cb, config) {
+    // Do not reassign function parameter
+    var _config = config || {};
+
+    return ping.probe(addr, _config).then(function (res) {
+        cb(res.alive, null);
+    }).catch(function (err) {
+        cb(null, err);
+    });
+}
+
+exports.probe = probe;
+
+
+/***/ }),
+
 /***/ 4294:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -10535,846 +11837,6 @@ function wrappy (fn, cb) {
     return ret
   }
 }
-
-
-/***/ }),
-
-/***/ 3300:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-(function (global, factory) {
-     true ? factory(exports, __nccwpck_require__(7147), __nccwpck_require__(3685), __nccwpck_require__(5687), __nccwpck_require__(7310), __nccwpck_require__(2037), __nccwpck_require__(1017), __nccwpck_require__(2081)) :
-    0;
-}(this, (function (exports,fs,http,https,url,os,path,child_process) { 'use strict';
-
-    /**
-     * @license xmlhttprequest-ts
-     * MIT license
-     */
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes} checked by tsc
-     */
-    /**
-     * defines the node implementaton of the XMLHttpRequest object specs
-     *
-     * see: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
-     */
-    var XMLHttpRequest = /** @class */ (function () {
-        function XMLHttpRequest() {
-            /**
-             * constant representing the state an XMLHttpRequest is in after being constructed
-             */
-            this.UNSENT = XMLHttpRequest.UNSENT;
-            /**
-             * constant representing the state an XMLHttpRequest is in after 'open' was called
-             */
-            this.OPENED = XMLHttpRequest.OPENED;
-            /**
-             * constant representing the state an XMLHttpRequest is in when all response headers have been received
-             */
-            this.HEADERS_RECEIVED = XMLHttpRequest.HEADERS_RECEIVED;
-            /**
-             * constant representing the state an XMLHttpRequest is in when either the data transfer has been completed or something went wrong
-             */
-            this.LOADING = XMLHttpRequest.LOADING;
-            /**
-             * constant representing the state an XMLHttpRequest is in when the response entity body is being received
-             */
-            this.DONE = XMLHttpRequest.DONE;
-            /**
-             * option to disable the builtin header blacklist
-             *
-             * IMPORTANT: this is not part of the XHR specs
-             */
-            this.disableHeaderCheck = false;
-            /**
-             * stores the ready state of the request (see UNSENT, OPENED, HEADERS_RECEIVED, LOADING, DONE)
-             */
-            this.readyState = XMLHttpRequest.UNSENT;
-            /**
-             * the text received from a server following a request being sent
-             */
-            this.responseText = '';
-            /**
-             * usually contains a document instance of the parsed request result but since the dom isn't available in node, this is always null
-             */
-            this.responseXML = null;
-            /**
-             * the numerical status code of the response
-             */
-            this.status = 0;
-            /**
-             * the text received from a server following a request being sent
-             */
-            this.statusText = '';
-            /**
-             * timeout in milliseconds after a request should time out
-             */
-            this.timeout = 0;
-            /**
-             * indicates whether or not cross-site Access-Control requests should be made using credentials like authorization headers
-             */
-            this.withCredentials = false;
-            /**
-             * defines the default headers sent by our requests
-             */
-            this.defaultHeaders = {
-                'User-Agent': 'ts-XMLHttpRequest',
-                'Accept': '*/*'
-            };
-            /**
-             * error flag, used when errors occur or abort is called
-             */
-            this.errorFlag = false;
-            /**
-             * list of headers that are not setable by the user according to the specs
-             *
-             * IMPORTNAT: this can optionally be disabled by setting disableHeaderCheck to true
-             */
-            this.forbiddenRequestHeaders = [
-                'accept-charset',
-                'accept-encoding',
-                'access-control-request-headers',
-                'access-control-request-method',
-                'connection',
-                'content-length',
-                'content-transfer-encoding',
-                'cookie',
-                'cookie2',
-                'date',
-                'expect',
-                'host',
-                'keep-alive',
-                'origin',
-                'referer',
-                'te',
-                'trailer',
-                'transfer-encoding',
-                'upgrade',
-                'via'
-            ];
-            /**
-             * list of request methods that are not setable by the user according to the specs
-             */
-            this.forbiddenRequestMethods = [
-                'TRACE',
-                'TRACK',
-                'CONNECT'
-            ];
-            /**
-             * stores the headers that are used for this request
-             */
-            this.headers = {};
-            /**
-             * stores the headers that are used for this request with the name being lower-cased
-             */
-            this.headersLowerCase = {};
-            /**
-             * stores the event listeners that have been set via the addEventListener method
-             */
-            this.listeners = {};
-            /**
-             * flag indicating if a request was sent already
-             */
-            this.sendFlag = false;
-        }
-        /**
-         * Open the connection. Currently supports local server requests.
-         *
-         * @param {?} method Connection method (eg GET, POST)
-         * @param {?} url URL for the connection.
-         * @param {?=} async Asynchronous connection (optional - default is true)
-         * @param {?=} user Username for basic authentication (optional)
-         * @param {?=} password Password for basic authentication (optional)
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.open = /**
-         * Open the connection. Currently supports local server requests.
-         *
-         * @param {?} method Connection method (eg GET, POST)
-         * @param {?} url URL for the connection.
-         * @param {?=} async Asynchronous connection (optional - default is true)
-         * @param {?=} user Username for basic authentication (optional)
-         * @param {?=} password Password for basic authentication (optional)
-         * @return {?}
-         */
-        function (method, url$$1, async, user, password) {
-            if (async === void 0) { async = true; }
-            this.abort();
-            this.errorFlag = false;
-            // Check for valid request method
-            if (!this.isAllowedHttpMethod(method)) {
-                throw new Error('SecurityError: Request method not allowed');
-            }
-            this.settings = {
-                'method': method,
-                'url': url$$1,
-                'async': (typeof async !== 'boolean' ? true : async),
-                'user': user,
-                'password': password
-            };
-            this.setState(this.OPENED);
-        };
-        /**
-         * disables or enables the check of allowed headers in the request
-         *
-         * IMPORTANT: this is not part of the W3C spec
-         *
-         * @param {?} state Enable or disable header checking.
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.setDisableHeaderCheck = /**
-         * disables or enables the check of allowed headers in the request
-         *
-         * IMPORTANT: this is not part of the W3C spec
-         *
-         * @param {?} state Enable or disable header checking.
-         * @return {?}
-         */
-        function (state) {
-            this.disableHeaderCheck = state;
-        };
-        /**
-         * sets a header for the request or appends the value if one is already set
-         *
-         * @param {?} header header name
-         * @param {?} value header value
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.setRequestHeader = /**
-         * sets a header for the request or appends the value if one is already set
-         *
-         * @param {?} header header name
-         * @param {?} value header value
-         * @return {?}
-         */
-        function (header, value) {
-            if (this.readyState !== this.OPENED) {
-                throw new Error('INVALID_STATE_ERR: setRequestHeader can only be called when state is OPEN');
-            }
-            if (!this.isAllowedHttpHeader(header)) {
-                console.warn('Refused to set unsafe header \"' + header + '\"');
-                return;
-            }
-            if (this.sendFlag) {
-                throw new Error('INVALID_STATE_ERR: send flag is true');
-            }
-            header = this.headersLowerCase[header.toLowerCase()] || header;
-            this.headersLowerCase[header.toLowerCase()] = header;
-            this.headers[header] = this.headers[header] ? this.headers[header] + ', ' + value : value;
-        };
-        /**
-         * returns all the response headers, separated by CRLF, as a string, or null if no response has been received
-         *
-         * @return {?} a string with all response headers separated by CR+LF, or null if no response has been received
-         */
-        XMLHttpRequest.prototype.getAllResponseHeaders = /**
-         * returns all the response headers, separated by CRLF, as a string, or null if no response has been received
-         *
-         * @return {?} a string with all response headers separated by CR+LF, or null if no response has been received
-         */
-        function () {
-            if (this.readyState < this.HEADERS_RECEIVED || this.errorFlag) {
-                return null;
-            }
-            var /** @type {?} */ result = '';
-            if (this.response) {
-                for (var /** @type {?} */ i in this.response.headers) {
-                    // Cookie headers are excluded
-                    if (i !== 'set-cookie' && i !== 'set-cookie2') {
-                        var /** @type {?} */ headerValue = this.response.headers[i];
-                        if (typeof headerValue === 'string') {
-                            result += i + ': ' + headerValue + '\r\n';
-                        }
-                        else if (Array.isArray(headerValue)) {
-                            result += i + ': ' + headerValue.join(', ') + '\r\n';
-                        }
-                        else {
-                            result += i + ':\r\n';
-                        }
-                    }
-                }
-            }
-            return result.substr(0, result.length - 2);
-        };
-        /**
-         * gets a header from the server response.
-         *
-         * @param {?} header
-         * @return {?} text of the header or null if it doesn't exist.
-         */
-        XMLHttpRequest.prototype.getResponseHeader = /**
-         * gets a header from the server response.
-         *
-         * @param {?} header
-         * @return {?} text of the header or null if it doesn't exist.
-         */
-        function (header) {
-            if (typeof header === 'string' &&
-                this.readyState > this.OPENED &&
-                this.response &&
-                this.response.headers &&
-                this.response.headers[header.toLowerCase()] &&
-                !this.errorFlag) {
-                var /** @type {?} */ responseHeader = this.response.headers[header.toLowerCase()];
-                if (typeof responseHeader === 'string') {
-                    return responseHeader;
-                }
-                if (Array.isArray(responseHeader)) {
-                    return responseHeader.join(', ');
-                }
-            }
-            return null;
-        };
-        /**
-         * gets a request header that was set in this instance
-         *
-         * IMPORTANT: this is not part of the W3C specs
-         *
-         * @param {?} name
-         * @return {?} returns the request header or empty string if not set
-         */
-        XMLHttpRequest.prototype.getRequestHeader = /**
-         * gets a request header that was set in this instance
-         *
-         * IMPORTANT: this is not part of the W3C specs
-         *
-         * @param {?} name
-         * @return {?} returns the request header or empty string if not set
-         */
-        function (name) {
-            if (typeof name === 'string' && this.headersLowerCase[name.toLowerCase()]) {
-                return this.headers[this.headersLowerCase[name.toLowerCase()]];
-            }
-            return undefined;
-        };
-        /**
-         * sends the request to the server.
-         *
-         * @param {?=} data
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.send = /**
-         * sends the request to the server.
-         *
-         * @param {?=} data
-         * @return {?}
-         */
-        function (data) {
-            var _this = this;
-            var /** @type {?} */ self = this;
-            if (this.settings === undefined) {
-                throw new Error('INVALID_STATE_ERR: connection must be opened before send() is called');
-            }
-            if (this.readyState !== this.OPENED) {
-                throw new Error('INVALID_STATE_ERR: connection must be opened before send() is called');
-            }
-            if (this.sendFlag) {
-                throw new Error('INVALID_STATE_ERR: send has already been called');
-            }
-            var /** @type {?} */ ssl = false, /** @type {?} */ local = false;
-            var /** @type {?} */ url$$1 = url.parse(this.settings.url);
-            var /** @type {?} */ host;
-            // Determine the server
-            switch (url$$1.protocol) {
-                case 'https:':
-                    ssl = true;
-                // SSL & non-SSL both need host, no break here.
-                case 'http:':
-                    host = url$$1.hostname;
-                    break;
-                case 'file:':
-                    local = true;
-                    break;
-                case undefined:
-                case null:
-                case '':
-                    host = 'localhost';
-                    break;
-                default:
-                    throw new Error('Protocol not supported.');
-            }
-            // Load files off the local filesystem (file://)
-            if (local) {
-                if (this.settings.method !== 'GET') {
-                    throw new Error('XMLHttpRequest: Only GET method is supported');
-                }
-                if (this.settings.async) {
-                    fs.readFile(unescape(url$$1.pathname || '/'), 'utf8', function (error, fileData) {
-                        if (error) {
-                            self.handleError(error);
-                        }
-                        else {
-                            self.status = 200;
-                            self.responseText = fileData;
-                            self.setState(self.DONE);
-                        }
-                    });
-                }
-                else {
-                    try {
-                        this.responseText = fs.readFileSync(unescape(url$$1.pathname || '/'), 'utf8');
-                        this.status = 200;
-                        this.setState(self.DONE);
-                    }
-                    catch (/** @type {?} */ e) {
-                        this.handleError(e);
-                    }
-                }
-                return;
-            }
-            // Default to port 80. If accessing localhost on another port be sure
-            // to use http://localhost:port/path
-            var /** @type {?} */ port = url$$1.port || (ssl ? 443 : 80);
-            // Add query string if one is used
-            var /** @type {?} */ uri = url$$1.pathname + (url$$1.search ? url$$1.search : '');
-            // Set the defaults if they haven't been set
-            for (var /** @type {?} */ name_1 in this.defaultHeaders) {
-                if (!this.headersLowerCase[name_1.toLowerCase()]) {
-                    this.headers[name_1] = this.defaultHeaders[name_1];
-                }
-            }
-            if (host) {
-                // Set the Host header or the server may reject the request
-                this.headers["Host"] = host;
-            }
-            // IPv6 addresses must be escaped with brackets
-            if (url$$1.host && url$$1.host[0] === '[') {
-                this.headers["Host"] = '[' + this.headers["Host"] + ']';
-            }
-            if (!((ssl && port === 443) || port === 80)) {
-                this.headers["Host"] += ':' + url$$1.port;
-            }
-            // Set Basic Auth if necessary
-            if (this.settings.user) {
-                if (typeof this.settings.password === 'undefined') {
-                    this.settings.password = '';
-                }
-                var /** @type {?} */ authBuf = Buffer.from(this.settings.user + ':' + this.settings.password);
-                this.headers["Authorization"] = 'Basic ' + authBuf.toString('base64');
-            }
-            // Set content length header
-            if (this.settings.method === 'GET' || this.settings.method === 'HEAD') {
-                data = null;
-            }
-            else if (data) {
-                this.headers['Content-Length'] = '' + (Buffer.isBuffer(data) ? data.length : Buffer.byteLength(data));
-                if (!this.getRequestHeader('Content-Type')) {
-                    this.headers['Content-Type'] = 'text/plain;charset=UTF-8';
-                }
-            }
-            else if (this.settings.method === 'POST') {
-                // For a post with no data set Content-Length: 0.
-                // This is required by buggy servers that don't meet the specs.
-                this.headers['Content-Length'] = '0';
-            }
-            var /** @type {?} */ options = {
-                host: host,
-                port: port,
-                path: uri,
-                method: this.settings.method,
-                headers: this.headers,
-                agent: false,
-                withCredentials: this.withCredentials
-            };
-            // Reset error flag
-            this.errorFlag = false;
-            // Handle async requests
-            if (this.settings.async) {
-                // handle timeouts correctly
-                if (this.timeout >= 1) {
-                    this.timeoutTimer = setTimeout(function () {
-                        if (_this.readyState !== _this.DONE) {
-                            self.handleTimeout(new Error('request timed out after ' + _this.timeout + 'ms'));
-                        }
-                    }, this.timeout);
-                }
-                // Use the proper protocol
-                var /** @type {?} */ doRequest_1 = ssl ? https.request : http.request;
-                // Request is being sent, set send flag
-                this.sendFlag = true;
-                // As per spec, this is called here for historical reasons.
-                self.dispatchEvent('readystatechange');
-                // Error handler for the request
-                var /** @type {?} */ errorHandler_1 = function (error) {
-                    self.handleError(error);
-                };
-                var /** @type {?} */ redirectCount_1 = 0;
-                // Handler for the response
-                var /** @type {?} */ responseHandler_1 = function (resp) {
-                    // Set response let to the response we got back
-                    // This is so it remains accessable outside this scope
-                    self.response = resp;
-                    if (self.settings === undefined) {
-                        throw new Error('INVALID_STATE_ERR: connection must be opened before send() is called');
-                    }
-                    // Check for redirect
-                    if (self.response.headers.location && (self.response.statusCode === 301 ||
-                        self.response.statusCode === 302 ||
-                        self.response.statusCode === 303 ||
-                        self.response.statusCode === 307)) {
-                        // increase redirect count
-                        // increase redirect count
-                        redirectCount_1++;
-                        // prevent looped redirects
-                        if (redirectCount_1 >= 10) {
-                            throw new Error('XMLHttpRequest: Request failed - too many redirects');
-                        }
-                        // Change URL to the redirect location
-                        self.settings.url = self.response.headers.location;
-                        var /** @type {?} */ parsedUrl = url.parse(self.settings.url);
-                        // Set host let in case it's used later
-                        host = parsedUrl.hostname;
-                        // Set host parameter for header or redirect won't work
-                        if (host) {
-                            self.headers["Host"] = host;
-                        }
-                        // Options for the new request
-                        var /** @type {?} */ newOptions = {
-                            hostname: parsedUrl.hostname,
-                            port: parsedUrl.port,
-                            path: parsedUrl.path,
-                            method: self.response.statusCode === 303 ? 'GET' : self.settings.method,
-                            headers: self.headers,
-                            withCredentials: self.withCredentials
-                        };
-                        // Update ssl and doRequest to be appropriate
-                        // For (potentially) new protocol
-                        ssl = (url$$1.protocol === 'https:' ? true : false);
-                        doRequest_1 = ssl ? https.request : http.request;
-                        // Issue the new request
-                        self.request = doRequest_1(newOptions, responseHandler_1).on('error', errorHandler_1);
-                        self.request.end();
-                        // @TODO Check if an XHR event needs to be fired here
-                        return;
-                    }
-                    self.response.setEncoding('utf8');
-                    self.setState(self.HEADERS_RECEIVED);
-                    self.status = self.response.statusCode || 0;
-                    self.response.on('data', function (chunk) {
-                        // Make sure there's some data
-                        if (chunk) {
-                            self.responseText += chunk;
-                        }
-                        // Don't emit state changes if the connection has been aborted.
-                        if (self.sendFlag) {
-                            self.setState(self.LOADING);
-                        }
-                    });
-                    self.response.on('end', function () {
-                        if (self.sendFlag) {
-                            // Discard the end event if the connection has been aborted
-                            self.setState(self.DONE);
-                            self.sendFlag = false;
-                        }
-                    });
-                    self.response.on('error', function (error) {
-                        self.handleError(error);
-                    });
-                };
-                // Create the request
-                self.request = doRequest_1(options, responseHandler_1).on('error', errorHandler_1);
-                // Node 0.4 and later won't accept empty data. Make sure it's needed.
-                if (data) {
-                    self.request.write(data);
-                }
-                self.request.end();
-                self.dispatchEvent('loadstart');
-            }
-            else {
-                // Synchronous
-                var /** @type {?} */ startTime = new Date().getTime();
-                // Create a temporary file for communication with the other Node process
-                var /** @type {?} */ contentFile_1 = os.tmpdir() + path.sep + 'ts-xmlhttprequest-content-' + process.pid;
-                var /** @type {?} */ syncFile_1 = os.tmpdir() + path.sep + 'ts-xmlhttprequest-sync-' + process.pid;
-                fs.writeFileSync(syncFile_1, '', 'utf8');
-                // The async request the other Node process executes
-                var /** @type {?} */ execString = 'let http = require(\'http\'), https = require(\'https\'), fs = require(\'fs\');'
-                    + 'let doRequest = http' + (ssl ? 's' : '') + '.request;'
-                    + 'let options = ' + JSON.stringify(options) + ';'
-                    + 'let responseText = \'\';'
-                    + 'let req = doRequest(options, function(response) {'
-                    + 'response.setEncoding(\'utf8\');'
-                    + 'response.on(\'data\', function(chunk) {'
-                    + '    responseText += chunk;'
-                    + '});'
-                    + 'response.on(\'end\', function() {'
-                    + 'fs.writeFileSync('
-                    + '    \'' + contentFile_1 + '\','
-                    + '    JSON.stringify({'
-                    + '        err: null,'
-                    + '        data: {statusCode: response.statusCode, headers: response.headers, text: responseText}'
-                    + '    }),'
-                    + '    \'utf8\''
-                    + ');'
-                    + 'fs.unlinkSync(\'' + syncFile_1 + '\');'
-                    + '});'
-                    + 'response.on(\'error\', function(error) {'
-                    + 'fs.writeFileSync(\'' + contentFile_1 + '\', JSON.stringify({err: error}), \'utf8\');'
-                    + 'fs.unlinkSync(\'' + syncFile_1 + '\');'
-                    + '});'
-                    + '}).on(\'error\', function(error) {'
-                    + 'fs.writeFileSync(\'' + contentFile_1 + '\', JSON.stringify({err: error}), \'utf8\');'
-                    + 'fs.unlinkSync(\'' + syncFile_1 + '\');'
-                    + '});'
-                    + (data ? 'req.write(\'' + JSON.stringify(data).slice(1, -1).replace(/'/g, '\\\'') + '\');' : '')
-                    + 'req.end();';
-                self.dispatchEvent('loadstart');
-                this.setState(self.LOADING);
-                // Start the other Node Process, executing this string
-                var /** @type {?} */ syncProc = child_process.spawn(process.argv[0], ['-e', execString]);
-                // since this method will run syncronized - this callback always get's called after everything is done
-                syncProc.on('exit', function (code, signal) {
-                    // clean up the temp files
-                    try {
-                        fs.unlinkSync(syncFile_1);
-                    }
-                    catch (/** @type {?} */ e) { }
-                    try {
-                        fs.unlinkSync(contentFile_1);
-                    }
-                    catch (/** @type {?} */ e) { }
-                });
-                while (fs.existsSync(syncFile_1)) {
-                    if (this.timeout !== 0 && new Date().getTime() >= startTime + this.timeout) {
-                        // kill the process when we face an error
-                        syncProc.stdin.end();
-                        syncProc.kill();
-                        // handle the timeout error
-                        return self.handleTimeout(new Error('request timed out after ' + this.timeout + 'ms'));
-                    }
-                }
-                // Kill the child process once the file has data
-                syncProc.stdin.end();
-                syncProc.kill();
-                var /** @type {?} */ resp = JSON.parse(fs.readFileSync(contentFile_1, 'utf8'));
-                // Remove the temporary file
-                fs.unlinkSync(contentFile_1);
-                if (resp.err) {
-                    self.handleError(resp.err);
-                }
-                else {
-                    self.response = resp.data;
-                    self.status = resp.data.statusCode;
-                    self.responseText = resp.data.text;
-                    self.setState(self.DONE);
-                }
-            }
-        };
-        /**
-         * aborts a request
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.abort = /**
-         * aborts a request
-         * @return {?}
-         */
-        function () {
-            if (this.request) {
-                this.request.abort();
-                this.request = undefined;
-            }
-            this.headers = {};
-            this.status = 0;
-            this.responseText = '';
-            this.responseXML = null;
-            this.errorFlag = true;
-            if (this.readyState !== this.UNSENT &&
-                (this.readyState !== this.OPENED || this.sendFlag) &&
-                this.readyState !== this.DONE) {
-                this.sendFlag = false;
-                this.setState(this.DONE);
-            }
-            this.readyState = this.UNSENT;
-            this.dispatchEvent('abort');
-        };
-        /**
-         * adds an event listener to the XMLHttpRequest - this is the preferred method of binding to events
-         * @param {?} event
-         * @param {?} callback
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.addEventListener = /**
-         * adds an event listener to the XMLHttpRequest - this is the preferred method of binding to events
-         * @param {?} event
-         * @param {?} callback
-         * @return {?}
-         */
-        function (event, callback) {
-            if (!(event in this.listeners)) {
-                this.listeners[event] = [];
-            }
-            // Currently allows duplicate callbacks. Should it?
-            this.listeners[event].push(callback);
-        };
-        /**
-         * removes an event callback that has been added with the addEventListener method.
-         * @param {?} event
-         * @param {?} callback
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.removeEventListener = /**
-         * removes an event callback that has been added with the addEventListener method.
-         * @param {?} event
-         * @param {?} callback
-         * @return {?}
-         */
-        function (event, callback) {
-            if (event in this.listeners) {
-                // Filter will return a new array with the callback removed
-                this.listeners[event] = this.listeners[event].filter(function (ev) {
-                    return ev !== callback;
-                });
-            }
-        };
-        /**
-         * dispatches events, including the "on" methods and events attached using addEventListener
-         * @param {?} event
-         * @param {?=} parameter
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.dispatchEvent = /**
-         * dispatches events, including the "on" methods and events attached using addEventListener
-         * @param {?} event
-         * @param {?=} parameter
-         * @return {?}
-         */
-        function (event, parameter) {
-            var /** @type {?} */ eventHandlerMethodName = 'on' + event;
-            if (typeof (/** @type {?} */ (this))[eventHandlerMethodName] === 'function') {
-                (/** @type {?} */ (this))[eventHandlerMethodName](parameter);
-            }
-            if (event in this.listeners) {
-                for (var /** @type {?} */ i = 0, /** @type {?} */ len = this.listeners[event].length; i < len; i++) {
-                    this.listeners[event][i].call(this, parameter);
-                }
-            }
-        };
-        /**
-         * changes readyState and calls onreadystatechange
-         * @param {?} state
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.setState = /**
-         * changes readyState and calls onreadystatechange
-         * @param {?} state
-         * @return {?}
-         */
-        function (state) {
-            if (state === this.LOADING || this.readyState !== state) {
-                this.readyState = state;
-                if ((this.settings && this.settings.async) || this.readyState < this.OPENED || this.readyState === this.DONE) {
-                    this.dispatchEvent('readystatechange');
-                }
-                if (this.readyState === this.DONE) {
-                    if (this.timeoutTimer) {
-                        clearTimeout(this.timeoutTimer);
-                        this.timeoutTimer = undefined;
-                    }
-                    if (!this.errorFlag) {
-                        this.dispatchEvent('load');
-                    }
-                    this.dispatchEvent('loadend');
-                }
-            }
-        };
-        /**
-         * called when a timeout is encountered
-         * @param {?} error
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.handleTimeout = /**
-         * called when a timeout is encountered
-         * @param {?} error
-         * @return {?}
-         */
-        function (error) {
-            if (this.request) {
-                this.request.abort();
-                this.request = undefined;
-            }
-            this.status = 0;
-            this.statusText = error.toString();
-            this.responseText = error.stack || '';
-            this.errorFlag = true;
-            this.dispatchEvent('timeout', error);
-            this.setState(this.DONE);
-        };
-        /**
-         * called when an error is encountered
-         * @param {?} error
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.handleError = /**
-         * called when an error is encountered
-         * @param {?} error
-         * @return {?}
-         */
-        function (error) {
-            this.status = 0;
-            this.statusText = error.toString();
-            this.responseText = error.stack || '';
-            this.errorFlag = true;
-            this.dispatchEvent('error', error);
-            this.setState(this.DONE);
-        };
-        /**
-         * checks if the specified header is allowed
-         * @param {?} header
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.isAllowedHttpHeader = /**
-         * checks if the specified header is allowed
-         * @param {?} header
-         * @return {?}
-         */
-        function (header) {
-            return (this.disableHeaderCheck || (header && this.forbiddenRequestHeaders.indexOf(header.toLowerCase()) === -1)) === true;
-        };
-        /**
-         * checks if the specified request method is allowed
-         * @param {?} method
-         * @return {?}
-         */
-        XMLHttpRequest.prototype.isAllowedHttpMethod = /**
-         * checks if the specified request method is allowed
-         * @param {?} method
-         * @return {?}
-         */
-        function (method) {
-            return (method && this.forbiddenRequestMethods.indexOf(method) === -1) === true;
-        };
-        /**
-         * constant representing the state an XMLHttpRequest is in after being constructed
-         */
-        XMLHttpRequest.UNSENT = 0;
-        /**
-         * constant representing the state an XMLHttpRequest is in after 'open' was called
-         */
-        XMLHttpRequest.OPENED = 1;
-        /**
-         * constant representing the state an XMLHttpRequest is in when all response headers have been received
-         */
-        XMLHttpRequest.HEADERS_RECEIVED = 2;
-        /**
-         * constant representing the state an XMLHttpRequest is in when either the data transfer has been completed or something went wrong
-         */
-        XMLHttpRequest.LOADING = 3;
-        /**
-         * constant representing the state an XMLHttpRequest is in when the response entity body is being received
-         */
-        XMLHttpRequest.DONE = 4;
-        return XMLHttpRequest;
-    }());
-
-    exports.XMLHttpRequest = XMLHttpRequest;
-
-    Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-//# sourceMappingURL=xmlhttprequest-ts.umd.js.map
 
 
 /***/ }),
