@@ -592,6 +592,13 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@juzi/nodejs-traceroute@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@juzi/nodejs-traceroute/-/nodejs-traceroute-3.0.3.tgz#4872c94703e1819ccd79476e14685e88e02e5ff3"
+  integrity sha512-29wqVtqgGDqvAg0sUNXFGvLn/oxtXtkdvlUcWrCRaHWNMP0G8IGl/ZZ9MI8h6rBIY4YRr4klRwAX+mVwWiwyeg==
+  dependencies:
+    validator "^13.7.0"
+
 "@mapbox/node-pre-gyp@^1.0.5":
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/@mapbox/node-pre-gyp/-/node-pre-gyp-1.0.9.tgz#09a8781a3a036151cdebbe8719d6f8b25d4058bc"
@@ -4863,6 +4870,11 @@ v8-to-istanbul@^8.1.0:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^1.6.0"
     source-map "^0.7.3"
+
+validator@^13.7.0:
+  version "13.11.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.11.0.tgz#23ab3fd59290c61248364eabf4067f04955fbb1b"
+  integrity sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==
 
 vercel@28.2.2:
   version "28.2.2"
