@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import { BuildTraceroute } from '@juzi/nodejs-traceroute'
 // import ping from 'ping'
 
-const pingStatus = (host: string, tenantName: string) => {
+const pingStatus = async (host: string, tenantName: string) => {
 	try {
 		const tracer = BuildTraceroute()
 		tracer
@@ -19,6 +19,7 @@ const pingStatus = (host: string, tenantName: string) => {
 				core.info(`close: code ${code}`)
 			})
 
+		core.info(`Tenant ${tenantName}`)
 		tracer.trace(host)
 	} catch (ex) {
 		core.info(ex)

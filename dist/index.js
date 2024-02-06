@@ -868,7 +868,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const nodejs_traceroute_1 = __nccwpck_require__(1867);
 // import ping from 'ping'
-const pingStatus = (host, tenantName) => {
+const pingStatus = async (host, tenantName) => {
     try {
         const tracer = (0, nodejs_traceroute_1.BuildTraceroute)();
         tracer
@@ -884,6 +884,7 @@ const pingStatus = (host, tenantName) => {
             .on('close', (code) => {
             core.info(`close: code ${code}`);
         });
+        core.info(`Tenant ${tenantName}`);
         tracer.trace(host);
     }
     catch (ex) {
