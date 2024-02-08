@@ -912,6 +912,12 @@ const traceroute = (url) => {
             return;
         }
         core.info(`Resultado do traceroute:\n${stdout}`);
+        const output = stdout.toString();
+        core.info(`Resultado do traceroute:\n${output}`);
+        if (output.toLowerCase().includes('host not found') ||
+            output.toLowerCase().includes('destination unreachable')) {
+            core.error('Erro 404: Página não encontrada.');
+        }
     });
     core.debug(`Encerrando traceroute:\n${newUrl}`);
 };
