@@ -31,7 +31,7 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-		core.debug(`Passando a URL: ${mountedUrl} para o traceroute`)
+		core.info(`Passando a URL: ${mountedUrl} para o traceroute`)
 		traceroute(mountedUrl)
 	}
 

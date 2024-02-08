@@ -824,7 +824,7 @@ const surge = () => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
-        core_1.default.debug(`Passando a URL: ${mountedUrl} para o traceroute`);
+        core_1.default.info(`Passando a URL: ${mountedUrl} para o traceroute`);
         (0, traceroute_1.default)(mountedUrl);
     };
     const shutDown = async ({ token, mountedUrl }) => {
@@ -957,7 +957,7 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        core_1.default.debug(`Passando a URL: ${mountedUrl} para o traceroute`);
+        core_1.default.info(`Passando a URL: ${mountedUrl} para o traceroute`);
         (0, traceroute_1.default)(mountedUrl);
     };
     const shutDown = async ({ token, mountedUrl }) => {

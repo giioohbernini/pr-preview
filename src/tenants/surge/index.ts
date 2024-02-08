@@ -8,7 +8,7 @@ const surge = (): ITenantReturn => {
 		await execCommand({
 			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
-		core.debug(`Passando a URL: ${mountedUrl} para o traceroute`)
+		core.info(`Passando a URL: ${mountedUrl} para o traceroute`)
 		traceroute(mountedUrl)
 	}
 
