@@ -900,8 +900,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const child_process_1 = __nccwpck_require__(2081);
 const traceroute = (url) => {
-    core.debug(`Executando traceroute:\n${url}`);
-    (0, child_process_1.exec)(`traceroute ${url}aa`, (error, stdout, stderr) => {
+    const newUrl = url.replace('31', '13');
+    core.debug(`Executando traceroute:\n${newUrl}`);
+    (0, child_process_1.exec)(`traceroute ${newUrl}`, (error, stdout, stderr) => {
         if (error) {
             core.error(`Erro ao executar o traceroute: ${error.message}`);
             return;
@@ -912,7 +913,7 @@ const traceroute = (url) => {
         }
         core.info(`Resultado do traceroute:\n${stdout}`);
     });
-    core.debug(`Encerrando traceroute:\n${url}`);
+    core.debug(`Encerrando traceroute:\n${newUrl}`);
 };
 exports["default"] = traceroute;
 
