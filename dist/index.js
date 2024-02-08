@@ -885,17 +885,35 @@ const core_1 = __importDefault(__nccwpck_require__(2186));
 const child_process_1 = __nccwpck_require__(2081);
 const traceroute = (mountedUrl) => {
     core_1.default.info('Executando traceroute...');
-    (0, child_process_1.exec)(`traceroute ${mountedUrl}`, (error, stdout, stderr) => {
-        if (error) {
-            core_1.default.error(`Erro ao executar o traceroute: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            core_1.default.error(`Erro ao executar o traceroute: ${stderr}`);
-            return;
-        }
-        core_1.default.info(`Resultado do traceroute:\n${stdout}`);
+    const tracerouteProcess = (0, child_process_1.spawn)('traceroute', [mountedUrl]);
+    tracerouteProcess.stdout.on('data', (data) => {
+        core_1.default.info(`Resultado do traceroute:\n${data}`);
     });
+    tracerouteProcess.stderr.on('data', (data) => {
+        core_1.default.error(`Erro ao executar o traceroute: ${data}`);
+    });
+    tracerouteProcess.on('error', (error) => {
+        core_1.default.error(`Erro ao executar o traceroute: ${error.message}`);
+    });
+    tracerouteProcess.on('close', (code) => {
+        if (code === 0) {
+            core_1.default.info('Traceroute concluído com sucesso.');
+        }
+        else {
+            core_1.default.error(`O traceroute foi encerrado com o código de saída ${code}.`);
+        }
+    });
+    // exec(`traceroute ${mountedUrl}`, (error, stdout, stderr) => {
+    // 	if (error) {
+    // 		core.error(`Erro ao executar o traceroute: ${error.message}`)
+    // 		return
+    // 	}
+    // 	if (stderr) {
+    // 		core.error(`Erro ao executar o traceroute: ${stderr}`)
+    // 		return
+    // 	}
+    // 	core.info(`Resultado do traceroute:\n${stdout}`)
+    // })
     core_1.default.info('Encerrando traceroute...');
 };
 exports["default"] = traceroute;
