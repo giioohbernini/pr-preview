@@ -1,4 +1,4 @@
-import core from '@actions/core'
+import * as core from '@actions/core'
 import { spawn } from 'child_process'
 
 const traceroute = (url: string) => {

@@ -812,11 +812,30 @@ exports.Tenants = {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __importDefault(__nccwpck_require__(2186));
+const core = __importStar(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
@@ -824,7 +843,7 @@ const surge = () => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
-        core_1.default.info(`Passando a URL: ${mountedUrl} para o traceroute`);
+        core.info(`Passando a URL: ${mountedUrl} para o traceroute`);
         (0, traceroute_1.default)(mountedUrl);
     };
     const shutDown = async ({ token, mountedUrl }) => {
@@ -879,32 +898,48 @@ exports["default"] = tenantsFactory;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __importDefault(__nccwpck_require__(2186));
+const core = __importStar(__nccwpck_require__(2186));
 const child_process_1 = __nccwpck_require__(2081);
 const traceroute = (url) => {
-    core_1.default.debug(`Executando traceroute:\n${url}`);
+    core.debug(`Executando traceroute:\n${url}`);
     const tracerouteProcess = (0, child_process_1.spawn)('traceroute', [url]);
     tracerouteProcess.stdout.on('data', (data) => {
         const output = data.toString();
-        core_1.default.info(`Resultado do traceroute:\n${output}`);
+        core.info(`Resultado do traceroute:\n${output}`);
     });
     tracerouteProcess.stderr.on('data', (data) => {
         const error = data.toString();
-        core_1.default.error(`Erro ao executar o traceroute: ${error}`);
+        core.error(`Erro ao executar o traceroute: ${error}`);
     });
     tracerouteProcess.on('error', (error) => {
-        core_1.default.error(`Erro ao executar o traceroute: ${error.message}`);
+        core.error(`Erro ao executar o traceroute: ${error.message}`);
     });
     tracerouteProcess.on('close', (code) => {
         if (code === 0) {
-            core_1.default.info('Traceroute concluído com sucesso.');
+            core.info('Traceroute concluído com sucesso.');
         }
         else {
-            core_1.default.error(`O traceroute foi encerrado com o código de saída ${code}.`);
+            core.error(`O traceroute foi encerrado com o código de saída ${code}.`);
         }
     });
     // exec(`traceroute ${mountedUrl}`, (error, stdout, stderr) => {
@@ -918,7 +953,7 @@ const traceroute = (url) => {
     // 	}
     // 	core.info(`Resultado do traceroute:\n${stdout}`)
     // })
-    core_1.default.debug(`Encerrando traceroute:\n${url}`);
+    core.debug(`Encerrando traceroute:\n${url}`);
 };
 exports["default"] = traceroute;
 
@@ -930,11 +965,30 @@ exports["default"] = traceroute;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core_1 = __importDefault(__nccwpck_require__(2186));
+const core = __importStar(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel = () => {
@@ -957,7 +1011,7 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        core_1.default.info(`Passando a URL: ${mountedUrl} para o traceroute`);
+        core.info(`Passando a URL: ${mountedUrl} para o traceroute`);
         (0, traceroute_1.default)(mountedUrl);
     };
     const shutDown = async ({ token, mountedUrl }) => {

@@ -1,4 +1,4 @@
-import core from '@actions/core'
+import * as core from '@actions/core'
 import traceroute from '../utils/traceroute'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams } from '../types'
