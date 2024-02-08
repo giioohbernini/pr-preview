@@ -2,7 +2,8 @@ import core from '@actions/core'
 import { exec } from 'child_process'
 
 const traceroute = (mountedUrl: string) => {
-	return exec(`traceroute ${mountedUrl}`, (error, stdout, stderr) => {
+	core.info('Executando traceroute...')
+	exec(`traceroute ${mountedUrl}`, (error, stdout, stderr) => {
 		if (error) {
 			core.error(`Erro ao executar o traceroute: ${error.message}`)
 			return
@@ -13,6 +14,7 @@ const traceroute = (mountedUrl: string) => {
 		}
 		core.info(`Resultado do traceroute:\n${stdout}`)
 	})
+	core.info('Encerrando traceroute...')
 }
 
 export default traceroute
