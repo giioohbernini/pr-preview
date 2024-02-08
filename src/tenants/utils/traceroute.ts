@@ -2,15 +2,17 @@ import core from '@actions/core'
 import { spawn } from 'child_process'
 
 const traceroute = (mountedUrl: string) => {
-	core.info('Executando traceroute...')
+	core.info(`Executando traceroute ${mountedUrl}`)
 	const tracerouteProcess = spawn('traceroute', [mountedUrl])
 
 	tracerouteProcess.stdout.on('data', (data) => {
-		core.info(`Resultado do traceroute:\n${data}`)
+		const output = data.toString()
+		core.info(`Resultado do traceroute:\n${output}`)
 	})
 
 	tracerouteProcess.stderr.on('data', (data) => {
-		core.error(`Erro ao executar o traceroute: ${data}`)
+		const error = data.toString()
+		core.error(`Erro ao executar o traceroute: ${error}`)
 	})
 
 	tracerouteProcess.on('error', (error) => {
@@ -36,7 +38,7 @@ const traceroute = (mountedUrl: string) => {
 	// 	}
 	// 	core.info(`Resultado do traceroute:\n${stdout}`)
 	// })
-	core.info('Encerrando traceroute...')
+	core.info(`Encerrando traceroute ${mountedUrl}`)
 }
 
 export default traceroute
