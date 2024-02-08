@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import traceroute from '../utils/traceroute'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams, ITenantReturn } from '../types'
@@ -8,7 +7,6 @@ const surge = (): ITenantReturn => {
 		await execCommand({
 			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
-		core.info(`Passando a URL: ${mountedUrl} para o traceroute`)
 		traceroute(mountedUrl)
 	}
 

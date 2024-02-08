@@ -1,4 +1,3 @@
-import * as core from '@actions/core'
 import traceroute from '../utils/traceroute'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams } from '../types'
@@ -31,7 +30,6 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-		core.info(`Passando a URL: ${mountedUrl} para o traceroute`)
 		traceroute(mountedUrl)
 	}
 
