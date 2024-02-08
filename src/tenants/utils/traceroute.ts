@@ -3,31 +3,7 @@ import { exec } from 'child_process'
 
 const traceroute = (url: string) => {
 	core.debug(`Executando traceroute:\n${url}`)
-	// const tracerouteProcess = spawn('traceroute', [url])
-
-	// tracerouteProcess.stdout.on('data', (data) => {
-	// 	const output = data.toString()
-	// 	core.info(`Resultado do traceroute:\n${output}`)
-	// })
-
-	// tracerouteProcess.stderr.on('data', (data) => {
-	// 	const error = data.toString()
-	// 	core.error(`Erro ao executar o traceroute: ${error}`)
-	// })
-
-	// tracerouteProcess.on('error', (error) => {
-	// 	core.error(`Erro ao executar o traceroute: ${error.message}`)
-	// })
-
-	// tracerouteProcess.on('close', (code) => {
-	// 	if (code === 0) {
-	// 		core.info('Traceroute concluído com sucesso.')
-	// 	} else {
-	// 		core.error(`O traceroute foi encerrado com o código de saída ${code}.`)
-	// 	}
-	// })
-
-	exec(`traceroute ${url}`, (error, stdout, stderr) => {
+	exec(`traceroute ${url}aa`, (error, stdout, stderr) => {
 		if (error) {
 			core.error(`Erro ao executar o traceroute: ${error.message}`)
 			return
