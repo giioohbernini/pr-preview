@@ -1,8 +1,8 @@
 import core from '@actions/core'
 import { exec } from 'child_process'
 
-const traceroute = (url: string) => {
-	exec(`traceroute ${url}`, (error, stdout, stderr) => {
+const traceroute = (mountedUrl: string) => {
+	return exec(`traceroute ${mountedUrl}`, (error, stdout, stderr) => {
 		if (error) {
 			core.error(`Erro ao executar o traceroute: ${error.message}`)
 			return

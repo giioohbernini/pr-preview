@@ -883,8 +883,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __importDefault(__nccwpck_require__(2186));
 const child_process_1 = __nccwpck_require__(2081);
-const traceroute = (url) => {
-    (0, child_process_1.exec)(`traceroute ${url}`, (error, stdout, stderr) => {
+const traceroute = (mountedUrl) => {
+    return (0, child_process_1.exec)(`traceroute ${mountedUrl}`, (error, stdout, stderr) => {
         if (error) {
             core_1.default.error(`Erro ao executar o traceroute: ${error.message}`);
             return;
