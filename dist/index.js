@@ -816,6 +816,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __importDefault(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
@@ -823,6 +824,7 @@ const surge = () => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
+        core_1.default.debug(`Passando a URL: ${mountedUrl} para o traceroute`);
         (0, traceroute_1.default)(mountedUrl);
     };
     const shutDown = async ({ token, mountedUrl }) => {
@@ -884,7 +886,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __importDefault(__nccwpck_require__(2186));
 const child_process_1 = __nccwpck_require__(2081);
 const traceroute = (url) => {
-    core_1.default.info(`Executando traceroute:\n${url}`);
+    core_1.default.debug(`Executando traceroute:\n${url}`);
     const tracerouteProcess = (0, child_process_1.spawn)('traceroute', [url]);
     tracerouteProcess.stdout.on('data', (data) => {
         const output = data.toString();
@@ -916,7 +918,7 @@ const traceroute = (url) => {
     // 	}
     // 	core.info(`Resultado do traceroute:\n${stdout}`)
     // })
-    core_1.default.info(`Encerrando traceroute:\n${url}`);
+    core_1.default.debug(`Encerrando traceroute:\n${url}`);
 };
 exports["default"] = traceroute;
 
@@ -932,6 +934,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core_1 = __importDefault(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel = () => {
@@ -954,6 +957,7 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
+        core_1.default.debug(`Passando a URL: ${mountedUrl} para o traceroute`);
         (0, traceroute_1.default)(mountedUrl);
     };
     const shutDown = async ({ token, mountedUrl }) => {

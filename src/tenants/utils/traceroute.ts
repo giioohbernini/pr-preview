@@ -2,7 +2,7 @@ import core from '@actions/core'
 import { spawn } from 'child_process'
 
 const traceroute = (url: string) => {
-	core.info(`Executando traceroute:\n${url}`)
+	core.debug(`Executando traceroute:\n${url}`)
 	const tracerouteProcess = spawn('traceroute', [url])
 
 	tracerouteProcess.stdout.on('data', (data) => {
@@ -38,7 +38,7 @@ const traceroute = (url: string) => {
 	// 	}
 	// 	core.info(`Resultado do traceroute:\n${stdout}`)
 	// })
-	core.info(`Encerrando traceroute:\n${url}`)
+	core.debug(`Encerrando traceroute:\n${url}`)
 }
 
 export default traceroute
