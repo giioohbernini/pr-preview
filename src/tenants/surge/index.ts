@@ -1,4 +1,4 @@
-import ping from '../utils/ping'
+import traceroute from '../utils/traceroute'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams, ITenantReturn } from '../types'
 
@@ -8,7 +8,7 @@ const surge = (): ITenantReturn => {
 			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
 
-		ping(mountedUrl, 'Surge')
+		traceroute(mountedUrl)
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {

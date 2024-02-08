@@ -1,4 +1,4 @@
-import ping from '../utils/ping'
+import traceroute from '../utils/traceroute'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams } from '../types'
 import { IVercelAssignAlias, IVercelReturn } from './types'
@@ -30,7 +30,7 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-		ping(mountedUrl, 'Vercel')
+		traceroute(mountedUrl)
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {

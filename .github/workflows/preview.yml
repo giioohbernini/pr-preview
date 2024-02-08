@@ -23,6 +23,8 @@ jobs:
             npm install -g yarn
             yarn
             yarn build-preview -- public/preview
+      - name: Install traceroute
+        run: sudo apt-get update && sudo apt-get install -y traceroute
       - name: Get the output url
         run: echo "url => ${{ steps.preview_step.outputs.preview_url }}"
   preview2:
@@ -43,6 +45,8 @@ jobs:
             npm install -g yarn
             yarn
             yarn build-preview -- public/preview2
+      - name: Install traceroute
+        run: sudo apt-get update && sudo apt-get install -y traceroute
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
   preview3:
@@ -66,6 +70,8 @@ jobs:
             yarn
             yarn build-preview -- public/preview3
             cp ./public/preview3/index.html ./public/preview3/teste/index.html
+      - name: Install traceroute
+        run: sudo apt-get update && sudo apt-get install -y traceroute
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
   preview4:
@@ -88,5 +94,7 @@ jobs:
             yarn
             yarn build-preview -- public/preview3
             cp ./public/preview3/index.html ./public/preview3/teste/index.html
+      - name: Install traceroute
+        run: sudo apt-get update && sudo apt-get install -y traceroute
       - name: Get the output url
         run: echo "url => ${{ steps.preview_action.outputs.preview_url }}"
