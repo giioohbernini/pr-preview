@@ -1,24 +1,20 @@
+/* eslint-disable github/no-then */
 import * as core from '@actions/core'
-import { exec } from 'child_process'
+// import { exec } from 'child_process'
 import axios from 'axios'
 
-// Seu código com o uso do axios
-
 const traceroute = (url: string) => {
-	const url2 = 'http://example.com/404'
 	core.debug(`Executando traceroute:\n${url}`)
+
 	axios
-		.get(url2)
-		// eslint-disable-next-line github/no-then
+		.get(url)
 		.then((response) => {
 			core.info(`Status da resposta: ${response.status}`)
-			if (response.status === 404) {
-				core.error('Erro 404: Página não encontrada.')
-			}
+			core.info('O site está online!')
 		})
-		// eslint-disable-next-line github/no-then
 		.catch((error) => {
-			core.error(`Erro ao fazer a solicitação: ${error.message}`)
+			core.error('O site não está online!')
+			core.error(`Erro: ${error.message}`)
 		})
 
 	// exec(`traceroute ${host}`, (error, stdout, stderr) => {

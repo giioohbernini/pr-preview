@@ -900,24 +900,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable github/no-then */
 const core = __importStar(__nccwpck_require__(2186));
+// import { exec } from 'child_process'
 const axios_1 = __importDefault(__nccwpck_require__(8757));
-// Seu código com o uso do axios
 const traceroute = (url) => {
-    const url2 = 'http://example.com/404';
     core.debug(`Executando traceroute:\n${url}`);
     axios_1.default
-        .get(url2)
-        // eslint-disable-next-line github/no-then
+        .get(url)
         .then((response) => {
         core.info(`Status da resposta: ${response.status}`);
-        if (response.status === 404) {
-            core.error('Erro 404: Página não encontrada.');
-        }
+        core.info('O site está online!');
     })
-        // eslint-disable-next-line github/no-then
         .catch((error) => {
-        core.error(`Erro ao fazer a solicitação: ${error.message}`);
+        core.error('O site não está online!');
+        core.error(`Erro: ${error.message}`);
     });
     // exec(`traceroute ${host}`, (error, stdout, stderr) => {
     // 	if (error) {
