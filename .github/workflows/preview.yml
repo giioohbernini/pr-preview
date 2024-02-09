@@ -79,7 +79,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install traceroute
-        run: sudo apt-get update && sudo apt-get install -y traceroute && sudo apt-get install curl
+        run: sudo apt-get install curl
       - uses: ./
         id: preview_action
         name: test pr-preview
