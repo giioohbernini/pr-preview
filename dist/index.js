@@ -907,7 +907,7 @@ const axios_1 = __importDefault(__nccwpck_require__(8757));
 const traceroute = (url) => {
     core.debug(`Executando traceroute:\n${url}`);
     axios_1.default
-        .get(url)
+        .get(`https://${url}`)
         .then((response) => {
         core.info(`Status da resposta: ${response.status}`);
         core.info('O site está online!');

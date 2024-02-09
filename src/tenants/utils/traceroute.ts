@@ -7,7 +7,7 @@ const traceroute = (url: string) => {
 	core.debug(`Executando traceroute:\n${url}`)
 
 	axios
-		.get(url)
+		.get(`https://${url}`)
 		.then((response) => {
 			core.info(`Status da resposta: ${response.status}`)
 			core.info('O site está online!')
