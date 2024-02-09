@@ -1,9 +1,11 @@
 import * as core from '@actions/core'
 import { exec } from 'child_process'
 
+const host = 'example404.com'
+
 const traceroute = (url: string) => {
 	core.debug(`Executando traceroute:\n${url}`)
-	exec(`traceroute ${url}`, (error, stdout, stderr) => {
+	exec(`traceroute ${host}`, (error, stdout, stderr) => {
 		const output = stdout.toString()
 
 		if (error) {
