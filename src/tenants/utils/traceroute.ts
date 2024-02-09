@@ -1,28 +1,27 @@
 import * as core from '@actions/core'
 import { exec } from 'child_process'
+import axios from 'axios'
+
+// Seu código com o uso do axios
 
 const traceroute = (url: string) => {
 	const replaceUrl = url.replace('31', '13')
 
 	core.debug(`Executando traceroute:\n${url}`)
-	exec(`curl -I ${replaceUrl}`, (error, stdout, stderr) => {
-		if (error) {
-			core.error(`Erro ao executar o curl: ${error.message}`)
-			return
-		}
-		if (stderr) {
-			core.error(`Erro ao executar o curl: ${stderr}`)
-			return
-		}
+	axios
+		.get(replaceUrl)
+		// eslint-disable-next-line github/no-then
+		.then((response) => {
+			core.info(`Status da resposta: ${response.status}`)
+			if (response.status === 404) {
+				core.error('Erro 404: Página não encontrada.')
+			}
+		})
+		// eslint-disable-next-line github/no-then
+		.catch((error) => {
+			core.error(`Erro ao fazer a solicitação: ${error.message}`)
+		})
 
-		const output = stdout.toString() // Converte a saída para string
-		core.info(`Resultado do curl:\n${output}`)
-
-		// Verifica se há indícios de erro 404 na saída
-		if (output.includes('HTTP/1.1 404 Not Found')) {
-			core.error('Erro 404: Página não encontrada.')
-		}
-	})
 	// exec(`traceroute ${host}`, (error, stdout, stderr) => {
 	// 	if (error) {
 	// 		core.error(`Erro ao executar o traceroute: ${error.message}`)
