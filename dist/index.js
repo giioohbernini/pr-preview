@@ -904,10 +904,10 @@ const core = __importStar(__nccwpck_require__(2186));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
 // Seu código com o uso do axios
 const traceroute = (url) => {
-    const replaceUrl = url.replace('31', '13');
+    const url2 = 'http://example.com/404';
     core.debug(`Executando traceroute:\n${url}`);
     axios_1.default
-        .get(replaceUrl)
+        .get(url2)
         // eslint-disable-next-line github/no-then
         .then((response) => {
         core.info(`Status da resposta: ${response.status}`);

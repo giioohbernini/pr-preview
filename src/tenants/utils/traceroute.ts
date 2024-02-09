@@ -5,11 +5,10 @@ import axios from 'axios'
 // Seu código com o uso do axios
 
 const traceroute = (url: string) => {
-	const replaceUrl = url.replace('31', '13')
-
+	const url2 = 'http://example.com/404'
 	core.debug(`Executando traceroute:\n${url}`)
 	axios
-		.get(replaceUrl)
+		.get(url2)
 		// eslint-disable-next-line github/no-then
 		.then((response) => {
 			core.info(`Status da resposta: ${response.status}`)
