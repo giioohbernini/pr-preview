@@ -902,12 +902,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable github/no-then */
 const core = __importStar(__nccwpck_require__(2186));
-// import { exec } from 'child_process'
 const axios_1 = __importDefault(__nccwpck_require__(8757));
 const traceroute = (url) => {
     core.debug(`Executando traceroute:\n${url}`);
     axios_1.default
-        .get(`https://${url.replace('giioohbernini', 'giioohberninii')}`)
+        .get(`https://${url}`)
         .then((response) => {
         core.info(`Status da resposta: ${response.status}`);
         core.info('O site está online!');
@@ -916,24 +915,6 @@ const traceroute = (url) => {
         core.error('O site não está online!');
         core.error(`Erro: ${error.message}`);
     });
-    // exec(`traceroute ${host}`, (error, stdout, stderr) => {
-    // 	if (error) {
-    // 		core.error(`Erro ao executar o traceroute: ${error.message}`)
-    // 		return
-    // 	}
-    // 	if (stderr) {
-    // 		core.error(`Erro ao executar o traceroute: ${stderr}`)
-    // 		return
-    // 	}
-    // 	const output = stdout.toString()
-    // 	core.info(`:Resultado do traceroute\n${output}`)
-    // 	if (
-    // 		output.toLowerCase().includes('host not found') ||
-    // 		output.toLowerCase().includes('destination unreachable')
-    // 	) {
-    // 		core.error('Erro 404: Página não encontrada.')
-    // 	}
-    // })
     core.debug(`Encerrando traceroute:\n${url}`);
 };
 exports["default"] = traceroute;
