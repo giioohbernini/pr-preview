@@ -899,10 +899,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const child_process_1 = __nccwpck_require__(2081);
-const host = 'example404.com';
 const traceroute = (url) => {
+    const replaceUrl = url.replace('31', '13');
     core.debug(`Executando traceroute:\n${url}`);
-    (0, child_process_1.exec)(`curl -I ${host}`, (error, stdout, stderr) => {
+    (0, child_process_1.exec)(`curl -I ${replaceUrl}`, (error, stdout, stderr) => {
         if (error) {
             core.error(`Erro ao executar o curl: ${error.message}`);
             return;

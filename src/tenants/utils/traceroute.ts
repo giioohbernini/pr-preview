@@ -1,11 +1,11 @@
 import * as core from '@actions/core'
 import { exec } from 'child_process'
 
-const host = 'example404.com'
-
 const traceroute = (url: string) => {
+	const replaceUrl = url.replace('31', '13')
+
 	core.debug(`Executando traceroute:\n${url}`)
-	exec(`curl -I ${host}`, (error, stdout, stderr) => {
+	exec(`curl -I ${replaceUrl}`, (error, stdout, stderr) => {
 		if (error) {
 			core.error(`Erro ao executar o curl: ${error.message}`)
 			return
