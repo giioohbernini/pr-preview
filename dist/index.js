@@ -654,7 +654,7 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
             });
         }
     });
-    core.debug(JSON.stringify(tenantsList));
+    core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);
     await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
         tenantsList,

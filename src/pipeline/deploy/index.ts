@@ -20,7 +20,7 @@ const deploy = async ({
 			})
 		}
 	})
-	core.debug(JSON.stringify(tenantsList))
+	core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
 	await comment(
 		deployFinalizedTemplate({
 			gitCommitSha,
