@@ -12,6 +12,7 @@ const commentTenantDeployURL = ({ tenantsList }: ICommentTenantDeployURL) => {
 					<tr>
 						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
 						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
+						<td>${tenant.statusCode}</td>
 					</tr>
 					`
 				: ''
@@ -48,6 +49,13 @@ export const deployFinalizedTemplate = ({
 	return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
+      <thead>
+        <tr>
+	        <th>Tenant</th>
+	        <th>URL</th>
+	        <th>Deploy status</th>
+        </tr>
+      </thead>
 			${commentTenantDeployURL({ tenantsList })}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>

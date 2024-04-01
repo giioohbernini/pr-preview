@@ -72,6 +72,7 @@ const commentTenantDeployURL = ({ tenantsList }) => {
 					<tr>
 						<td><strong>✅ Preview: ${tenant.tenantName}</strong></td>
 						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></td>
+						<td>${tenant.statusCode}</td>
 					</tr>
 					`
             : '';
@@ -97,6 +98,13 @@ const deployFinalizedTemplate = ({ gitCommitSha, tenantsList, duration, image, }
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
     <table>
+      <thead>
+        <tr>
+	        <th>Tenant</th>
+	        <th>URL</th>
+	        <th>Deploy status</th>
+        </tr>
+      </thead>
 			${commentTenantDeployURL({ tenantsList })}
     </table>
     <p>:clock1: Build time: <b>${duration}s</b></p>
@@ -619,7 +627,7 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
     // eslint-disable-next-line github/array-foreach
     tenantsList.forEach(async (tenant) => {
         if (tenant.token) {
-            await tenant.deploy({
+            tenant.statusCode = await tenant.deploy({
                 token: tenant.token,
                 distFolder,
                 mountedUrl: tenant.commandUrl,
@@ -823,7 +831,8 @@ const surge = () => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
-        (0, traceroute_1.default)(mountedUrl);
+        const statusCode = (0, traceroute_1.default)(mountedUrl);
+        return statusCode;
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
@@ -903,19 +912,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable github/no-then */
 const core = __importStar(__nccwpck_require__(2186));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
-const traceroute = (url) => {
+const traceroute = async (url) => {
     core.debug(`Executando traceroute:\n${url}`);
-    axios_1.default
+    const errorMenssage = await axios_1.default
         .get(`https://${url}`)
         .then((response) => {
         core.info(`Status da resposta: ${response.status}`);
         core.info('O site está online!');
+        return response.status;
     })
         .catch((error) => {
         core.error('O site não está online!');
         core.error(`Erro: ${error.message}`);
+        return error;
     });
     core.debug(`Encerrando traceroute:\n${url}`);
+    return `${errorMenssage}`;
 };
 exports["default"] = traceroute;
 
@@ -953,7 +965,8 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        (0, traceroute_1.default)(mountedUrl);
+        const statusCode = await (0, traceroute_1.default)(mountedUrl);
+        return statusCode;
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({

@@ -10,6 +10,6 @@ export interface IShutDownParams {
 }
 
 export interface ITenantReturn {
-	deploy: ({ token, distFolder, mountedUrl }: IDeployParams) => Promise<void>
+	deploy: ({ token, distFolder, mountedUrl }: IDeployParams) => Promise<string>
 	shutDown: ({ token, mountedUrl }: IShutDownParams) => Promise<void>
 }

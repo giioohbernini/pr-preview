@@ -29,6 +29,7 @@ export interface ITenant {
 		token,
 		distFolder,
 		mountedUrl,
-	}: IDeployTenantParams) => Promise<void>
+	}: IDeployTenantParams) => Promise<string>
 	shutDown: ({ token, mountedUrl }: IShutDown) => Promise<void>
+	statusCode?: string
 }

@@ -12,7 +12,7 @@ const deploy = async ({
 	// eslint-disable-next-line github/array-foreach
 	tenantsList.forEach(async (tenant) => {
 		if (tenant.token) {
-			await tenant.deploy({
+			tenant.statusCode = await tenant.deploy({
 				token: tenant.token,
 				distFolder,
 				mountedUrl: tenant.commandUrl,

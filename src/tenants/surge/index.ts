@@ -7,7 +7,9 @@ const surge = (): ITenantReturn => {
 		await execCommand({
 			command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
 		})
-		traceroute(mountedUrl)
+		const statusCode = traceroute(mountedUrl)
+
+		return statusCode
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {

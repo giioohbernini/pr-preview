@@ -30,7 +30,9 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-		traceroute(mountedUrl)
+		const statusCode = await traceroute(mountedUrl)
+
+		return statusCode
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
