@@ -652,6 +652,7 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 distFolder,
                 mountedUrl: tenant.commandUrl,
             });
+            core.debug(`tenant >>>> ${JSON.stringify(tenantsList)}`);
         }
     });
     core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);

@@ -18,6 +18,8 @@ const deploy = async ({
 				distFolder,
 				mountedUrl: tenant.commandUrl,
 			})
+
+			core.debug(`tenant >>>> ${JSON.stringify(tenantsList)}`)
 		}
 	})
 	core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
