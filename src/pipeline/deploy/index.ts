@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { IDeployParams } from './types'
@@ -19,7 +20,7 @@ const deploy = async ({
 			})
 		}
 	})
-
+	core.debug(JSON.stringify(tenantsList))
 	await comment(
 		deployFinalizedTemplate({
 			gitCommitSha,
