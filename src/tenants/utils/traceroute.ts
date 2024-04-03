@@ -11,7 +11,7 @@ const traceroute = async (url: string): Promise<string> => {
 			core.info(`Status da resposta: ${response.status}`)
 			core.info('O site está online!')
 
-			return response.status
+			return `Request success with status code ${response.status}`
 		})
 		.catch((error) => {
 			core.error('O site não está online!')
@@ -19,8 +19,8 @@ const traceroute = async (url: string): Promise<string> => {
 
 			return error.message
 		})
-	core.debug(`Encerrando traceroute:\n${url}`)
 
+	core.debug(`Encerrando traceroute:\n${url}`)
 	return `${errorMenssage}`
 }
 
