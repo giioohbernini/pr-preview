@@ -19,13 +19,16 @@ const deploy = async ({
 					distFolder,
 					mountedUrl: tenant.commandUrl,
 				})
-				if (index === tenantsList.length - 1) resolve()
 			}
+
+			core.debug(`tenant >>>> ${JSON.stringify(tenantsList)}`)
+			if (index === tenantsList.length - 1) resolve()
 		})
 	})
 
 	// eslint-disable-next-line github/no-then
 	execDeploy.then(async () => {
+		core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
 		await comment(
 			deployFinalizedTemplate({
 				gitCommitSha,
