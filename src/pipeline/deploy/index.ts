@@ -21,7 +21,7 @@ const deploy = async ({
 				})
 			}
 
-			core.debug(`tenant >>>> ${JSON.stringify(tenantsList)}`)
+			core.debug(`tenant >>>> ${JSON.stringify(tenant)}`)
 			if (index === tenantsList.length - 1) resolve()
 		})
 	})
