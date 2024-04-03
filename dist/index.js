@@ -644,24 +644,42 @@ const core = __importStar(__nccwpck_require__(2186));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, }) => {
-    // eslint-disable-next-line github/array-foreach
-    tenantsList.forEach(async (tenant) => {
-        if (tenant.token) {
-            tenant.statusCode = await tenant.deploy({
-                token: tenant.token,
-                distFolder,
-                mountedUrl: tenant.commandUrl,
-            });
-            core.debug(`tenant >>>> ${JSON.stringify(tenantsList)}`);
-        }
+    const execDeploy = new Promise((resolve) => {
+        // eslint-disable-next-line github/array-foreach
+        tenantsList.forEach(async (tenant, index) => {
+            if (tenant.token) {
+                tenant.statusCode = await tenant.deploy({
+                    token: tenant.token,
+                    distFolder,
+                    mountedUrl: tenant.commandUrl,
+                });
+                core.debug(`tenant >>>> ${JSON.stringify(tenantsList)}`);
+            }
+            if (index === tenantsList.length - 1)
+                resolve();
+        });
     });
-    core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);
-    await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
-        gitCommitSha,
-        tenantsList,
-        duration,
-        image,
-    }));
+    // eslint-disable-next-line github/array-foreach
+    // tenantsList.forEach(async (tenant) => {
+    // 	if (tenant.token) {
+    // 		tenant.statusCode = await tenant.deploy({
+    // 			token: tenant.token,
+    // 			distFolder,
+    // 			mountedUrl: tenant.commandUrl,
+    // 		})
+    // 		core.debug(`tenant >>>> ${JSON.stringify(tenantsList)}`)
+    // 	}
+    // })
+    // eslint-disable-next-line github/no-then
+    execDeploy.then(async () => {
+        core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);
+        await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
+            gitCommitSha,
+            tenantsList,
+            duration,
+            image,
+        }));
+    });
 };
 exports["default"] = deploy;
 
@@ -946,7 +964,7 @@ const traceroute = async (url) => {
         .catch((error) => {
         core.error('O site não está online!');
         core.error(`Erro: ${error.message}`);
-        return error;
+        return error.message;
     });
     core.debug(`Encerrando traceroute:\n${url}`);
     return `${errorMenssage}`;
