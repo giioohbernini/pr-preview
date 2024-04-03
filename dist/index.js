@@ -655,8 +655,13 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 });
             }
             core.debug(`tenant >>>> ${JSON.stringify(tenant)}`);
-            if (index === tenantsList.length - 1)
+            if (index === tenantsList.length - 1) {
+                core.debug(`resolve >>>> ${JSON.stringify({
+                    index,
+                    tenantsListLength: tenantsList.length,
+                })}`);
                 resolve();
+            }
         });
     });
     // eslint-disable-next-line github/no-then
