@@ -647,7 +647,10 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
     const execDeploy = new Promise((resolve) => {
         // eslint-disable-next-line github/array-foreach
         tenantsList.forEach(async (tenant, index) => {
-            core.debug(`token >>>> ${JSON.stringify({ token: tenant.token })}`);
+            core.debug(`token >>>> ${JSON.stringify({
+                token: tenant.token,
+                name: tenant.tenantName,
+            })}`);
             if (tenant.token) {
                 tenant.statusCode = await tenant.deploy({
                     token: tenant.token,
