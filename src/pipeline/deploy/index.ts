@@ -34,7 +34,7 @@ const deploy = async ({
 			// tenantsListData.forEach(async (tenant) => {
 			// 	tenant.statusCode = await traceroute(tenant.commandUrl)
 			// })
-			core.debug(`tenantsList >>>> ${JSON.stringify(tenantsListData)}`)
+			core.debug(`tenantsListData >>>> ${JSON.stringify(tenantsListData)}`)
 			return tenantsListData
 		})
 		// eslint-disable-next-line github/no-then
