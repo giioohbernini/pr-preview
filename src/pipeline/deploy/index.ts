@@ -1,8 +1,9 @@
 import * as core from '@actions/core'
-import traceroute from '../../tenants/utils/traceroute'
+// import traceroute from '../../tenants/utils/traceroute'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { IDeployParams } from './types'
+// import { ITenant } from '../../types'
 
 const deploy = async ({
 	distFolder,
@@ -11,50 +12,43 @@ const deploy = async ({
 	image,
 	tenantsList,
 }: IDeployParams) => {
-	const execDeploy = new Promise<void>((resolve) => {
+	const execDeploy = new Promise((resolve) => {
 		// eslint-disable-next-line github/array-foreach
 		tenantsList.forEach(async (tenant, index) => {
-			core.debug(
-				`token >>>> ${JSON.stringify({
-					token: tenant.token,
-					name: tenant.tenantName,
-				})}`
-			)
 			if (tenant.token) {
 				await tenant.deploy({
 					token: tenant.token,
 					distFolder,
 					mountedUrl: tenant.commandUrl,
 				})
-
-				tenant.statusCode = await traceroute(tenant.commandUrl)
 			}
 
-			core.debug(`tenant >>>> ${JSON.stringify(tenant)}`)
-			if (index === tenantsList.length - 1) {
-				core.debug(
-					`resolve >>>> ${JSON.stringify({
-						index,
-						tenantsListLength: tenantsList.length,
-					})}`
-				)
-				resolve()
-			}
+			if (index === tenantsList.length - 1) resolve(tenantsList)
 		})
 	})
 
-	// eslint-disable-next-line github/no-then
-	execDeploy.then(async () => {
-		core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
-		await comment(
-			deployFinalizedTemplate({
-				gitCommitSha,
-				tenantsList,
-				duration,
-				image,
-			})
-		)
-	})
+	execDeploy
+		// eslint-disable-next-line github/no-then
+		.then((tenantsListData) => {
+			// eslint-disable-next-line github/array-foreach
+			// tenantsListData.forEach(async (tenant) => {
+			// 	tenant.statusCode = await traceroute(tenant.commandUrl)
+			// })
+			core.debug(`tenantsList >>>> ${JSON.stringify(tenantsListData)}`)
+			return tenantsListData
+		})
+		// eslint-disable-next-line github/no-then
+		.then(async () => {
+			core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
+			await comment(
+				deployFinalizedTemplate({
+					gitCommitSha,
+					tenantsList,
+					duration,
+					image,
+				})
+			)
+		})
 }
 
 export default deploy
