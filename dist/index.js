@@ -641,6 +641,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
+const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
 const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, }) => {
@@ -652,11 +653,12 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 name: tenant.tenantName,
             })}`);
             if (tenant.token) {
-                tenant.statusCode = await tenant.deploy({
+                await tenant.deploy({
                     token: tenant.token,
                     distFolder,
                     mountedUrl: tenant.commandUrl,
                 });
+                tenant.statusCode = await (0, traceroute_1.default)(tenant.commandUrl);
             }
             core.debug(`tenant >>>> ${JSON.stringify(tenant)}`);
             if (index === tenantsList.length - 1) {
@@ -854,23 +856,20 @@ exports.Tenants = {
 /***/ }),
 
 /***/ 2764:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const traceroute_1 = __importDefault(__nccwpck_require__(8303));
+// import traceroute from '../utils/traceroute'
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
     const deploy = async ({ token, distFolder, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
-        const statusCode = (0, traceroute_1.default)(mountedUrl);
-        return statusCode;
+        // const statusCode = traceroute(mountedUrl)
+        // return statusCode
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
@@ -973,15 +972,12 @@ exports["default"] = traceroute;
 /***/ }),
 
 /***/ 9707:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const traceroute_1 = __importDefault(__nccwpck_require__(8303));
+// import traceroute from '../utils/traceroute'
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel = () => {
     const vercelCli = 'vercel';
@@ -1003,8 +999,8 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        const statusCode = await (0, traceroute_1.default)(mountedUrl);
-        return statusCode;
+        // const statusCode = await traceroute(mountedUrl)
+        // return statusCode
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({

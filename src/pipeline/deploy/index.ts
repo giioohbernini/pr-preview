@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import traceroute from '../../tenants/utils/traceroute'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { IDeployParams } from './types'
@@ -20,11 +21,13 @@ const deploy = async ({
 				})}`
 			)
 			if (tenant.token) {
-				tenant.statusCode = await tenant.deploy({
+				await tenant.deploy({
 					token: tenant.token,
 					distFolder,
 					mountedUrl: tenant.commandUrl,
 				})
+
+				tenant.statusCode = await traceroute(tenant.commandUrl)
 			}
 
 			core.debug(`tenant >>>> ${JSON.stringify(tenant)}`)

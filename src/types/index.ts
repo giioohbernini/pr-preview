@@ -29,7 +29,7 @@ export interface ITenant {
 		token,
 		distFolder,
 		mountedUrl,
-	}: IDeployTenantParams) => Promise<string>
+	}: IDeployTenantParams) => Promise<void>
 	shutDown: ({ token, mountedUrl }: IShutDown) => Promise<void>
 	statusCode?: string
 }
