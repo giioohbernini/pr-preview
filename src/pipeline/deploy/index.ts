@@ -34,12 +34,12 @@ const deploy = async ({
 			tenantsListData.forEach(async (tenant) => {
 				tenant.statusCode = await traceroute(tenant.commandUrl)
 			})
-
+			core.debug(`tenantsListData 1 >>>> ${JSON.stringify(tenantsListData)}`)
 			return tenantsListData
 		})
 		// eslint-disable-next-line github/no-then
 		.then(async (tenantsListData) => {
-			core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
+			core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`)
 			await comment(
 				deployFinalizedTemplate({
 					gitCommitSha,
