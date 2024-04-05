@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-// import traceroute from '../../tenants/utils/traceroute'
+import traceroute from '../../tenants/utils/traceroute'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { IDeployParams } from './types'
@@ -12,7 +12,7 @@ const deploy = async ({
 	image,
 	tenantsList,
 }: IDeployParams) => {
-	const execDeploy = new Promise((resolve) => {
+	const execDeploy = new Promise<void>((resolve) => {
 		// eslint-disable-next-line github/array-foreach
 		tenantsList.forEach(async (tenant, index) => {
 			if (tenant.token) {
@@ -23,19 +23,17 @@ const deploy = async ({
 				})
 			}
 
-			if (index === tenantsList.length - 1) resolve(tenantsList)
+			if (index === tenantsList.length - 1) resolve()
 		})
 	})
 
 	execDeploy
 		// eslint-disable-next-line github/no-then
-		.then((tenantsListData) => {
+		.then(() => {
 			// eslint-disable-next-line github/array-foreach
-			// tenantsListData.forEach(async (tenant) => {
-			// 	tenant.statusCode = await traceroute(tenant.commandUrl)
-			// })
-			core.debug(`tenantsListData >>>> ${JSON.stringify(tenantsListData)}`)
-			return tenantsListData
+			tenantsList.forEach(async (tenant) => {
+				tenant.statusCode = await traceroute(tenant.commandUrl)
+			})
 		})
 		// eslint-disable-next-line github/no-then
 		.then(async () => {
