@@ -654,21 +654,13 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                     distFolder,
                     mountedUrl: tenant.commandUrl,
                 });
+                tenant.statusCode = await (0, traceroute_1.default)(tenant.commandUrl);
             }
             if (index === tenantsList.length - 1)
                 resolve(tenantsList);
         });
     });
     execDeploy
-        // eslint-disable-next-line github/no-then
-        .then((tenantsListData) => {
-        // eslint-disable-next-line github/array-foreach
-        tenantsListData.forEach(async (tenant) => {
-            tenant.statusCode = await (0, traceroute_1.default)(tenant.commandUrl);
-        });
-        core.debug(`tenantsListData 1 >>>> ${JSON.stringify(tenantsListData)}`);
-        return tenantsListData;
-    })
         // eslint-disable-next-line github/no-then
         .then(async (tenantsListData) => {
         core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`);

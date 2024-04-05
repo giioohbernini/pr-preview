@@ -21,6 +21,8 @@ const deploy = async ({
 					distFolder,
 					mountedUrl: tenant.commandUrl,
 				})
+
+				tenant.statusCode = await traceroute(tenant.commandUrl)
 			}
 
 			if (index === tenantsList.length - 1) resolve(tenantsList)
@@ -28,15 +30,6 @@ const deploy = async ({
 	})
 
 	execDeploy
-		// eslint-disable-next-line github/no-then
-		.then((tenantsListData) => {
-			// eslint-disable-next-line github/array-foreach
-			tenantsListData.forEach(async (tenant) => {
-				tenant.statusCode = await traceroute(tenant.commandUrl)
-			})
-			core.debug(`tenantsListData 1 >>>> ${JSON.stringify(tenantsListData)}`)
-			return tenantsListData
-		})
 		// eslint-disable-next-line github/no-then
 		.then(async (tenantsListData) => {
 			core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`)
