@@ -3,7 +3,7 @@ import traceroute from '../../tenants/utils/traceroute'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { IDeployParams } from './types'
-// import { ITenant } from '../../types'
+import { ITenant } from '../../types'
 
 const deploy = async ({
 	distFolder,
@@ -12,7 +12,7 @@ const deploy = async ({
 	image,
 	tenantsList,
 }: IDeployParams) => {
-	const execDeploy = new Promise<void>((resolve) => {
+	const execDeploy = new Promise<ITenant[]>((resolve) => {
 		// eslint-disable-next-line github/array-foreach
 		tenantsList.forEach(async (tenant, index) => {
 			if (tenant.token) {
@@ -23,25 +23,27 @@ const deploy = async ({
 				})
 			}
 
-			if (index === tenantsList.length - 1) resolve()
+			if (index === tenantsList.length - 1) resolve(tenantsList)
 		})
 	})
 
 	execDeploy
 		// eslint-disable-next-line github/no-then
-		.then(() => {
+		.then((tenantsListData) => {
 			// eslint-disable-next-line github/array-foreach
-			tenantsList.forEach(async (tenant) => {
+			tenantsListData.forEach(async (tenant) => {
 				tenant.statusCode = await traceroute(tenant.commandUrl)
 			})
+
+			return tenantsListData
 		})
 		// eslint-disable-next-line github/no-then
-		.then(async () => {
+		.then(async (tenantsListData) => {
 			core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
 			await comment(
 				deployFinalizedTemplate({
 					gitCommitSha,
-					tenantsList,
+					tenantsList: tenantsListData,
 					duration,
 					image,
 				})

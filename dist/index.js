@@ -644,7 +644,6 @@ const core = __importStar(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-// import { ITenant } from '../../types'
 const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, }) => {
     const execDeploy = new Promise((resolve) => {
         // eslint-disable-next-line github/array-foreach
@@ -657,23 +656,24 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 });
             }
             if (index === tenantsList.length - 1)
-                resolve();
+                resolve(tenantsList);
         });
     });
     execDeploy
         // eslint-disable-next-line github/no-then
-        .then(() => {
+        .then((tenantsListData) => {
         // eslint-disable-next-line github/array-foreach
-        tenantsList.forEach(async (tenant) => {
+        tenantsListData.forEach(async (tenant) => {
             tenant.statusCode = await (0, traceroute_1.default)(tenant.commandUrl);
         });
+        return tenantsListData;
     })
         // eslint-disable-next-line github/no-then
-        .then(async () => {
+        .then(async (tenantsListData) => {
         core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);
         await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
             gitCommitSha,
-            tenantsList,
+            tenantsList: tenantsListData,
             duration,
             image,
         }));
