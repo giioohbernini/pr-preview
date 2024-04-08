@@ -842,15 +842,12 @@ exports.Tenants = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// import traceroute from '../utils/traceroute'
 const execCommand_1 = __nccwpck_require__(5064);
 const surge = () => {
     const deploy = async ({ token, distFolder, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
             command: ['surge', `./${distFolder}`, mountedUrl, `--token`, token],
         });
-        // const statusCode = traceroute(mountedUrl)
-        // return statusCode
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({
@@ -958,7 +955,6 @@ exports["default"] = traceroute;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-// import traceroute from '../utils/traceroute'
 const execCommand_1 = __nccwpck_require__(5064);
 const vercel = () => {
     const vercelCli = 'vercel';
@@ -980,8 +976,6 @@ const vercel = () => {
             command: [vercelCli, '--yes', '--cwd', `./${distFolder}`, '-t', token],
         });
         vercelAssignAlias({ token, deploymentUrl, mountedUrl });
-        // const statusCode = await traceroute(mountedUrl)
-        // return statusCode
     };
     const shutDown = async ({ token, mountedUrl }) => {
         await (0, execCommand_1.execCommand)({

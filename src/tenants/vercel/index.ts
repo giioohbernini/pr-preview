@@ -1,4 +1,3 @@
-// import traceroute from '../utils/traceroute'
 import { execCommand } from '../../helpers/execCommand'
 import { IDeployParams, IShutDownParams } from '../types'
 import { IVercelAssignAlias, IVercelReturn } from './types'
@@ -30,9 +29,6 @@ const vercel = (): IVercelReturn => {
 		})
 
 		vercelAssignAlias({ token, deploymentUrl, mountedUrl })
-		// const statusCode = await traceroute(mountedUrl)
-
-		// return statusCode
 	}
 
 	const shutDown = async ({ token, mountedUrl }: IShutDownParams) => {
