@@ -35,8 +35,7 @@ const deploy = async ({
 		}
 	}
 
-
-
+	core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
 
 	// const execDeploy = new Promise<ITenant[]>((resolve) => {
 	// 	// eslint-disable-next-line github/array-foreach
@@ -56,18 +55,18 @@ const deploy = async ({
 	// })
 
 	// execDeploy
-		// eslint-disable-next-line github/no-then
-		// .then(async (tenantsListData) => {
-		// 	core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`)
-		// 	await comment(
-		// 		deployFinalizedTemplate({
-		// 			gitCommitSha,
-		// 			tenantsList: tenantsListData,
-		// 			duration,
-		// 			image,
-		// 		})
-		// 	)
-		// })
+	// eslint-disable-next-line github/no-then
+	// .then(async (tenantsListData) => {
+	// 	core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`)
+	// 	await comment(
+	// 		deployFinalizedTemplate({
+	// 			gitCommitSha,
+	// 			tenantsList: tenantsListData,
+	// 			duration,
+	// 			image,
+	// 		})
+	// 	)
+	// })
 }
 
 export default deploy

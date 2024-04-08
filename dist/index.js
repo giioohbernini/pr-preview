@@ -662,6 +662,7 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
             // tenant.statusCode = await getStatus(tenant.commandUrl)
         }
     }
+    core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);
     // const execDeploy = new Promise<ITenant[]>((resolve) => {
     // 	// eslint-disable-next-line github/array-foreach
     // 	tenantsList.forEach(async (tenant, index) => {
