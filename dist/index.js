@@ -642,35 +642,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
-const comment_1 = __importDefault(__nccwpck_require__(6645));
-const commentTemplates_1 = __nccwpck_require__(7662);
+const getStatus = async (url) => {
+    return new Promise(async (resolve) => {
+        const statusCode = await (0, traceroute_1.default)(url);
+        if (statusCode)
+            resolve(statusCode);
+    });
+};
 const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, }) => {
-    const execDeploy = new Promise((resolve) => {
-        // eslint-disable-next-line github/array-foreach
-        tenantsList.forEach(async (tenant, index) => {
-            if (tenant.token) {
-                await tenant.deploy({
-                    token: tenant.token,
-                    distFolder,
-                    mountedUrl: tenant.commandUrl,
-                });
-                tenant.statusCode = await (0, traceroute_1.default)(tenant.commandUrl);
-            }
-            if (index === tenantsList.length - 1)
-                resolve(tenantsList);
-        });
-    });
-    execDeploy
-        // eslint-disable-next-line github/no-then
-        .then(async (tenantsListData) => {
-        core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`);
-        await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
-            gitCommitSha,
-            tenantsList: tenantsListData,
-            duration,
-            image,
-        }));
-    });
+    for (let tenant of tenantsList) {
+        if (tenant.token) {
+            await tenant.deploy({
+                token: tenant.token,
+                distFolder,
+                mountedUrl: tenant.commandUrl,
+            });
+            const status = await getStatus(tenant.commandUrl);
+            core.debug(`status >>>> ${JSON.stringify(tenant)} ${JSON.stringify(status)}`);
+            // tenant.statusCode = await getStatus(tenant.commandUrl)
+        }
+    }
+    // const execDeploy = new Promise<ITenant[]>((resolve) => {
+    // 	// eslint-disable-next-line github/array-foreach
+    // 	tenantsList.forEach(async (tenant, index) => {
+    // 		if (tenant.token) {
+    // 			await tenant.deploy({
+    // 				token: tenant.token,
+    // 				distFolder,
+    // 				mountedUrl: tenant.commandUrl,
+    // 			})
+    // 			// tenant.statusCode = await traceroute(tenant.commandUrl)
+    // 		}
+    // 		if (index === tenantsList.length - 1) resolve(tenantsList)
+    // 	})
+    // })
+    // execDeploy
+    // eslint-disable-next-line github/no-then
+    // .then(async (tenantsListData) => {
+    // 	core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`)
+    // 	await comment(
+    // 		deployFinalizedTemplate({
+    // 			gitCommitSha,
+    // 			tenantsList: tenantsListData,
+    // 			duration,
+    // 			image,
+    // 		})
+    // 	)
+    // })
 };
 exports["default"] = deploy;
 
