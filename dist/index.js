@@ -79,25 +79,28 @@ const commentTenantDeployURL = ({ tenantsList }) => {
     })
         .join('');
 };
-const deployInProgressTemplate = ({ gitCommitSha, buildingLogUrl, deployingImage, tenantsList, }) => {
+const deployInProgressTemplate = ({ deployingImage, }) => {
     return `
-		${tenantsList
-        .map((tenant) => {
-        return `
-					<p>
-						⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">${tenant.tenantName}</a> ... <a href="${buildingLogUrl}">Build logs</a>
-					</p>
-				`;
-    })
-        .join('')}
+		<p>
+			⚡️ Starting deploying 
+		</p>
     <p>${deployingImage}</p>
   `;
 };
 exports.deployInProgressTemplate = deployInProgressTemplate;
-const buildInProgressTemplate = ({ deployingImage, }) => {
+const buildInProgressTemplate = ({ deployingImage, gitCommitSha, buildingLogUrl, tenantsList, }) => {
     return `
-		<p>Build in progress</p>
-		<p>${deployingImage}</p>
+	${tenantsList
+        .map((tenant) => {
+        return `
+				<p>
+					⚡️ Build in progress ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">${tenant.tenantName}</a> ... <a href="${buildingLogUrl}">Build logs</a>
+				</p>
+			`;
+    })
+        .join('')}
+
+	<p>${deployingImage}</p>
 	`;
 };
 exports.buildInProgressTemplate = buildInProgressTemplate;
@@ -532,17 +535,19 @@ async function main() {
         imageUrl: 'https://user-images.githubusercontent.com/507615/90240294-8d2abd00-de5b-11ea-8140-4840a0b2d571.gif',
     });
     await (0, comment_1.default)((0, commentTemplates_1.deployInProgressTemplate)({
-        gitCommitSha,
-        buildingLogUrl,
         deployingImage,
-        tenantsList,
     }));
     try {
         const { duration, image } = await (0, build_1.default)({
             buildingLogUrl,
             buildCommand,
         });
-        await (0, comment_1.default)((0, commentTemplates_1.buildInProgressTemplate)({ deployingImage }));
+        await (0, comment_1.default)((0, commentTemplates_1.buildInProgressTemplate)({
+            gitCommitSha,
+            buildingLogUrl,
+            deployingImage,
+            tenantsList,
+        }));
         await (0, deploy_1.default)({
             previewPath,
             distFolder,

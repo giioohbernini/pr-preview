@@ -21,33 +21,36 @@ const commentTenantDeployURL = ({ tenantsList }: ICommentTenantDeployURL) => {
 }
 
 export const deployInProgressTemplate = ({
-	gitCommitSha,
-	buildingLogUrl,
 	deployingImage,
-	tenantsList,
-}: IDeployInProgressPrams) => {
+}: {
+	deployingImage: string
+}) => {
 	return `
-		${tenantsList
-			.map((tenant) => {
-				return `
-					<p>
-						⚡️ Deploying PR Preview ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">${tenant.tenantName}</a> ... <a href="${buildingLogUrl}">Build logs</a>
-					</p>
-				`
-			})
-			.join('')}
+		<p>
+			⚡️ Starting deploying 
+		</p>
     <p>${deployingImage}</p>
   `
 }
 
 export const buildInProgressTemplate = ({
 	deployingImage,
-}: {
-	deployingImage: string
-}) => {
+	gitCommitSha,
+	buildingLogUrl,
+	tenantsList,
+}: IDeployInProgressPrams) => {
 	return `
-		<p>Build in progress</p>
-		<p>${deployingImage}</p>
+	${tenantsList
+		.map((tenant) => {
+			return `
+				<p>
+					⚡️ Build in progress ${gitCommitSha} to: <a href="https://${tenant.outputUrl}">${tenant.tenantName}</a> ... <a href="${buildingLogUrl}">Build logs</a>
+				</p>
+			`
+		})
+		.join('')}
+
+	<p>${deployingImage}</p>
 	`
 }
 

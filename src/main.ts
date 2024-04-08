@@ -38,10 +38,7 @@ async function main() {
 
 	await comment(
 		deployInProgressTemplate({
-			gitCommitSha,
-			buildingLogUrl,
 			deployingImage,
-			tenantsList,
 		})
 	)
 
@@ -51,7 +48,14 @@ async function main() {
 			buildCommand,
 		})
 
-		await comment(buildInProgressTemplate({ deployingImage }))
+		await comment(
+			buildInProgressTemplate({
+				gitCommitSha,
+				buildingLogUrl,
+				deployingImage,
+				tenantsList,
+			})
+		)
 
 		await deploy({
 			previewPath,
