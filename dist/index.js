@@ -617,30 +617,10 @@ exports["default"] = build;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
@@ -659,45 +639,15 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 distFolder,
                 mountedUrl: tenant.commandUrl,
             });
-            const status = await getStatus(tenant.commandUrl);
-            tenant.statusCode = status;
-            core.debug(`status >>>> ${JSON.stringify(tenant)} ${JSON.stringify(status)}`);
+            tenant.statusCode = await getStatus(tenant.commandUrl);
         }
     }
-    core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);
     await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
         gitCommitSha,
         tenantsList,
         duration,
         image,
     }));
-    // const execDeploy = new Promise<ITenant[]>((resolve) => {
-    // 	// eslint-disable-next-line github/array-foreach
-    // 	tenantsList.forEach(async (tenant, index) => {
-    // 		if (tenant.token) {
-    // 			await tenant.deploy({
-    // 				token: tenant.token,
-    // 				distFolder,
-    // 				mountedUrl: tenant.commandUrl,
-    // 			})
-    // 			// tenant.statusCode = await traceroute(tenant.commandUrl)
-    // 		}
-    // 		if (index === tenantsList.length - 1) resolve(tenantsList)
-    // 	})
-    // })
-    // execDeploy
-    // eslint-disable-next-line github/no-then
-    // .then(async (tenantsListData) => {
-    // 	core.debug(`tenantsListData 2 >>>> ${JSON.stringify(tenantsListData)}`)
-    // 	await comment(
-    // 		deployFinalizedTemplate({
-    // 			gitCommitSha,
-    // 			tenantsList: tenantsListData,
-    // 			duration,
-    // 			image,
-    // 		})
-    // 	)
-    // })
 };
 exports["default"] = deploy;
 
