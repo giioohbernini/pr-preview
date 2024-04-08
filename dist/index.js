@@ -96,7 +96,7 @@ const deployInProgressTemplate = ({ gitCommitSha, buildingLogUrl, deployingImage
 exports.deployInProgressTemplate = deployInProgressTemplate;
 const prepareVariablesInProfressTemplate = () => {
     return `
-		<p>Preparing the variables</p>
+		<p>Preparing the variables!</p>
 	`;
 };
 exports.prepareVariablesInProfressTemplate = prepareVariablesInProfressTemplate;

@@ -42,7 +42,7 @@ export const deployInProgressTemplate = ({
 
 export const prepareVariablesInProfressTemplate = () => {
 	return `
-		<p>Preparing the variables</p>
+		<p>Preparing the variables!</p>
 	`
 }
 
