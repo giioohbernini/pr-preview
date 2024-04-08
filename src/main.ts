@@ -4,7 +4,7 @@ import fail from './helpers/fail'
 import { formatImage } from './helpers/formatImage'
 import {
 	deployInProgressTemplate,
-	prepareVariablesInProfressTemplate,
+	buildInProgressTemplate,
 } from './helpers/commentTemplates'
 import prepare from './pipeline/prepare'
 import build from './pipeline/build'
@@ -12,8 +12,6 @@ import shutDown from './pipeline/shutDown'
 import deploy from './pipeline/deploy'
 
 async function main() {
-	await comment(prepareVariablesInProfressTemplate())
-
 	const {
 		previewPath,
 		distFolder,
@@ -52,6 +50,8 @@ async function main() {
 			buildingLogUrl,
 			buildCommand,
 		})
+
+		await comment(buildInProgressTemplate({ deployingImage }))
 
 		await deploy({
 			previewPath,

@@ -40,9 +40,14 @@ export const deployInProgressTemplate = ({
   `
 }
 
-export const prepareVariablesInProfressTemplate = () => {
+export const buildInProgressTemplate = ({
+	deployingImage,
+}: {
+	deployingImage: string
+}) => {
 	return `
-		<p>Preparing the variables!</p>
+		<p>Build in progress</p>
+		<p>${deployingImage}</p>
 	`
 }
 
