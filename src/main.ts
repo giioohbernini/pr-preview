@@ -2,13 +2,18 @@ import * as core from '@actions/core'
 import comment from './helpers/comment'
 import fail from './helpers/fail'
 import { formatImage } from './helpers/formatImage'
-import { deployInProgressTemplate } from './helpers/commentTemplates'
+import {
+	deployInProgressTemplate,
+	prepareVariablesInProfressTemplate,
+} from './helpers/commentTemplates'
 import prepare from './pipeline/prepare'
 import build from './pipeline/build'
 import shutDown from './pipeline/shutDown'
 import deploy from './pipeline/deploy'
 
 async function main() {
+	await comment(prepareVariablesInProfressTemplate())
+
 	const {
 		previewPath,
 		distFolder,

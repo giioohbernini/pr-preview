@@ -63,7 +63,7 @@ exports["default"] = comment;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deployFinalizedTemplate = exports.deployInProgressTemplate = void 0;
+exports.deployFinalizedTemplate = exports.prepareVariablesInProfressTemplate = exports.deployInProgressTemplate = void 0;
 const commentTenantDeployURL = ({ tenantsList }) => {
     return tenantsList
         .map((tenant) => {
@@ -94,6 +94,12 @@ const deployInProgressTemplate = ({ gitCommitSha, buildingLogUrl, deployingImage
   `;
 };
 exports.deployInProgressTemplate = deployInProgressTemplate;
+const prepareVariablesInProfressTemplate = () => {
+    return `
+		<p>Preparing the variables</p>
+	`;
+};
+exports.prepareVariablesInProfressTemplate = prepareVariablesInProfressTemplate;
 const deployFinalizedTemplate = ({ gitCommitSha, tenantsList, duration, image, }) => {
     return `
     <p>🎊 PR Preview ${gitCommitSha} has been successfully built and deployed</p>
@@ -512,6 +518,7 @@ const build_1 = __importDefault(__nccwpck_require__(644));
 const shutDown_1 = __importDefault(__nccwpck_require__(4858));
 const deploy_1 = __importDefault(__nccwpck_require__(8425));
 async function main() {
+    await (0, comment_1.default)((0, commentTemplates_1.prepareVariablesInProfressTemplate)());
     const { previewPath, distFolder, buildCommand, gitCommitSha, buildingLogUrl, shouldShutdown, tenantsList, } = await (0, prepare_1.default)();
     if (shouldShutdown) {
         return await (0, shutDown_1.default)({

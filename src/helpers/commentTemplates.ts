@@ -40,6 +40,12 @@ export const deployInProgressTemplate = ({
   `
 }
 
+export const prepareVariablesInProfressTemplate = () => {
+	return `
+		<p>Preparing the variables</p>
+	`
+}
+
 export const deployFinalizedTemplate = ({
 	gitCommitSha,
 	tenantsList,
