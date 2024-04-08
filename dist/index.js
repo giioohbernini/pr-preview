@@ -642,6 +642,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
+const comment_1 = __importDefault(__nccwpck_require__(6645));
+const commentTemplates_1 = __nccwpck_require__(7662);
 const getStatus = async (url) => {
     return new Promise(async (resolve) => {
         const statusCode = await (0, traceroute_1.default)(url);
@@ -658,11 +660,17 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 mountedUrl: tenant.commandUrl,
             });
             const status = await getStatus(tenant.commandUrl);
+            tenant.statusCode = status;
             core.debug(`status >>>> ${JSON.stringify(tenant)} ${JSON.stringify(status)}`);
-            // tenant.statusCode = await getStatus(tenant.commandUrl)
         }
     }
     core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`);
+    await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
+        gitCommitSha,
+        tenantsList,
+        duration,
+        image,
+    }));
     // const execDeploy = new Promise<ITenant[]>((resolve) => {
     // 	// eslint-disable-next-line github/array-foreach
     // 	tenantsList.forEach(async (tenant, index) => {

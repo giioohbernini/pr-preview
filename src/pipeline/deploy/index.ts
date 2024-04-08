@@ -5,7 +5,7 @@ import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { IDeployParams } from './types'
 import { ITenant } from '../../types'
 
-const getStatus = async (url: string) => {
+const getStatus = async (url: string): Promise<string> => {
 	return new Promise(async (resolve) => {
 		const statusCode = await traceroute(url)
 
@@ -28,14 +28,22 @@ const deploy = async ({
 				mountedUrl: tenant.commandUrl,
 			})
 			const status = await getStatus(tenant.commandUrl)
+			tenant.statusCode = status
 			core.debug(
 				`status >>>> ${JSON.stringify(tenant)} ${JSON.stringify(status)}`
 			)
-			// tenant.statusCode = await getStatus(tenant.commandUrl)
 		}
 	}
 
 	core.debug(`tenantsList >>>> ${JSON.stringify(tenantsList)}`)
+	await comment(
+		deployFinalizedTemplate({
+			gitCommitSha,
+			tenantsList,
+			duration,
+			image,
+		})
+	)
 
 	// const execDeploy = new Promise<ITenant[]>((resolve) => {
 	// 	// eslint-disable-next-line github/array-foreach
