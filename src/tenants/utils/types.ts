@@ -9,3 +9,10 @@ export interface ITenantsFactory {
 	repoName: string
 	prNumber: number | undefined
 }
+
+export interface MapperStatusCode {
+	[key: string]: {
+		name: string
+		desc: string
+	}
+}

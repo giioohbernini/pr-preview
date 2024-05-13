@@ -864,6 +864,43 @@ exports["default"] = surge;
 
 /***/ }),
 
+/***/ 5178:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.mapperStatusCode = void 0;
+exports.mapperStatusCode = {
+    200: {
+        name: 'OK',
+        desc: 'Request has been successfully processed'
+    },
+    400: {
+        name: 'Bad Request',
+        desc: 'The request cannot be fulfilled due to bad syntax'
+    },
+    401: {
+        name: `Unauthorized`,
+        desc: `The request was a legal request`
+    },
+    404: {
+        name: 'Not Found',
+        desc: 'The requested page could not be found but may be available again in the future'
+    },
+    500: {
+        name: 'Internal Server Error',
+        desc: 'Internal Server Error'
+    },
+    default: {
+        name: '',
+        desc: ''
+    }
+};
+
+
+/***/ }),
+
 /***/ 7536:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -927,21 +964,23 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /* eslint-disable github/no-then */
 const core = __importStar(__nccwpck_require__(2186));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
+const constants_1 = __nccwpck_require__(5178);
 const traceroute = async (url) => {
-    core.debug(`Executando traceroute:\n${url}`);
+    core.debug(`Running traceroute:\n${url}`);
     const errorMenssage = await axios_1.default
         .get(`https://${url}`)
         .then((response) => {
-        core.info(`Status da resposta: ${response.status}`);
-        core.info('O site está online!');
-        return `Request success with status code ${response.status}`;
+        core.info(`Response status: ${response.status}`);
+        core.info('The website is online.');
+        const status = constants_1.mapperStatusCode[response.status] || constants_1.mapperStatusCode['default'];
+        return `${status.desc}`;
     })
         .catch((error) => {
-        core.error('O site não está online!');
-        core.error(`Erro: ${error.message}`);
+        core.error('The website is not online.');
+        core.error(`Error: ${error.message}`);
         return error.message;
     });
-    core.debug(`Encerrando traceroute:\n${url}`);
+    core.debug(`Ending traceroute:\n${url}`);
     return `${errorMenssage}`;
 };
 exports["default"] = traceroute;

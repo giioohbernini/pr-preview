@@ -1,26 +1,29 @@
 /* eslint-disable github/no-then */
 import * as core from '@actions/core'
 import axios from 'axios'
+import { mapperStatusCode } from './constants'
 
 const traceroute = async (url: string): Promise<string> => {
-	core.debug(`Executando traceroute:\n${url}`)
+	core.debug(`Running traceroute:\n${url}`)
 
 	const errorMenssage = await axios
 		.get(`https://${url}`)
 		.then((response) => {
-			core.info(`Status da resposta: ${response.status}`)
-			core.info('O site está online!')
+			core.info(`Response status: ${response.status}`)
+			core.info('The website is online.')
+			
+			const status = mapperStatusCode[response.status] || mapperStatusCode['default']
 
-			return `Request success with status code ${response.status}`
+			return `${status.desc}`
 		})
 		.catch((error) => {
-			core.error('O site não está online!')
-			core.error(`Erro: ${error.message}`)
+			core.error('The website is not online.')
+			core.error(`Error: ${error.message}`)
 
 			return error.message
 		})
 
-	core.debug(`Encerrando traceroute:\n${url}`)
+	core.debug(`Ending traceroute:\n${url}`)
 	return `${errorMenssage}`
 }
 
