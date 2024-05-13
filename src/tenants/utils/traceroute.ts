@@ -3,6 +3,14 @@ import * as core from '@actions/core'
 import axios from 'axios'
 import { mapperStatusCode } from './constants'
 
+const returnCodeMessageError = (message: string) => {
+	const sizeMessage = message.length
+	const positionCode = message.indexOf('code')
+	const codeNumber = message.slice(positionCode + 5, sizeMessage)
+
+	return mapperStatusCode[codeNumber] || mapperStatusCode['default']
+}
+
 const traceroute = async (url: string): Promise<string> => {
 	core.debug(`Running traceroute:\n${url}`)
 
@@ -20,8 +28,8 @@ const traceroute = async (url: string): Promise<string> => {
 		.catch((error) => {
 			core.error('The website is not online.')
 			core.error(`Error: ${error.message}`)
-			core.debug(`>>>>>>>>> ${error}`)
-			return error.message
+			
+			return returnCodeMessageError(error.message)
 		})
 
 	core.debug(`Ending traceroute:\n${url}`)

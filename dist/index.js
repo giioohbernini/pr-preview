@@ -965,6 +965,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
 const constants_1 = __nccwpck_require__(5178);
+const returnCodeMessageError = (message) => {
+    const sizeMessage = message.length;
+    const positionCode = message.indexOf('code');
+    const codeNumber = message.slice(positionCode + 5, sizeMessage);
+    return constants_1.mapperStatusCode[codeNumber] || constants_1.mapperStatusCode['default'];
+};
 const traceroute = async (url) => {
     core.debug(`Running traceroute:\n${url}`);
     const errorMenssage = await axios_1.default
@@ -978,8 +984,7 @@ const traceroute = async (url) => {
         .catch((error) => {
         core.error('The website is not online.');
         core.error(`Error: ${error.message}`);
-        core.debug(`>>>>>>>>> ${error}`);
-        return error.message;
+        return returnCodeMessageError(error.message);
     });
     core.debug(`Ending traceroute:\n${url}`);
     return `${errorMenssage}`;
