@@ -11,15 +11,16 @@ const traceroute = async (url: string): Promise<string> => {
 		.then((response) => {
 			core.info(`Response status: ${response.status}`)
 			core.info('The website is online.')
-			
-			const status = mapperStatusCode[response.status] || mapperStatusCode['default']
+
+			const status =
+				mapperStatusCode[response.status] || mapperStatusCode['default']
 
 			return `${status.desc}`
 		})
 		.catch((error) => {
 			core.error('The website is not online.')
 			core.error(`Error: ${error.message}`)
-
+			core.error('>>>>>>>>> ', error)
 			return error.message
 		})
 

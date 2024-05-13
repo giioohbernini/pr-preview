@@ -874,28 +874,28 @@ exports.mapperStatusCode = void 0;
 exports.mapperStatusCode = {
     200: {
         name: 'OK',
-        desc: 'Request has been successfully processed'
+        desc: 'Request has been successfully processed',
     },
     400: {
         name: 'Bad Request',
-        desc: 'The request cannot be fulfilled due to bad syntax'
+        desc: 'The request cannot be fulfilled due to bad syntax',
     },
     401: {
         name: `Unauthorized`,
-        desc: `The request was a legal request`
+        desc: `The request was a legal request`,
     },
     404: {
         name: 'Not Found',
-        desc: 'The requested page could not be found but may be available again in the future'
+        desc: 'The requested page could not be found but may be available again in the future',
     },
     500: {
         name: 'Internal Server Error',
-        desc: 'Internal Server Error'
+        desc: 'Internal Server Error',
     },
     default: {
         name: '',
-        desc: ''
-    }
+        desc: '',
+    },
 };
 
 
@@ -978,6 +978,7 @@ const traceroute = async (url) => {
         .catch((error) => {
         core.error('The website is not online.');
         core.error(`Error: ${error.message}`);
+        core.error('>>>>>>>>> ', error);
         return error.message;
     });
     core.debug(`Ending traceroute:\n${url}`);
