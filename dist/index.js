@@ -969,7 +969,7 @@ const returnCodeMessageError = (message) => {
     const sizeMessage = message.length;
     const positionCode = message.indexOf('code');
     const codeNumber = message.slice(positionCode + 5, sizeMessage);
-    return constants_1.mapperStatusCode[codeNumber] || constants_1.mapperStatusCode['default'];
+    return constants_1.mapperStatusCode[codeNumber].desc || constants_1.mapperStatusCode['default'].desc;
 };
 const traceroute = async (url) => {
     core.debug(`Running traceroute:\n${url}`);
@@ -978,8 +978,8 @@ const traceroute = async (url) => {
         .then((response) => {
         core.info(`Response status: ${response.status}`);
         core.info('The website is online.');
-        const status = constants_1.mapperStatusCode[response.status] || constants_1.mapperStatusCode['default'];
-        return `${status.desc}`;
+        const status = constants_1.mapperStatusCode[response.status].desc || constants_1.mapperStatusCode['default'].desc;
+        return `${status}`;
     })
         .catch((error) => {
         core.error('The website is not online.');
