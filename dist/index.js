@@ -978,7 +978,7 @@ const traceroute = async (url) => {
         .catch((error) => {
         core.error('The website is not online.');
         core.error(`Error: ${error.message}`);
-        core.error('>>>>>>>>> ', error);
+        core.debug(`>>>>>>>>> ${error}`);
         return error.message;
     });
     core.debug(`Ending traceroute:\n${url}`);

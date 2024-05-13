@@ -20,7 +20,7 @@ const traceroute = async (url: string): Promise<string> => {
 		.catch((error) => {
 			core.error('The website is not online.')
 			core.error(`Error: ${error.message}`)
-			core.error('>>>>>>>>> ', error)
+			core.debug(`>>>>>>>>> ${error}`)
 			return error.message
 		})
 
