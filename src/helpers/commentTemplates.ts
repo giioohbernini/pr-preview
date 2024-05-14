@@ -75,8 +75,14 @@ export const deployFinalizedTemplate = ({
         </tr>
       </thead>
 			${commentTenantDeployURL({ tenantsList })}
+			<tr>
+				<td>
+					:clock1: Build time: <b>${duration}s</b>
+				</td>
+				<td colspan="2">
+					${image}
+				</td>
+			</tr>
     </table>
-    <p>:clock1: Build time: <b>${duration}s</b></p>
-    <p>${image}</p>
   `
 }
