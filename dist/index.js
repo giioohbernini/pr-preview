@@ -73,7 +73,7 @@ const commentTenantDeployURL = ({ tenantsList }) => {
         return tenant.token
             ? `
 					<tr>
-						<td style="width: 100px"><strong>${icon} ${tenant.tenantName}</strong></td>
+						<td width='100'><strong>${icon} ${tenant.tenantName}</strong></td>
 						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></td>
 						<td>${desc}</td>
 					</tr>
