@@ -8,7 +8,7 @@ const returnCodeMessageError = (message: string) => {
 	const positionCode = message.indexOf('code')
 	const codeNumber = message.slice(positionCode + 5, sizeMessage)
 
-	return mapperStatusCode[codeNumber].desc || mapperStatusCode['default'].desc
+	return mapperStatusCode[codeNumber] || mapperStatusCode['default']
 }
 
 const traceroute = async (url: string): Promise<string> => {
@@ -21,14 +21,15 @@ const traceroute = async (url: string): Promise<string> => {
 			core.info('The website is online.')
 
 			const status =
-				mapperStatusCode[response.status].desc || mapperStatusCode['default'].desc
+				mapperStatusCode[response.status] ||
+				mapperStatusCode['default']
 
 			return `${status}`
 		})
 		.catch((error) => {
 			core.error('The website is not online.')
 			core.error(`Error: ${error.message}`)
-			
+
 			return returnCodeMessageError(error.message)
 		})
 

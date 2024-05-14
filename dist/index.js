@@ -872,30 +872,12 @@ exports["default"] = surge;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.mapperStatusCode = void 0;
 exports.mapperStatusCode = {
-    200: {
-        name: 'OK',
-        desc: 'Request has been successfully processed',
-    },
-    400: {
-        name: 'Bad Request',
-        desc: 'The request cannot be fulfilled due to bad syntax',
-    },
-    401: {
-        name: `Unauthorized`,
-        desc: `The request was a legal request`,
-    },
-    404: {
-        name: 'Not Found',
-        desc: 'The requested page could not be found but may be available again in the future',
-    },
-    500: {
-        name: 'Internal Server Error',
-        desc: 'Internal Server Error',
-    },
-    default: {
-        name: '',
-        desc: '',
-    },
+    200: 'OK - Request has been successfully processed',
+    400: 'Bad Request - The server could not understand the request due to invalid syntax.',
+    401: 'Unauthorized - You do not have the necessary permissions to access this resource',
+    404: 'Not Found - The requested page could not be found but may be available again in the future',
+    500: 'Internal Server Error',
+    default: 'We do not have the status mapped.',
 };
 
 
@@ -969,7 +951,7 @@ const returnCodeMessageError = (message) => {
     const sizeMessage = message.length;
     const positionCode = message.indexOf('code');
     const codeNumber = message.slice(positionCode + 5, sizeMessage);
-    return constants_1.mapperStatusCode[codeNumber].desc || constants_1.mapperStatusCode['default'].desc;
+    return constants_1.mapperStatusCode[codeNumber] || constants_1.mapperStatusCode['default'];
 };
 const traceroute = async (url) => {
     core.debug(`Running traceroute:\n${url}`);
@@ -978,7 +960,8 @@ const traceroute = async (url) => {
         .then((response) => {
         core.info(`Response status: ${response.status}`);
         core.info('The website is online.');
-        const status = constants_1.mapperStatusCode[response.status].desc || constants_1.mapperStatusCode['default'].desc;
+        const status = constants_1.mapperStatusCode[response.status] ||
+            constants_1.mapperStatusCode['default'];
         return `${status}`;
     })
         .catch((error) => {

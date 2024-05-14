@@ -11,8 +11,5 @@ export interface ITenantsFactory {
 }
 
 export interface MapperStatusCode {
-	[key: string]: {
-		name: string
-		desc: string
-	}
+	[key: string]: string
 }
