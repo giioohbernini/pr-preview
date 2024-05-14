@@ -67,12 +67,31 @@ exports.deployFinalizedTemplate = exports.buildInProgressTemplate = exports.depl
 const commentTenantDeployURL = ({ tenantsList }) => {
     return tenantsList
         .map((tenant) => {
+        const { desc, number } = tenant.statusCode || {};
+        let icon = '';
+        switch (number) {
+            case 400:
+                icon = '\u274C';
+                break;
+            case 401:
+                icon = '\u274C';
+                break;
+            case 404:
+                icon = '\u274C';
+                break;
+            case 500:
+                icon = '\u274C';
+                break;
+            default:
+                icon = '\u2705';
+                break;
+        }
         return tenant.token
             ? `
 					<tr>
-						<td><strong>✅ ${tenant.tenantName}</strong></td>
+						<td><strong>${icon} ${tenant.tenantName}</strong></td>
 						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></td>
-						<td>${tenant.statusCode}</td>
+						<td>${desc}</td>
 					</tr>
 					`
             : '';
@@ -872,12 +891,30 @@ exports["default"] = surge;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.mapperStatusCode = void 0;
 exports.mapperStatusCode = {
-    200: 'OK - Request has been successfully processed',
-    400: 'Bad Request - The server could not understand the request due to invalid syntax.',
-    401: 'Unauthorized - You do not have the necessary permissions to access this resource',
-    404: 'Not Found - The requested page could not be found but may be available again in the future',
-    500: 'Internal Server Error',
-    default: 'We do not have the status mapped.',
+    200: {
+        desc: 'OK - Request has been successfully processed',
+        number: 200
+    },
+    400: {
+        desc: 'Bad Request - The server could not understand the request due to invalid syntax.',
+        number: 400
+    },
+    401: {
+        desc: 'Unauthorized - You do not have the necessary permissions to access this resource',
+        number: 401
+    },
+    404: {
+        desc: 'Not Found - The requested page could not be found but may be available again in the future',
+        number: 404
+    },
+    500: {
+        desc: 'Internal Server Error',
+        number: 500
+    },
+    default: {
+        desc: 'We do not have the status mapped.',
+        number: 0
+    },
 };
 
 
@@ -960,9 +997,8 @@ const traceroute = async (url) => {
         .then((response) => {
         core.info(`Response status: ${response.status}`);
         core.info('The website is online.');
-        const status = constants_1.mapperStatusCode[response.status] ||
-            constants_1.mapperStatusCode['default'];
-        return `${status}`;
+        const status = constants_1.mapperStatusCode[response.status] || constants_1.mapperStatusCode['default'];
+        return status;
     })
         .catch((error) => {
         core.error('The website is not online.');
@@ -970,7 +1006,7 @@ const traceroute = async (url) => {
         return returnCodeMessageError(error.message);
     });
     core.debug(`Ending traceroute:\n${url}`);
-    return `${errorMenssage}`;
+    return errorMenssage;
 };
 exports["default"] = traceroute;
 

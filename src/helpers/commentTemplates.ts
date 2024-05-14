@@ -7,12 +7,33 @@ import {
 const commentTenantDeployURL = ({ tenantsList }: ICommentTenantDeployURL) => {
 	return tenantsList
 		.map((tenant) => {
+			const { desc, number } = tenant.statusCode || {}
+			let icon = ''
+
+			switch (number) {
+				case 400:
+					icon = '\u274C'
+					break
+				case 401:
+					icon = '\u274C'
+					break
+				case 404:
+					icon = '\u274C'
+					break
+				case 500:
+					icon = '\u274C'
+					break
+				default:
+					icon = '\u2705'
+					break
+			}
+
 			return tenant.token
 				? `
 					<tr>
-						<td><strong>✅ ${tenant.tenantName}</strong></td>
+						<td><strong>${icon} ${tenant.tenantName}</strong></td>
 						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
-						<td>${tenant.statusCode}</td>
+						<td>${desc}</td>
 					</tr>
 					`
 				: ''

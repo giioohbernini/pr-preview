@@ -8,3 +8,8 @@ export interface IDeployParams {
 	image: string
 	tenantsList: ITenant[]
 }
+
+export interface IStatusCode {
+	desc: string
+	number: number
+}

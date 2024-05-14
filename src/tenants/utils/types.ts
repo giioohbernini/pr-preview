@@ -10,6 +10,11 @@ export interface ITenantsFactory {
 	prNumber: number | undefined
 }
 
-export interface MapperStatusCode {
-	[key: string]: string
+export interface IStatusCode {
+	desc: string
+	number: number
+}
+
+export interface IMapperStatusCode {
+	[key: string]: IStatusCode
 }

@@ -1,9 +1,9 @@
 import traceroute from '../../tenants/utils/traceroute'
 import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
-import { IDeployParams } from './types'
+import { IDeployParams, IStatusCode } from './types'
 
-const getStatus = async (url: string): Promise<string> => {
+const getStatus = async (url: string): Promise<IStatusCode> => {
 	return new Promise(async (resolve) => {
 		const statusCode = await traceroute(url)
 
