@@ -1,3 +1,4 @@
+import { iconStatusDeploy } from './iconStatusDeploy'
 import {
 	IDeployInProgressPrams,
 	IdeployFinalized,
@@ -8,30 +9,12 @@ const commentTenantDeployURL = ({ tenantsList }: ICommentTenantDeployURL) => {
 	return tenantsList
 		.map((tenant) => {
 			const { desc, number } = tenant.statusCode || {}
-			let icon = ''
-
-			switch (number) {
-				case 400:
-					icon = '\u274C'
-					break
-				case 401:
-					icon = '\u274C'
-					break
-				case 404:
-					icon = '\u274C'
-					break
-				case 500:
-					icon = '\u274C'
-					break
-				default:
-					icon = '\u2705'
-					break
-			}
+			let icon = iconStatusDeploy(number)
 
 			return tenant.token
 				? `
 					<tr>
-						<td><strong>${icon} ${tenant.tenantName}</strong></td>
+						<td style="width: 100px;"><strong>${icon} ${tenant.tenantName}</strong></td>
 						<td><a href='https://${tenant.outputUrl}' target="_blank">${tenant?.outputUrl}</a></td>
 						<td>${desc}</td>
 					</tr>
