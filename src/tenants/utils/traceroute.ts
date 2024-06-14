@@ -14,12 +14,12 @@ const returnCodeMessageError = (message: string) => {
 
 const traceroute = async ({
 	url,
-	previewUrl = '',
+	previewPath = '',
 }: ITraceroute): Promise<IStatusCode> => {
-	core.debug(`Running traceroute:\n${url}${previewUrl}`)
+	core.debug(`Running traceroute:\n${url}${previewPath}`)
 
 	const errorMenssage = await axios
-		.get(`https://${url}${previewUrl}`)
+		.get(`https://${url}${previewPath}`)
 		.then((response) => {
 			core.info(`Response status: ${response.status}`)
 			core.info('The website is online.')
@@ -36,7 +36,7 @@ const traceroute = async ({
 			return returnCodeMessageError(error.message)
 		})
 
-	core.debug(`Ending traceroute:\n${url}${previewUrl}`)
+	core.debug(`Ending traceroute:\n${url}${previewPath}`)
 	return errorMenssage
 }
 

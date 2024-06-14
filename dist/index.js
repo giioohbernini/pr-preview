@@ -677,9 +677,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-const getStatus = async ({ url, previewUrl, }) => {
+const getStatus = async ({ url, previewPath, }) => {
     return new Promise(async (resolve) => {
-        const statusCode = await (0, traceroute_1.default)({ url, previewUrl });
+        const statusCode = await (0, traceroute_1.default)({ url, previewPath });
         if (statusCode)
             resolve(statusCode);
     });
@@ -694,7 +694,7 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
             });
             tenant.statusCode = await getStatus({
                 url: tenant.commandUrl,
-                previewUrl: tenant.previewUrl,
+                previewPath: tenant.previewPath,
             });
         }
     }
@@ -1014,10 +1014,10 @@ const returnCodeMessageError = (message) => {
     const codeNumber = message.slice(positionCode + 5, sizeMessage);
     return constants_1.mapperStatusCode[codeNumber] || constants_1.mapperStatusCode['default'];
 };
-const traceroute = async ({ url, previewUrl = '', }) => {
-    core.debug(`Running traceroute:\n${url}${previewUrl}`);
+const traceroute = async ({ url, previewPath = '', }) => {
+    core.debug(`Running traceroute:\n${url}${previewPath}`);
     const errorMenssage = await axios_1.default
-        .get(`https://${url}${previewUrl}`)
+        .get(`https://${url}${previewPath}`)
         .then((response) => {
         core.info(`Response status: ${response.status}`);
         core.info('The website is online.');
@@ -1029,7 +1029,7 @@ const traceroute = async ({ url, previewUrl = '', }) => {
         core.error(`Error: ${error.message}`);
         return returnCodeMessageError(error.message);
     });
-    core.debug(`Ending traceroute:\n${url}${previewUrl}`);
+    core.debug(`Ending traceroute:\n${url}${previewPath}`);
     return errorMenssage;
 };
 exports["default"] = traceroute;

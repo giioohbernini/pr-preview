@@ -30,7 +30,7 @@ export interface ITenant {
 	tenantName: string
 	commandUrl: string
 	outputUrl: string
-	previewUrl?: string
+	previewPath?: string
 	deploy: ({
 		token,
 		distFolder,

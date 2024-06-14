@@ -5,10 +5,10 @@ import { IDeployParams, IStatusCode, IGetStatusParams } from './types'
 
 const getStatus = async ({
 	url,
-	previewUrl,
+	previewPath,
 }: IGetStatusParams): Promise<IStatusCode> => {
 	return new Promise(async (resolve) => {
-		const statusCode = await traceroute({ url, previewUrl })
+		const statusCode = await traceroute({ url, previewPath })
 
 		if (statusCode) resolve(statusCode)
 	})
@@ -31,7 +31,7 @@ const deploy = async ({
 
 			tenant.statusCode = await getStatus({
 				url: tenant.commandUrl,
-				previewUrl: tenant.previewUrl,
+				previewPath: tenant.previewPath,
 			})
 		}
 	}
