@@ -16,7 +16,7 @@ export interface IStatusCode {
 }
 
 export interface ITraceroute {
-	url: string,
+	url: string
 	previewUrl: string | undefined
 }
 

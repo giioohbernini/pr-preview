@@ -3,9 +3,12 @@ import comment from '../../helpers/comment'
 import { deployFinalizedTemplate } from '../../helpers/commentTemplates'
 import { IDeployParams, IStatusCode, IGetStatusParams } from './types'
 
-const getStatus = async ({url, previewUrl}: IGetStatusParams): Promise<IStatusCode> => {
+const getStatus = async ({
+	url,
+	previewUrl,
+}: IGetStatusParams): Promise<IStatusCode> => {
 	return new Promise(async (resolve) => {
-		const statusCode = await traceroute({url, previewUrl})
+		const statusCode = await traceroute({ url, previewUrl })
 
 		if (statusCode) resolve(statusCode)
 	})
@@ -28,7 +31,7 @@ const deploy = async ({
 
 			tenant.statusCode = await getStatus({
 				url: tenant.commandUrl,
-				previewUrl: tenant.previewUrl
+				previewUrl: tenant.previewUrl,
 			})
 		}
 	}

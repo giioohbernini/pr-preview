@@ -12,7 +12,10 @@ const returnCodeMessageError = (message: string) => {
 	return mapperStatusCode[codeNumber] || mapperStatusCode['default']
 }
 
-const traceroute = async ({url, previewUrl}: ITraceroute): Promise<IStatusCode> => {
+const traceroute = async ({
+	url,
+	previewUrl = '',
+}: ITraceroute): Promise<IStatusCode> => {
 	core.debug(`Running traceroute:\n${url}${previewUrl}`)
 
 	const errorMenssage = await axios

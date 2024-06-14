@@ -677,7 +677,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-const getStatus = async ({ url, previewUrl }) => {
+const getStatus = async ({ url, previewUrl, }) => {
     return new Promise(async (resolve) => {
         const statusCode = await (0, traceroute_1.default)({ url, previewUrl });
         if (statusCode)
@@ -694,7 +694,7 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
             });
             tenant.statusCode = await getStatus({
                 url: tenant.commandUrl,
-                previewUrl: tenant.previewUrl
+                previewUrl: tenant.previewUrl,
             });
         }
     }
@@ -1014,7 +1014,7 @@ const returnCodeMessageError = (message) => {
     const codeNumber = message.slice(positionCode + 5, sizeMessage);
     return constants_1.mapperStatusCode[codeNumber] || constants_1.mapperStatusCode['default'];
 };
-const traceroute = async ({ url, previewUrl }) => {
+const traceroute = async ({ url, previewUrl = '', }) => {
     core.debug(`Running traceroute:\n${url}${previewUrl}`);
     const errorMenssage = await axios_1.default
         .get(`https://${url}${previewUrl}`)
