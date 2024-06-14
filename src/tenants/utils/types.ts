@@ -15,6 +15,11 @@ export interface IStatusCode {
 	number: number
 }
 
+export interface ITraceroute {
+	url: string,
+	previewUrl: string | undefined
+}
+
 export interface IMapperStatusCode {
 	[key: string]: IStatusCode
 }

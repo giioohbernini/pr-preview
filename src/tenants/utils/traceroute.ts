@@ -1,7 +1,7 @@
 /* eslint-disable github/no-then */
 import * as core from '@actions/core'
 import axios from 'axios'
-import { IStatusCode } from './types'
+import { IStatusCode, ITraceroute } from './types'
 import { mapperStatusCode } from './constants'
 
 const returnCodeMessageError = (message: string) => {
@@ -12,11 +12,11 @@ const returnCodeMessageError = (message: string) => {
 	return mapperStatusCode[codeNumber] || mapperStatusCode['default']
 }
 
-const traceroute = async (url: string): Promise<IStatusCode> => {
-	core.debug(`Running traceroute:\n${url}`)
+const traceroute = async ({url, previewUrl}: ITraceroute): Promise<IStatusCode> => {
+	core.debug(`Running traceroute:\n${url}${previewUrl}`)
 
 	const errorMenssage = await axios
-		.get(`https://${url}`)
+		.get(`https://${url}${previewUrl}`)
 		.then((response) => {
 			core.info(`Response status: ${response.status}`)
 			core.info('The website is online.')
@@ -33,7 +33,7 @@ const traceroute = async (url: string): Promise<IStatusCode> => {
 			return returnCodeMessageError(error.message)
 		})
 
-	core.debug(`Ending traceroute:\n${url}`)
+	core.debug(`Ending traceroute:\n${url}${previewUrl}`)
 	return errorMenssage
 }
 

@@ -677,9 +677,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-const getStatus = async (url) => {
+const getStatus = async ({ url, previewUrl }) => {
     return new Promise(async (resolve) => {
-        const statusCode = await (0, traceroute_1.default)(url);
+        const statusCode = await (0, traceroute_1.default)({ url, previewUrl });
         if (statusCode)
             resolve(statusCode);
     });
@@ -692,7 +692,10 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 distFolder,
                 mountedUrl: tenant.commandUrl,
             });
-            tenant.statusCode = await getStatus(tenant.commandUrl);
+            tenant.statusCode = await getStatus({
+                url: tenant.commandUrl,
+                previewUrl: tenant.previewUrl
+            });
         }
     }
     await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
@@ -1011,10 +1014,10 @@ const returnCodeMessageError = (message) => {
     const codeNumber = message.slice(positionCode + 5, sizeMessage);
     return constants_1.mapperStatusCode[codeNumber] || constants_1.mapperStatusCode['default'];
 };
-const traceroute = async (url) => {
-    core.debug(`Running traceroute:\n${url}`);
+const traceroute = async ({ url, previewUrl }) => {
+    core.debug(`Running traceroute:\n${url}${previewUrl}`);
     const errorMenssage = await axios_1.default
-        .get(`https://${url}`)
+        .get(`https://${url}${previewUrl}`)
         .then((response) => {
         core.info(`Response status: ${response.status}`);
         core.info('The website is online.');
@@ -1026,7 +1029,7 @@ const traceroute = async (url) => {
         core.error(`Error: ${error.message}`);
         return returnCodeMessageError(error.message);
     });
-    core.debug(`Ending traceroute:\n${url}`);
+    core.debug(`Ending traceroute:\n${url}${previewUrl}`);
     return errorMenssage;
 };
 exports["default"] = traceroute;

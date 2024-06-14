@@ -13,3 +13,8 @@ export interface IStatusCode {
 	desc: string
 	number: number
 }
+
+export interface IGetStatusParams {
+	url: string
+	previewUrl: string | undefined
+}
