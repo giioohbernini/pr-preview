@@ -68,7 +68,7 @@ const prepare = async (): Promise<IReturnPrepare> => {
 	core.debug(`teardown enabled?: ${teardown}`)
 	core.debug(`tenantsList: ${JSON.stringify(tenantsList)}`)
 	core.info('Finalizing the initialization of the variables.')
-
+	core.debug(`Tenant list: ${tenantsList}`)
 	return {
 		previewPath,
 		distFolder,
