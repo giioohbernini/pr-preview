@@ -16,5 +16,4 @@ export interface IStatusCode {
 
 export interface IGetStatusParams {
 	url: string
-	previewPath: string | undefined
 }

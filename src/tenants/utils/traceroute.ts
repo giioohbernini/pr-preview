@@ -12,14 +12,11 @@ const returnCodeMessageError = (message: string) => {
 	return mapperStatusCode[codeNumber] || mapperStatusCode['default']
 }
 
-const traceroute = async ({
-	url,
-	previewPath = '',
-}: ITraceroute): Promise<IStatusCode> => {
-	core.debug(`Running traceroute:\n${url}${previewPath}`)
+const traceroute = async ({ url }: ITraceroute): Promise<IStatusCode> => {
+	core.debug(`Running traceroute:\n${url}`)
 
 	const errorMenssage = await axios
-		.get(`https://${url}${previewPath}`)
+		.get(`https://${url}`)
 		.then((response) => {
 			core.info(`Response status: ${response.status}`)
 			core.info('The website is online.')
@@ -36,7 +33,7 @@ const traceroute = async ({
 			return returnCodeMessageError(error.message)
 		})
 
-	core.debug(`Ending traceroute:\n${url}${previewPath}`)
+	core.debug(`Ending traceroute:\n${url}`)
 	return errorMenssage
 }
 

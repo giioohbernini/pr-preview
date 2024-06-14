@@ -677,9 +677,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const traceroute_1 = __importDefault(__nccwpck_require__(8303));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
 const commentTemplates_1 = __nccwpck_require__(7662);
-const getStatus = async ({ url, previewPath, }) => {
+const getStatus = async ({ url }) => {
     return new Promise(async (resolve) => {
-        const statusCode = await (0, traceroute_1.default)({ url, previewPath });
+        const statusCode = await (0, traceroute_1.default)({ url });
         if (statusCode)
             resolve(statusCode);
     });
@@ -692,10 +692,7 @@ const deploy = async ({ distFolder, gitCommitSha, duration, image, tenantsList, 
                 distFolder,
                 mountedUrl: tenant.commandUrl,
             });
-            tenant.statusCode = await getStatus({
-                url: tenant.commandUrl,
-                previewPath: tenant.previewPath,
-            });
+            tenant.statusCode = await getStatus({ url: tenant.outputUrl });
         }
     }
     await (0, comment_1.default)((0, commentTemplates_1.deployFinalizedTemplate)({
@@ -784,7 +781,6 @@ const prepare = async () => {
     core.debug(`teardown enabled?: ${teardown}`);
     core.debug(`tenantsList: ${JSON.stringify(tenantsList)}`);
     core.info('Finalizing the initialization of the variables.');
-    core.debug(`Tenant list: ${JSON.stringify(tenantsList)}`);
     return {
         previewPath,
         distFolder,
@@ -1015,10 +1011,10 @@ const returnCodeMessageError = (message) => {
     const codeNumber = message.slice(positionCode + 5, sizeMessage);
     return constants_1.mapperStatusCode[codeNumber] || constants_1.mapperStatusCode['default'];
 };
-const traceroute = async ({ url, previewPath = '', }) => {
-    core.debug(`Running traceroute:\n${url}${previewPath}`);
+const traceroute = async ({ url }) => {
+    core.debug(`Running traceroute:\n${url}`);
     const errorMenssage = await axios_1.default
-        .get(`https://${url}${previewPath}`)
+        .get(`https://${url}`)
         .then((response) => {
         core.info(`Response status: ${response.status}`);
         core.info('The website is online.');
@@ -1030,7 +1026,7 @@ const traceroute = async ({ url, previewPath = '', }) => {
         core.error(`Error: ${error.message}`);
         return returnCodeMessageError(error.message);
     });
-    core.debug(`Ending traceroute:\n${url}${previewPath}`);
+    core.debug(`Ending traceroute:\n${url}`);
     return errorMenssage;
 };
 exports["default"] = traceroute;

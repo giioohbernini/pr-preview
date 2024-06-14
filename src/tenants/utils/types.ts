@@ -17,7 +17,6 @@ export interface IStatusCode {
 
 export interface ITraceroute {
 	url: string
-	previewPath: string | undefined
 }
 
 export interface IMapperStatusCode {
