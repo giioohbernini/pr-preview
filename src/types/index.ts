@@ -20,15 +20,22 @@ interface IShutDown {
 	mountedUrl: string
 }
 
+interface IStatusCode {
+	desc: string
+	number: number
+}
+
 export interface ITenant {
 	token: string
 	tenantName: string
 	commandUrl: string
 	outputUrl: string
+	previewPath?: string
 	deploy: ({
 		token,
 		distFolder,
 		mountedUrl,
 	}: IDeployTenantParams) => Promise<void>
 	shutDown: ({ token, mountedUrl }: IShutDown) => Promise<void>
+	statusCode?: IStatusCode
 }

@@ -9,3 +9,16 @@ export interface ITenantsFactory {
 	repoName: string
 	prNumber: number | undefined
 }
+
+export interface IStatusCode {
+	desc: string
+	number: number
+}
+
+export interface ITraceroute {
+	url: string
+}
+
+export interface IMapperStatusCode {
+	[key: string]: IStatusCode
+}

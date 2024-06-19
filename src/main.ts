@@ -2,7 +2,10 @@ import * as core from '@actions/core'
 import comment from './helpers/comment'
 import fail from './helpers/fail'
 import { formatImage } from './helpers/formatImage'
-import { deployInProgressTemplate } from './helpers/commentTemplates'
+import {
+	deployInProgressTemplate,
+	buildInProgressTemplate,
+} from './helpers/commentTemplates'
 import prepare from './pipeline/prepare'
 import build from './pipeline/build'
 import shutDown from './pipeline/shutDown'
@@ -35,10 +38,7 @@ async function main() {
 
 	await comment(
 		deployInProgressTemplate({
-			gitCommitSha,
-			buildingLogUrl,
 			deployingImage,
-			tenantsList,
 		})
 	)
 
@@ -47,6 +47,15 @@ async function main() {
 			buildingLogUrl,
 			buildCommand,
 		})
+
+		await comment(
+			buildInProgressTemplate({
+				gitCommitSha,
+				buildingLogUrl,
+				deployingImage,
+				tenantsList,
+			})
+		)
 
 		await deploy({
 			previewPath,
