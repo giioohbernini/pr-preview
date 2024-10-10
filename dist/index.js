@@ -842,7 +842,7 @@ const shutDown = async ({ gitCommitSha, tenantsList, }) => {
 					<p>:recycle: PR Preview ${gitCommitSha} has been successfully destroyed since this PR has been closed.</p>
 					<ul>
 						<li>Tenant name: ${tenant.tenantName}</li>
-			      <li>Tenant URL: [${tenant.outputUrl}](https://${tenant.outputUrl})</li>
+			      <li>Tenant URL: <a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></li>
 		      </ul>
 			  `);
         });
