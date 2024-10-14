@@ -827,12 +827,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const fail_1 = __importDefault(__nccwpck_require__(6213));
 const comment_1 = __importDefault(__nccwpck_require__(6645));
-const formatImage_1 = __nccwpck_require__(8781);
-const shutDown = async ({ buildingLogUrl, gitCommitSha, tenantsList, }) => {
-    const image = (0, formatImage_1.formatImage)({
-        buildingLogUrl,
-        imageUrl: 'https://user-images.githubusercontent.com/507615/98094112-d838f700-1ec3-11eb-8530-381c2276b80e.png',
-    });
+const shutDown = async ({ gitCommitSha, tenantsList, }) => {
     try {
         // eslint-disable-next-line github/array-foreach
         return tenantsList.forEach(async (tenant) => {
@@ -843,7 +838,13 @@ const shutDown = async ({ buildingLogUrl, gitCommitSha, tenantsList, }) => {
                     mountedUrl: tenant.commandUrl,
                 });
             }
-            return await (0, comment_1.default)(`:recycle: [PR Preview](https://${tenant.outputUrl}) ${gitCommitSha} has been successfully destroyed since this PR has been closed. \n ${image}`);
+            return await (0, comment_1.default)(`
+					<p>:recycle: PR Preview ${gitCommitSha} has been successfully destroyed since this PR has been closed.</p>
+					<ul>
+						<li>Tenant name: ${tenant.tenantName}</li>
+			      <li>Tenant URL: <a href='https://${tenant.outputUrl}' target="_blank">${tenant === null || tenant === void 0 ? void 0 : tenant.outputUrl}</a></li>
+		      </ul>
+			  `);
         });
     }
     catch (err) {
